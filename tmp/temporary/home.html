@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main page</title>
+</head>
+<body>
+<img src="static/goose.jpg" alt="">
+<p><i>GOOSE</i></p>
+<h2>НОВОСТИ</h2>
+<hr>
+
+{% if newsEntries %}
+    {% for news in newsEntries %}
+        <div style="float: left; padding: 10px;">
+            <h3>{{ news.title }}</h3>
+            <hr>
+            <p>{{ news.id | safe }}</p>
+            <p>{{ news.shortDescript | safe }}</p>
+            <p>Author: <i>{{ news.author }}</i></p>
+            <p>Gallery: <i>{{ news.gallery.title }}</i></p>
+            <p><i>{{ news.gallery.slug }}</i></p>
+            <p><img src="/media/{{ news.gallery.image1 }}" alt=""></p>
+            <hr>
+            <a href="/news/edit/{{ news.id }}">Редактировать запись</a><br>
+            <a href="/news/edit_gallery/{{ news.gallery_id }}">Редактировать галлерею</a><br>
+            <a href="/news/del/{{ news.gallery_id }}">Удалить</a>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>OH, SHIT! THERE IS nihuya.obj AGAIN!</p>
+{% endif %}
+
+<hr>
+<div style="float: none">
+    <button><a href="{{ newsURL }}">ВСЕ НОВОСТИ</a></button>
+</div>
+</body>
+</html>

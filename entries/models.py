@@ -1,9 +1,44 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.core.validators import FileExtensionValidator
+from django.db import models
 from django.template.defaultfilters import slugify
+from taggit.managers import TaggableManager
+from tinymce.models import HTMLField
+
 
 class Tags(models.Model):
     name = models.CharField(max_length=250, verbose_name="Название тега")
+
+
+def upload_to(instance, filename):
+    return '/'.join(['entries', 'gallery', str(instance.slug), filename])
+
+
+class Gallery(models.Model):
+    title = models.CharField(max_length=100, verbose_name="Название", blank=True)
+    entry = models.ForeignKey(ContentType, on_delete=models.DO_NOTHING, blank=True, null=True)
+    slug = models.SlugField(max_length=50, default="none")
+    image1 = models.ImageField(upload_to=upload_to, blank=True)
+    image2 = models.ImageField(upload_to=upload_to, blank=True)
+    image3 = models.ImageField(upload_to=upload_to, blank=True)
+    image4 = models.ImageField(upload_to=upload_to, blank=True)
+    image5 = models.ImageField(upload_to=upload_to, blank=True)
+    image6 = models.ImageField(upload_to=upload_to, blank=True)
+    image7 = models.ImageField(upload_to=upload_to, blank=True)
+    image8 = models.ImageField(upload_to=upload_to, blank=True)
+    image9 = models.ImageField(upload_to=upload_to, blank=True)
+    image10 = models.ImageField(upload_to=upload_to, blank=True)
+    image11 = models.ImageField(upload_to=upload_to, blank=True)
+    image12 = models.ImageField(upload_to=upload_to, blank=True)
+    image13 = models.ImageField(upload_to=upload_to, blank=True)
+    image14 = models.ImageField(upload_to=upload_to, blank=True)
+    image15 = models.ImageField(upload_to=upload_to, blank=True)
+
+    def __str__(self):
+        if self.entry:
+            return "{0} - {1}".format(self.entry.name, self.title)
+        return "none - {0}".format(self.title)
 
 
 class Categories(models.Model):
@@ -24,13 +59,21 @@ class Categories(models.Model):
         super().save(*args, **kwargs)
 
 
+def upload_to_entries(instance, filename):
+    return '/'.join(['entries', str(instance.ModuleNAME), str(instance.pk), filename])
+
+
 class Entry(models.Model):
+    ModuleNAME = "none"
+
     title = models.CharField(max_length=200, verbose_name="Заголовок")
     slug = models.SlugField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
     author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
     datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
     descript = HTMLField(verbose_name="Описание")
-    tags = models.ManyToManyField(Tags, blank=True, verbose_name="Теги")
+    tags = TaggableManager(blank=True)
+    image = models.ImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
+                              verbose_name="Илюстрация")
     inTop = models.BooleanField(default=False, verbose_name="Закрепить материал", blank="True")
     atMain = models.BooleanField(default=False, verbose_name="Вывести материал на главную страницу", blank="True")
 
@@ -47,6 +90,14 @@ class Entry(models.Model):
         verbose_name_plural = "Записи"
 
 
+# ------------
+# START-of-MODULES
+# ------------
+# ////--------
+# NEWS: НОВОСТИ
+# ////--------
+
+
 class CategoriesNews(Categories):
     pass
 
@@ -55,25 +106,26 @@ class CategoriesNews(Categories):
         verbose_name_plural = "Категории новостей"
 
 
-class EntryNews(ContentGalleryMixin, Entry):
+class EntryNews(Entry):
+    ModuleNAME = "news"
+
     categories = models.ForeignKey(CategoriesNews, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
-    shortDescript = models.TextField(verbose_name="Короткое описание")
+    shortDescript = HTMLField(verbose_name="Короткое описание")
     source = models.URLField(blank=True, verbose_name="Источник")
-    image = models.ImageField(upload_to='entries/categories', default='spostap.png', null=True, unique=False,
-                              verbose_name="Илюстрация")
-    gallery = models.FileField(upload_to='entries/news', blank=True, null=True)
-	
-	
-	def get_image_filename(instance, filename):
-	    title = instance.post.title
-	    slug = slugify(title)
-	    return "post_images/%s-%s" % (slug, filename) 
+    gallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         verbose_name = "Новость"
         verbose_name_plural = "Новости"
-		
-class Images(models.Model):
-    post = models.ForeignKey(Post, default=None)
-    image = models.ImageField(upload_to=get_image_filename,
-                              verbose_name='Image')		
+
+
+# /////////-------
+# ARTICLES: СТАТЬИ
+# /////////-------
+
+class CategoriesArticles(Categories):
+    pass
+
+    class Meta:
+        verbose_name = "Категория cтатей"
+        verbose_name_plural = "Категории статей"
