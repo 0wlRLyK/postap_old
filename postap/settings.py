@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     'taggit',
 
     # POSTAP APPS
-    'entries'
+    'entries',
+
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
@@ -140,3 +142,52 @@ STATICFILES_DIRS = [
 ]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# /////////-------
+# ADMIN INTERFACE
+# /////////-------
+_ = lambda s: s
+
+NUCLEUS = {
+    'sidebar': {
+        # Title
+        'title': _('POSTAP ADMINISTRATING'),
+
+        # # Footer
+        # 'footer': {
+        #     'title': _('Custom title'),
+        #     'description': _('Longer text displayed below the title'),
+        # },
+
+        # Navigation
+        'navigation': {
+
+            # Application
+            'entries': {
+                'title': _('Записи'),  # Override title
+                'icon': 'admin/ui/img/entries/entries.svg'  # Optional
+            },
+            'EntryNews': {
+                'title': _('Новости'),
+                'icon': 'admin/ui/img/entries/news.svg'  # Optional
+            },
+            'CategoriesNews': {
+                'title': _('Категории новостей'),
+                'icon': 'admin/ui/img/entries/category.svg'  # Optional
+            },
+            'EntryArticle': {
+                'title': _('Статьи'),
+                'icon': 'admin/ui/img/entries/news.svg'  # Optional
+            },
+            'CategoriesArticle': {
+                'title': _('Категории статей'),
+                'icon': 'admin/ui/img/entries/category.svg'  # Optional
+            },
+            'Gallery': {
+                'title': _('Галереи'),
+                'icon': 'admin/ui/img/entries/gallery.svg'  # Optional
+            },
+
+        }
+    }
+}

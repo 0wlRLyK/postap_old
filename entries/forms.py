@@ -1,7 +1,12 @@
 from betterforms.multiform import MultiModelForm, MultiForm
 from django import forms
 
-from .models import EntryNews, Gallery
+from .models import EntryNews, Gallery, EntryArticle
+
+
+# ////--------
+# NEWS: НОВОСТИ
+# ////--------
 
 
 class NewsForm(forms.ModelForm):
@@ -28,5 +33,24 @@ class NewsAddForm(MultiForm):
 class NewsEditForm(MultiModelForm):
     form_classes = {
         'newsEntry': NewsForm,
+        'gallery': GalleryForm,
+    }
+
+
+# /////////-------
+# ARTICLES: СТАТЬИ
+# /////////-------
+
+
+class ArticleForm(forms.ModelForm):
+    class Meta:
+        model = EntryArticle
+        fields = ['title', 'slug', 'categories', 'shortDescript',
+                  'descript', 'image', 'inTop', 'atMain', 'source']
+
+
+class ArticleAddForm(MultiForm):
+    form_classes = {
+        'articlesEntry': ArticleForm,
         'gallery': GalleryForm,
     }
