@@ -1,10 +1,11 @@
 from django.shortcuts import redirect
 from django.views.generic import CreateView, TemplateView, ListView, UpdateView, DeleteView, DetailView
 from extra_views import UpdateWithInlinesView, InlineFormSetFactory
+from gallery.models import Gallery
 from gallery.models import GalleryItem
 
-from .forms import NewsAddForm, ArticleAddForm
-from .models import EntryNews, Gallery, EntryArticle
+from .forms import NewsAddForm, ArticleAddForm, FileAddForm
+from .models import EntryNews, EntryArticle, EntryFile
 from .variables import NEWS
 
 
@@ -34,8 +35,6 @@ class DetailNews(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        x = Gallery.objects.select_related()
-        context['teachers'] = Gallery.objects.select_related()
         context['some'] = GalleryItem.objects.filter(entry__entrynews=self.object)
         return context
 
@@ -109,8 +108,6 @@ class DetailArticle(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        x = Gallery.objects.select_related()
-        context['teachers'] = Gallery.objects.select_related()
         context['some'] = GalleryItem.objects.filter(entry__entryarticle=self.object)
         return context
 
@@ -162,4 +159,75 @@ class EditArticleGallery(UpdateWithInlinesView):
 class DeleteArticle(DeleteView):
     success_url = "/articles/"
     template_name = "entries/articles/delete.html"
+    model = Gallery
+
+
+# //////-------
+# FILES: ФАЙЛЫ
+# //////-------
+class ListFiles(ListView):
+    paginate_by = 2
+    model = EntryFile
+    context_object_name = "filesList"
+    template_name = "entries/files/list.html"
+
+
+class DetailFile(DetailView):
+    model = EntryFile
+    context_object_name = "file"
+    template_name = "entries/files/details.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['some'] = GalleryItem.objects.filter(entry__entryfile=self.object)
+        return context
+
+
+class AddFile(CreateView):
+    form_class = FileAddForm
+    success_url = "/files/"
+    template_name = "entries/files/add.html"
+
+    def form_valid(self, form):
+        files_form = form['file'].save(commit=False)
+        gallery = form['gallery'].save(commit=False)
+        item = form['item'].save(commit=False)
+        files_form.author = self.request.user
+        gallery.name = files_form.title
+        nid = EntryNews.objects.count()
+        gallery.slug = "file{0}".format(nid + 1)
+        files_form.objgallery = gallery
+        gallery.save()
+        for i in item:
+            i.entry = gallery
+            i.save()
+
+        files_form.save()
+        return redirect("/files/")
+
+
+class EditFile(UpdateView):
+    success_url = "/files/"
+    template_name = "entries/files/edit.html"
+    model = EntryFile
+    fields = '__all__'
+    exclude = ['objgallery', 'author']
+
+
+class ImageFileInline(InlineFormSetFactory):
+    model = GalleryItem
+    fields = ['image']
+
+
+class EditFileGallery(UpdateWithInlinesView):
+    success_url = "/files/"
+    template_name = "entries/files/edit.html"
+    model = Gallery
+    inlines = [ImageInline]
+    fields = '__all__'
+
+
+class DeleteFile(DeleteView):
+    success_url = "/files/"
+    template_name = "entries/files/delete.html"
     model = Gallery

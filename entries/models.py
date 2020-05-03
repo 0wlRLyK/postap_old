@@ -45,19 +45,8 @@ class Categories(models.Model):
     slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
     descript = HTMLField(verbose_name="Описание")
     image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True,
-                          variations={'thumbnail_sq': (100, 100), 'thumbnail': (120, 90),
-                                      'thumbnail_sq_crp': (100, 100, True), 'thumbnail_crp': (120, 90, True),
-                                      'small_sq': (200, 200), 'small': (200, 150), 'small_sq_crp': (200, 200, True),
-                                      'small_crp': (200, 150, True), 'medium_sq': (350, 350), 'medium': (320, 240),
-                                      'medium_sq_crp': (350, 350, True), 'medium_crp': (320, 240, True),
-                                      'large_sq': (600, 600), 'large': (600, 450), 'large_sq_crp': (600, 600, True),
-                                      'large_crp': (600, 450, True), 'res800x600': (800, 600),
-                                      'res800x600_crp': (800, 800, True), 'res1024x600': (1024, 600),
-                                      'res1024x600_crp': (1024, 600, True), 'res1280x720': (1280, 720),
-                                      'res1280x720_crp': (1280, 720, True), 'res1440x1080': (1440, 1080),
-                                      'res1440x1080_crp': (1440, 1080, True), 'res1920x1080': (1920, 1080),
-                                      'res1920x1080_crp': (1920, 1080, True), '4k': (3840, 2160),
-                                      '4k_crp': (3840, 2160, True), }, )
+                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
+                                      'big': (800, 600), })
     icon = models.FileField(upload_to='entries/categories',
                             validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
                             verbose_name="Иконка категории", help_text="Форматы svg, png, gif", blank=True)
@@ -108,19 +97,8 @@ class EntryNews(models.Model):
     tags = TaggableManager(blank=True)
     image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
                           verbose_name="Илюстрация",
-                          variations={'thumbnail_sq': (100, 100), 'thumbnail': (120, 90),
-                                      'thumbnail_sq_crp': (100, 100, True), 'thumbnail_crp': (120, 90, True),
-                                      'small_sq': (200, 200), 'small': (200, 150), 'small_sq_crp': (200, 200, True),
-                                      'small_crp': (200, 150, True), 'medium_sq': (350, 350), 'medium': (320, 240),
-                                      'medium_sq_crp': (350, 350, True), 'medium_crp': (320, 240, True),
-                                      'large_sq': (600, 600), 'large': (600, 450), 'large_sq_crp': (600, 600, True),
-                                      'large_crp': (600, 450, True), 'res800x600': (800, 600),
-                                      'res800x600_crp': (800, 800, True), 'res1024x600': (1024, 600),
-                                      'res1024x600_crp': (1024, 600, True), 'res1280x720': (1280, 720),
-                                      'res1280x720_crp': (1280, 720, True), 'res1440x1080': (1440, 1080),
-                                      'res1440x1080_crp': (1440, 1080, True), 'res1920x1080': (1920, 1080),
-                                      'res1920x1080_crp': (1920, 1080, True), '4k': (3840, 2160),
-                                      '4k_crp': (3840, 2160, True), }, )
+                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
+                                      'big': (800, 600), })
     inTop = models.BooleanField(default=False, verbose_name="Закрепить материал", blank="True")
     atMain = models.BooleanField(default=False, verbose_name="Вывести материал на главную страницу", blank="True")
 
@@ -166,26 +144,15 @@ class EntryArticle(models.Model):
     author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
     datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
     categories = models.ForeignKey(CategoriesArticle, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
-    descript = HTMLField(verbose_name="Описание")
     shortDescript = HTMLField(verbose_name="Короткое описание")
-    source = models.URLField(blank=True, verbose_name="Источник")
-    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True)
-    tags = TaggableManager(blank=True)
+    descript = HTMLField(verbose_name="Описание")
     image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
                           verbose_name="Илюстрация",
-                          variations={'thumbnail_sq': (100, 100), 'thumbnail': (120, 90),
-                                      'thumbnail_sq_crp': (100, 100, True), 'thumbnail_crp': (120, 90, True),
-                                      'small_sq': (200, 200), 'small': (200, 150), 'small_sq_crp': (200, 200, True),
-                                      'small_crp': (200, 150, True), 'medium_sq': (350, 350), 'medium': (320, 240),
-                                      'medium_sq_crp': (350, 350, True), 'medium_crp': (320, 240, True),
-                                      'large_sq': (600, 600), 'large': (600, 450), 'large_sq_crp': (600, 600, True),
-                                      'large_crp': (600, 450, True), 'res800x600': (800, 600),
-                                      'res800x600_crp': (800, 800, True), 'res1024x600': (1024, 600),
-                                      'res1024x600_crp': (1024, 600, True), 'res1280x720': (1280, 720),
-                                      'res1280x720_crp': (1280, 720, True), 'res1440x1080': (1440, 1080),
-                                      'res1440x1080_crp': (1440, 1080, True), 'res1920x1080': (1920, 1080),
-                                      'res1920x1080_crp': (1920, 1080, True), '4k': (3840, 2160),
-                                      '4k_crp': (3840, 2160, True), }, )
+                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
+                                      'big': (800, 600), })
+    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True)
+    source = models.URLField(blank=True, verbose_name="Источник")
+    tags = TaggableManager(blank=True)
     inTop = models.BooleanField(default=False, verbose_name="Закрепить материал", blank="True")
     atMain = models.BooleanField(default=False, verbose_name="Вывести материал на главную страницу", blank="True")
 
@@ -208,3 +175,80 @@ class EntryArticle(models.Model):
     class Meta:
         verbose_name = "Статья"
         verbose_name_plural = "Статьи"
+
+
+# //////-------
+# FILES: ФАЙЛЫ
+# //////-------
+
+class CategoriesFiles(Categories):
+    pass
+
+    class Meta:
+        verbose_name = "Категория файлов"
+        verbose_name_plural = "Категории файлов"
+
+
+def upload_to_torrent(instance, filename):
+    return '/'.join(['entries', 'files', str(instance.pk), filename])
+
+
+def upload_to_file(instance, filename):
+    return '/'.join(['entries', 'files', 'torrent', str(instance.pk), filename])
+
+
+class EntryFile(models.Model):
+    ModuleNAME = "files"
+    id = models.AutoField(primary_key=True)
+
+    title = models.CharField(max_length=200, verbose_name="Заголовок")
+    slug = models.SlugField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
+    author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
+    datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
+    categories = models.ForeignKey(CategoriesFiles, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
+    shortDescript = HTMLField(verbose_name="Короткое описание")
+    descript = HTMLField(verbose_name="Описание")
+    image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
+                          verbose_name="Илюстрация",
+                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
+                                      'big': (800, 600), })
+    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True)
+    file = models.FileField(upload_to=upload_to_file, verbose_name="Файл", blank=True)
+    torrent1 = models.FileField(upload_to=upload_to_torrent,
+                                validators=[FileExtensionValidator(['torrent'])],
+                                verbose_name="Торрент #1", blank=True, )
+    torrent2 = models.FileField(upload_to=upload_to_torrent,
+                                validators=[FileExtensionValidator(['torrent'])],
+                                verbose_name="Торрент #1", blank=True, )
+    torrent3 = models.FileField(upload_to=upload_to_torrent,
+                                validators=[FileExtensionValidator(['torrent'])],
+                                verbose_name="Торрент #1", blank=True, )
+    gdrive = models.URLField(blank=True, verbose_name="Google")
+    yadrive = models.URLField(blank=True, verbose_name="Yandex")
+    mega = models.URLField(blank=True, verbose_name="MEGA")
+    source1 = models.URLField(blank=True, verbose_name="Другой источник #1")
+    source2 = models.URLField(blank=True, verbose_name="Другой источник #2")
+    source3 = models.URLField(blank=True, verbose_name="Другой источник #3")
+    tags = TaggableManager(blank=True)
+    inTop = models.BooleanField(default=False, verbose_name="Закрепить материал", blank="True")
+    atMain = models.BooleanField(default=False, verbose_name="Вывести материал на главную страницу", blank="True")
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if self.slug is None:
+            self.slug = slugify(self.title)
+        if self.id is None:
+            saved_image, saved_file, saved_tor1, saved_tor2, saved_tor3 = self.image, self.file, self.torrent1, self.torrent2, self.torrent3
+            self.image, self.file, self.torrent1, self.torrent2, self.torrent3 = None, None, None, None, None
+            super(EntryFile, self).save(*args, **kwargs)
+            self.image, self.file, self.torrent1, self.torrent2, self.torrent3 = saved_image, saved_file, saved_tor1, saved_tor2, saved_tor3
+            if 'force_insert' in kwargs:
+                kwargs.pop('force_insert')
+
+        super(EntryFile, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Файл"
+        verbose_name_plural = "Файлы"

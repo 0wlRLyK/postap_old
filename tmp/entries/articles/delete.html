@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Удаление статьи</title>
 </head>
 <body>
 <form method="post">{% csrf_token %}
-    <p>Are you sure you want to delete "{{ object }}"?</p>
+    <p>Вы уверены что хотите удалить "{{ object }}"?</p>
     <input type="submit" value="Confirm">
 </form>
 </body>

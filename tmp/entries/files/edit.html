@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Редактирование статьи</title>
+    <title>Редактирование файла</title>
     <script type="text/javascript" src="{% static "tinymce/tinymce.min.js" %}"></script>
     <script type="text/javascript" src="{% static "tinymce/jquery.tinymce.min.js" %}"></script>
     <script type="text/javascript" src="{% static "django_tinymce/init_tinymce.js" %}"></script>
@@ -13,6 +13,9 @@
 
     {% csrf_token %}
     {{ form.as_p }}
+    {% for formset in inlines %}
+        {{ formset }}
+    {% endfor %}
 
     <input type="submit" name="submit" value="Submit"/>
 </form>

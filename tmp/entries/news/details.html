@@ -3,15 +3,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Новость {{ news.title }}</title>
 </head>
 <body>
 
-{{ news.name }}
-<br>
-{% for teacher in teachers %}
-    {{ teacher.image }}
-{% endfor %}<br>
+<h2>{{ news.title }}</h2>
+<hr>
+
 {% for foo in some %}
     <img src="/media/{{ foo.image }}" alt="">
 
