@@ -10,18 +10,16 @@
 {% if articlesList %}
     {% for article in articlesList %}
         <div style="float: left; padding: 10px;">
-            <h3>{{ article.title }}</h3>
+            <h3><a href="/articles/a/{{ article.slug }}/">{{ article.title }}</a></h3>
             <hr>
-            <p>{{ article.objID | safe }}</p>
-            <p>{{ article.shortDescript | safe }}</p>
             <p>Author: <i>{{ article.author }}</i></p>
             <p>Gallery: <i>{{ article.gallery.title }}</i></p>
-            <p><i>{{ article.gallery.slug }}</i></p>
-            <p><img src="/media/{{ article.gallery.image1 }}" alt=""></p>
+            <p><i>{{ article.objgallery.slug }}</i></p>
+            <p><img src="/media/{{ article.image }}" alt=""></p>
             <hr>
             <a href="/articles/edit/{{ article.id }}">Редактировать запись</a><br>
             <a href="/articles/edit_gallery/{{ article.gallery_id }}">Редактировать галлерею</a><br>
-            <a href="/articles/del/{{ article.gallery_id }}">Удалить</a>
+            <a href="/articles/del/{{ article.objgallery_id }}">Удалить</a>
         </div>
     {% endfor %}
 {% else %}

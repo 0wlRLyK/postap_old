@@ -6,6 +6,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.text import slugify
 from gallery.models import Gallery
+from stdimage import StdImageField
 from taggit.managers import TaggableManager
 from tinymce.models import HTMLField
 
@@ -43,7 +44,20 @@ class Categories(models.Model):
     name = models.CharField(max_length=150, verbose_name="Название категории")
     slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
     descript = HTMLField(verbose_name="Описание")
-    image = models.ImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True)
+    image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True,
+                          variations={'thumbnail_sq': (100, 100), 'thumbnail': (120, 90),
+                                      'thumbnail_sq_crp': (100, 100, True), 'thumbnail_crp': (120, 90, True),
+                                      'small_sq': (200, 200), 'small': (200, 150), 'small_sq_crp': (200, 200, True),
+                                      'small_crp': (200, 150, True), 'medium_sq': (350, 350), 'medium': (320, 240),
+                                      'medium_sq_crp': (350, 350, True), 'medium_crp': (320, 240, True),
+                                      'large_sq': (600, 600), 'large': (600, 450), 'large_sq_crp': (600, 600, True),
+                                      'large_crp': (600, 450, True), 'res800x600': (800, 600),
+                                      'res800x600_crp': (800, 800, True), 'res1024x600': (1024, 600),
+                                      'res1024x600_crp': (1024, 600, True), 'res1280x720': (1280, 720),
+                                      'res1280x720_crp': (1280, 720, True), 'res1440x1080': (1440, 1080),
+                                      'res1440x1080_crp': (1440, 1080, True), 'res1920x1080': (1920, 1080),
+                                      'res1920x1080_crp': (1920, 1080, True), '4k': (3840, 2160),
+                                      '4k_crp': (3840, 2160, True), }, )
     icon = models.FileField(upload_to='entries/categories',
                             validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
                             verbose_name="Иконка категории", help_text="Форматы svg, png, gif", blank=True)
@@ -92,8 +106,21 @@ class EntryNews(models.Model):
     source = models.URLField(blank=True, verbose_name="Источник")
     objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True)
     tags = TaggableManager(blank=True)
-    image = models.ImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
-                              verbose_name="Илюстрация")
+    image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
+                          verbose_name="Илюстрация",
+                          variations={'thumbnail_sq': (100, 100), 'thumbnail': (120, 90),
+                                      'thumbnail_sq_crp': (100, 100, True), 'thumbnail_crp': (120, 90, True),
+                                      'small_sq': (200, 200), 'small': (200, 150), 'small_sq_crp': (200, 200, True),
+                                      'small_crp': (200, 150, True), 'medium_sq': (350, 350), 'medium': (320, 240),
+                                      'medium_sq_crp': (350, 350, True), 'medium_crp': (320, 240, True),
+                                      'large_sq': (600, 600), 'large': (600, 450), 'large_sq_crp': (600, 600, True),
+                                      'large_crp': (600, 450, True), 'res800x600': (800, 600),
+                                      'res800x600_crp': (800, 800, True), 'res1024x600': (1024, 600),
+                                      'res1024x600_crp': (1024, 600, True), 'res1280x720': (1280, 720),
+                                      'res1280x720_crp': (1280, 720, True), 'res1440x1080': (1440, 1080),
+                                      'res1440x1080_crp': (1440, 1080, True), 'res1920x1080': (1920, 1080),
+                                      'res1920x1080_crp': (1920, 1080, True), '4k': (3840, 2160),
+                                      '4k_crp': (3840, 2160, True), }, )
     inTop = models.BooleanField(default=False, verbose_name="Закрепить материал", blank="True")
     atMain = models.BooleanField(default=False, verbose_name="Вывести материал на главную страницу", blank="True")
 
@@ -144,8 +171,21 @@ class EntryArticle(models.Model):
     source = models.URLField(blank=True, verbose_name="Источник")
     objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True)
     tags = TaggableManager(blank=True)
-    image = models.ImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
-                              verbose_name="Илюстрация")
+    image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
+                          verbose_name="Илюстрация",
+                          variations={'thumbnail_sq': (100, 100), 'thumbnail': (120, 90),
+                                      'thumbnail_sq_crp': (100, 100, True), 'thumbnail_crp': (120, 90, True),
+                                      'small_sq': (200, 200), 'small': (200, 150), 'small_sq_crp': (200, 200, True),
+                                      'small_crp': (200, 150, True), 'medium_sq': (350, 350), 'medium': (320, 240),
+                                      'medium_sq_crp': (350, 350, True), 'medium_crp': (320, 240, True),
+                                      'large_sq': (600, 600), 'large': (600, 450), 'large_sq_crp': (600, 600, True),
+                                      'large_crp': (600, 450, True), 'res800x600': (800, 600),
+                                      'res800x600_crp': (800, 800, True), 'res1024x600': (1024, 600),
+                                      'res1024x600_crp': (1024, 600, True), 'res1280x720': (1280, 720),
+                                      'res1280x720_crp': (1280, 720, True), 'res1440x1080': (1440, 1080),
+                                      'res1440x1080_crp': (1440, 1080, True), 'res1920x1080': (1920, 1080),
+                                      'res1920x1080_crp': (1920, 1080, True), '4k': (3840, 2160),
+                                      '4k_crp': (3840, 2160, True), }, )
     inTop = models.BooleanField(default=False, verbose_name="Закрепить материал", blank="True")
     atMain = models.BooleanField(default=False, verbose_name="Вывести материал на главную страницу", blank="True")
 

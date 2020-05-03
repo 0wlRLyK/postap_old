@@ -1,4 +1,3 @@
-from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import redirect
 from django.views.generic import CreateView, TemplateView, ListView, UpdateView, DeleteView, DetailView
 from extra_views import UpdateWithInlinesView, InlineFormSetFactory
@@ -31,7 +30,7 @@ class ListNews(ListView):
 class DetailNews(DetailView):
     model = EntryNews
     context_object_name = "news"
-    template_name = "temporary/test.html"
+    template_name = "entries/news/details.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -46,17 +45,7 @@ class AddNews(CreateView):
     success_url = "news/"
     template_name = "entries/news/add.html"
 
-    # def get_context_data(self, **kwargs):
-    #     data = super(AddNews, self).get_context_data(**kwargs)
-    #     if self.request.POST:
-    #         data['sponsorships'] = GalleryItemFormSet(self.request.POST)
-    #     else:
-    #         data['sponsorships'] = GalleryItemFormSet()
-    #     return data
-
     def form_valid(self, form):
-        # context = self.get_context_data()
-        # sponsorships = context['sponsorships']
         news_form = form['news'].save(commit=False)
         gallery = form['gallery'].save(commit=False)
         item = form['item'].save(commit=False)
@@ -64,10 +53,6 @@ class AddNews(CreateView):
         gallery.name = news_form.title
         nid = EntryNews.objects.count()
         gallery.slug = "news{0}".format(nid + 1)
-
-        # if sponsorships.is_valid():
-        #     sponsorships.instance = self.object
-        #     sponsorships.save()
         news_form.objgallery = gallery
         gallery.save()
         for i in item:
@@ -77,8 +62,6 @@ class AddNews(CreateView):
         news_form.save()
         return redirect("/news/")
 
-    def get_success_url(self):
-        return redirect("/news/")
 
 
 class EditNews(UpdateView):
@@ -119,21 +102,39 @@ class ListArticles(ListView):
     template_name = "entries/articles/list.html"
 
 
+class DetailArticle(DetailView):
+    model = EntryArticle
+    context_object_name = "article"
+    template_name = "entries/articles/details.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        x = Gallery.objects.select_related()
+        context['teachers'] = Gallery.objects.select_related()
+        context['some'] = GalleryItem.objects.filter(entry__entryarticle=self.object)
+        return context
+
+
 class AddArticle(CreateView):
     form_class = ArticleAddForm
     success_url = "/articles/"
     template_name = "entries/articles/add.html"
 
     def form_valid(self, form):
-        articlesEntry = form['articlesEntry'].save(commit=False)
+        articles_form = form['article'].save(commit=False)
         gallery = form['gallery'].save(commit=False)
-        gallery.title = articlesEntry.title
-        gallery.entry = ContentType.objects.get(model="entryarticle")
-        gallery.slug = "articles"
+        item = form['item'].save(commit=False)
+        articles_form.author = self.request.user
+        gallery.name = articles_form.title
+        nid = EntryNews.objects.count()
+        gallery.slug = "article{0}".format(nid + 1)
+        articles_form.objgallery = gallery
         gallery.save()
-        articlesEntry.author = self.request.user
-        articlesEntry.gallery = gallery
-        articlesEntry.save()
+        for i in item:
+            i.entry = gallery
+            i.save()
+
+        articles_form.save()
         return redirect("/articles/")
 
 
@@ -145,11 +146,17 @@ class EditArticle(UpdateView):
               'descript', 'image', 'inTop', 'atMain', 'source']
 
 
-class EditGalleryArticle(UpdateView):
-    success_url = "/articles/"
+class ImageArticleInline(InlineFormSetFactory):
+    model = GalleryItem
+    fields = ['image']
+
+
+class EditArticleGallery(UpdateWithInlinesView):
+    success_url = "/article/"
     template_name = "entries/articles/edit.html"
     model = Gallery
-    fields = ['image', ]
+    inlines = [ImageInline]
+    fields = '__all__'
 
 
 class DeleteArticle(DeleteView):

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'extra_views',
     'tinymce',
     'taggit',
+    'stdimage',
 
     # POSTAP APPS
     'entries',

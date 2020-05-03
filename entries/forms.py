@@ -1,4 +1,4 @@
-from betterforms.multiform import MultiModelForm, MultiForm
+from betterforms.multiform import MultiForm
 from django import forms
 from django.forms.models import inlineformset_factory
 from gallery.models import Gallery, GalleryItem
@@ -15,7 +15,7 @@ class NewsForm(forms.ModelForm):
     class Meta:
         model = EntryNews
         fields = ['title', 'slug', 'categories', 'shortDescript',
-                  'descript', 'image', 'inTop', 'atMain', 'source']
+                  'descript', 'image', 'inTop', 'atMain', 'source', 'tags']
 
 
 class GalleryForm(forms.ModelForm):
@@ -42,12 +42,6 @@ class NewsAddForm(MultiForm):
     }
 
 
-class NewsEditForm(MultiModelForm):
-    form_classes = {
-        'newsEntry': NewsForm,
-        'gallery': GalleryForm,
-        'item': GalleryItemFormSet,
-    }
 
 
 # /////////-------
@@ -59,11 +53,12 @@ class ArticleForm(forms.ModelForm):
     class Meta:
         model = EntryArticle
         fields = ['title', 'slug', 'categories', 'shortDescript',
-                  'descript', 'image', 'inTop', 'atMain', 'source']
+                  'descript', 'image', 'inTop', 'atMain', 'source', 'tags']
 
 
 class ArticleAddForm(MultiForm):
     form_classes = {
-        'articlesEntry': ArticleForm,
+        'article': ArticleForm,
         'gallery': GalleryForm,
+        'item': GalleryItemFormSet,
     }
