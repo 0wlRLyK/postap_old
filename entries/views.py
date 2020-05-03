@@ -1,6 +1,8 @@
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import redirect
-from django.views.generic import CreateView, TemplateView, ListView, UpdateView, DeleteView
+from django.views.generic import CreateView, TemplateView, ListView, UpdateView, DeleteView, DetailView
+from extra_views import UpdateWithInlinesView, InlineFormSetFactory
+from gallery.models import GalleryItem
 
 from .forms import NewsAddForm, ArticleAddForm
 from .models import EntryNews, Gallery, EntryArticle
@@ -26,24 +28,56 @@ class ListNews(ListView):
     template_name = "entries/news/list.html"
 
 
+class DetailNews(DetailView):
+    model = EntryNews
+    context_object_name = "news"
+    template_name = "temporary/test.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        x = Gallery.objects.select_related()
+        context['teachers'] = Gallery.objects.select_related()
+        context['some'] = GalleryItem.objects.filter(entry__entrynews=self.object)
+        return context
+
+
 class AddNews(CreateView):
     form_class = NewsAddForm
     success_url = "news/"
     template_name = "entries/news/add.html"
 
-    def form_valid(self, form):
-        # Save the user first, because the profile needs a user before it
-        # can be saved.
+    # def get_context_data(self, **kwargs):
+    #     data = super(AddNews, self).get_context_data(**kwargs)
+    #     if self.request.POST:
+    #         data['sponsorships'] = GalleryItemFormSet(self.request.POST)
+    #     else:
+    #         data['sponsorships'] = GalleryItemFormSet()
+    #     return data
 
-        newsEntry = form['newsEntry'].save(commit=False)
+    def form_valid(self, form):
+        # context = self.get_context_data()
+        # sponsorships = context['sponsorships']
+        news_form = form['news'].save(commit=False)
         gallery = form['gallery'].save(commit=False)
-        gallery.title = newsEntry.title
-        gallery.entry = ContentType.objects.get(model="entrynews")
-        gallery.slug = "news"
+        item = form['item'].save(commit=False)
+        news_form.author = self.request.user
+        gallery.name = news_form.title
+        nid = EntryNews.objects.count()
+        gallery.slug = "news{0}".format(nid + 1)
+
+        # if sponsorships.is_valid():
+        #     sponsorships.instance = self.object
+        #     sponsorships.save()
+        news_form.objgallery = gallery
         gallery.save()
-        newsEntry.author = self.request.user
-        newsEntry.gallery = gallery
-        newsEntry.save()
+        for i in item:
+            i.entry = gallery
+            i.save()
+
+        news_form.save()
+        return redirect("/news/")
+
+    def get_success_url(self):
         return redirect("/news/")
 
 
@@ -55,12 +89,17 @@ class EditNews(UpdateView):
               'descript', 'image', 'inTop', 'atMain', 'source']
 
 
-class EditGallery(UpdateView):
+class ImageInline(InlineFormSetFactory):
+    model = GalleryItem
+    fields = ['image']
+
+
+class EditGallery(UpdateWithInlinesView):
     success_url = "/news/"
     template_name = "entries/news/edit.html"
     model = Gallery
-    fields = ['image1', 'image2', 'image3', 'image4', 'image5', 'image6', 'image7', 'image8', 'image9',
-              'image10', 'image11', 'image12', 'image13', 'image14', 'image15']
+    inlines = [ImageInline]
+    fields = '__all__'
 
 
 class DeleteNews(DeleteView):
@@ -110,8 +149,7 @@ class EditGalleryArticle(UpdateView):
     success_url = "/articles/"
     template_name = "entries/articles/edit.html"
     model = Gallery
-    fields = ['image1', 'image2', 'image3', 'image4', 'image5', 'image6', 'image7', 'image8', 'image9',
-              'image10', 'image11', 'image12', 'image13', 'image14', 'image15']
+    fields = ['image', ]
 
 
 class DeleteArticle(DeleteView):

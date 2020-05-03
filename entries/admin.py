@@ -1,13 +1,6 @@
 from django.contrib import admin
 
-from .models import EntryNews, CategoriesNews, Gallery, EntryArticle, CategoriesArticle
-
-
-@admin.register(Gallery)
-class GalleryAdmin(admin.ModelAdmin):
-    list_display = ['title', 'entry']
-    search_fields = ['title', 'entry']
-    list_filter = ('entry',)
+from .models import EntryNews, CategoriesNews, EntryArticle, CategoriesArticle
 
 
 # ////--------
@@ -24,7 +17,7 @@ class CategoriesNewsAdmin(admin.ModelAdmin):
 @admin.register(EntryNews)
 class NewsAdmin(admin.ModelAdmin):
     fields = ['title', 'slug', 'author', 'categories', 'shortDescript',
-              'descript', 'image', 'gallery', 'inTop', 'atMain', 'source', 'tags']
+              'descript', 'image', 'objgallery', 'inTop', 'atMain', 'source', 'tags']
     list_display = ['title', 'categories', 'tag_list']
     search_fields = ['title', 'slug', 'tags']
     list_filter = ('categories', 'datetime', 'tags')
@@ -50,7 +43,7 @@ class CategoriesArticleAdmin(admin.ModelAdmin):
 @admin.register(EntryArticle)
 class ArticleAdmin(admin.ModelAdmin):
     fields = ['title', 'slug', 'author', 'categories', 'shortDescript',
-              'descript', 'image', 'gallery', 'inTop', 'atMain', 'source', 'tags']
+              'descript', 'image', 'objgallery', 'inTop', 'atMain', 'source', 'tags']
     list_display = ['title', 'categories', 'tag_list']
     search_fields = ['title', 'slug', 'tags']
     list_filter = ('categories', 'datetime', 'tags')

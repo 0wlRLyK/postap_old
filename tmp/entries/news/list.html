@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Список новостей</title>
 </head>
 <body>
 <Div style="text-align: right"><a href="/news/add/">Добавить новость</a></Div>
@@ -15,13 +15,14 @@
             <p>{{ news.id | safe }}</p>
             <p>{{ news.shortDescript | safe }}</p>
             <p>Author: <i>{{ news.author }}</i></p>
-            <p>Gallery: <i>{{ news.gallery.title }}</i></p>
+            <p>Gallery: <i>{{ news.objgallery.slug }}</i></p>
             <p><i>{{ news.gallery.slug }}</i></p>
-            <p><img src="/media/{{ news.gallery.image1 }}" alt=""></p>
+            <p><img src="/media/{{ news.image }}" alt=""></p>
             <hr>
             <a href="/news/edit/{{ news.id }}">Редактировать запись</a><br>
-            <a href="/news/edit_gallery/{{ news.gallery_id }}">Редактировать галлерею</a><br>
-            <a href="/news/del/{{ news.gallery_id }}">Удалить</a>
+            <a href="/news/edit_gallery/{{ news.objgallery_id }}">Редактировать
+                галлерею {{ news.objgallery_id }}</a><br>
+            <a href="/news/del/{{ news.objgallery_id }}">Удалить</a>
         </div>
     {% endfor %}
 {% else %}

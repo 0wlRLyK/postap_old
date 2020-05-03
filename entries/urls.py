@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .variables import NEWS, ARTICLES
-from .views import HomePage, AddNews, ListNews, EditNews, EditGallery, DeleteNews, \
+from .views import HomePage, AddNews, ListNews, DetailNews, EditNews, EditGallery, DeleteNews, \
     ListArticles, AddArticle, EditArticle, EditGalleryArticle, DeleteArticle
 
 urlpatterns = [
@@ -10,6 +10,7 @@ urlpatterns = [
     # NEWS: НОВОСТИ
     # ////--------
     path(NEWS.mainURL(), ListNews.as_view()),
+    path("{0}entry/{1}/".format(NEWS.mainURL(), "<slug:slug>"), DetailNews.as_view()),
     path(NEWS.addURL(), AddNews.as_view()),
     path("{0}{1}/".format(NEWS.editURL(), "<int:pk>"), EditNews.as_view()),
     path("{0}{1}/".format(NEWS.editGalleryURL(), "<int:pk>"), EditGallery.as_view()),

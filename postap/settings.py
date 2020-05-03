@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # EXTENSIONS OF DEFAULT DJANGO FUNCTIONALITY
     'betterforms',
     'extra_views',
     'tinymce',
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
 
     # POSTAP APPS
     'entries',
+    'gallery',
 
     'django_cleanup.apps.CleanupConfig',
 ]
