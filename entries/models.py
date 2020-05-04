@@ -401,3 +401,57 @@ class EntryMod(models.Model):
     class Meta:
         verbose_name = "Мод"
         verbose_name_plural = "Моды"
+
+
+# /////////////---------------------
+# IMAGEgALLERY: ГАЛЕРЕЯ ИЗОБРАЖЕНИЙ
+# /////////////---------------------
+
+
+class CategoriesImages(Categories):
+    pass
+
+    class Meta:
+        verbose_name = "Категория галереи"
+        verbose_name_plural = "Категории галереи"
+
+
+class EntryImageGallery(models.Model):
+    ModuleNAME = "gallery"
+    id = models.AutoField(primary_key=True)
+
+    title = models.CharField(max_length=200, verbose_name="Заголовок")
+    slug = models.SlugField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
+    author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
+    datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
+    categories = models.ForeignKey(CategoriesImages, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
+    shortDescript = HTMLField(verbose_name="Короткое описание")
+    descript = HTMLField(verbose_name="Описание")
+    image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
+                          verbose_name="Илюстрация",
+                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
+                                      'big': (800, 600), })
+    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True, default=None)
+    tags = TaggableManager(blank=True)
+    inTop = models.BooleanField(default=False, verbose_name="Закрепить материал", blank="True")
+    atMain = models.BooleanField(default=False, verbose_name="Вывести материал на главную страницу", blank="True")
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if self.slug is None:
+            self.slug = slugify(self.title)
+        if self.id is None:
+            saved_image = self.image
+            self.image = None
+            super(EntryImageGallery, self).save(*args, **kwargs)
+            self.image = saved_image
+            if 'force_insert' in kwargs:
+                kwargs.pop('force_insert')
+
+        super(EntryImageGallery, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Изображение"
+        verbose_name_plural = "Изображения"

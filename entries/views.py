@@ -4,8 +4,8 @@ from extra_views import UpdateWithInlinesView, InlineFormSetFactory
 from gallery.models import Gallery
 from gallery.models import GalleryItem
 
-from .forms import NewsAddForm, ArticleAddForm, FileAddForm, ModAddForm
-from .models import EntryNews, EntryArticle, EntryFile, EntryMod
+from .forms import NewsAddForm, ArticleAddForm, FileAddForm, ModAddForm, ImageGalleryAddForm
+from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGallery
 from .variables import NEWS
 
 
@@ -60,7 +60,6 @@ class AddNews(CreateView):
 
         news_form.save()
         return redirect("/news/")
-
 
 
 class EditNews(UpdateView):
@@ -316,4 +315,75 @@ class EditModGallery(UpdateWithInlinesView):
 class DeleteMod(DeleteView):
     success_url = "/mods/"
     template_name = "entries/files/delete.html"
+    model = Gallery
+
+
+# /////////////---------------------
+# IMAGEgALLERY: ГАЛЕРЕЯ ИЗОБРАЖЕНИЙ
+# /////////////---------------------
+
+class ListImages(ListView):
+    paginate_by = 2
+    model = EntryImageGallery
+    context_object_name = "imagesList"
+    template_name = "entries/gallery/list.html"
+
+
+class DetailImage(DetailView):
+    model = EntryImageGallery
+    context_object_name = "image"
+    template_name = "entries/gallery/details.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['some'] = GalleryItem.objects.filter(entry__entryimagegallery=self.object)
+        return context
+
+
+class AddImage(CreateView):
+    form_class = ImageGalleryAddForm
+    success_url = "/gallery/"
+    template_name = "entries/gallery/add.html"
+
+    def form_valid(self, form):
+        images_form = form['image_gallery'].save(commit=False)
+        gallery = form['gallery'].save(commit=False)
+        item = form['item'].save(commit=False)
+        images_form.author = self.request.user
+        gallery.name = images_form.title
+        nid = EntryNews.objects.count()
+        gallery.slug = "article{0}".format(nid + 1)
+        images_form.objgallery = gallery
+        gallery.save()
+        for i in item:
+            i.entry = gallery
+            i.save()
+
+        images_form.save()
+        return redirect("/gallery/")
+
+
+class EditImage(UpdateView):
+    success_url = "/gallery/"
+    template_name = "entries/gallery/edit.html"
+    model = EntryImageGallery
+    fields = "__all__"
+
+
+class GalleryImageArticleInline(InlineFormSetFactory):
+    model = GalleryItem
+    fields = ['image']
+
+
+class EditGalleryImage(UpdateWithInlinesView):
+    success_url = "/gallery/"
+    template_name = "entries/gallery/edit.html"
+    model = Gallery
+    inlines = [ImageInline]
+    fields = '__all__'
+
+
+class DeleteImage(DeleteView):
+    success_url = "/gallery/"
+    template_name = "entries/gallery/delete.html"
     model = Gallery

@@ -3,7 +3,7 @@ from django import forms
 from django.forms.models import inlineformset_factory
 from gallery.models import Gallery, GalleryItem
 
-from .models import EntryNews, EntryArticle, EntryFile, EntryMod
+from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGallery
 
 
 # ////--------
@@ -107,6 +107,26 @@ class ModAddForm(MultiForm):
     form_classes = {
         'mod': ModForm,
         'file': FileModForm,
+        'gallery': GalleryForm,
+        'item': GalleryItemFormSet,
+    }
+
+
+# /////////////---------------------
+# IMAGEgALLERY: ГАЛЕРЕЯ ИЗОБРАЖЕНИЙ
+# /////////////---------------------
+
+
+class ImageGalleryForm(forms.ModelForm):
+    class Meta:
+        model = EntryImageGallery
+        fields = '__all__'
+        exclude = ['objgallery', 'author']
+
+
+class ImageGalleryAddForm(MultiForm):
+    form_classes = {
+        'image_gallery': ImageGalleryForm,
         'gallery': GalleryForm,
         'item': GalleryItemFormSet,
     }

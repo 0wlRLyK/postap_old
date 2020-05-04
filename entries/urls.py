@@ -1,10 +1,11 @@
 from django.urls import path
 
-from .variables import NEWS, ARTICLES, FILES, MODS
+from .variables import NEWS, ARTICLES, FILES, MODS, IMAGE_GALLERY
 from .views import HomePage, AddNews, ListNews, DetailNews, EditNews, EditGallery, DeleteNews, \
     ListArticles, DetailArticle, AddArticle, EditArticle, EditArticleGallery, DeleteArticle, \
     ListFiles, DetailFile, AddFile, EditFile, EditFileGallery, DeleteFile, \
-    ListMods, DetailMod, AddMod, EditMod, EditModFile, EditModGallery, DeleteMod
+    ListMods, DetailMod, AddMod, EditMod, EditModFile, EditModGallery, DeleteMod, \
+    ListImages, DetailImage, AddImage, EditImage, EditGalleryImage, DeleteImage
 
 urlpatterns = [
     path('', HomePage.as_view()),
@@ -45,4 +46,13 @@ urlpatterns = [
     path("{0}{1}/".format(MODS.editURL(), "<int:pk>"), EditMod.as_view()),
     path("{0}{1}/".format(MODS.editGalleryURL(), "<int:pk>"), EditModGallery.as_view()),
     path("{0}{1}/".format(MODS.delURL(), "<int:pk>"), DeleteMod.as_view()),
+    # /////////////---------------------
+    # IMAGEgALLERY: ГАЛЕРЕЯ ИЗОБРАЖЕНИЙ
+    # /////////////---------------------
+    path(IMAGE_GALLERY.mainURL(), ListImages.as_view()),
+    path("{0}{1}/".format(IMAGE_GALLERY.detailURL(), "<slug:slug>"), DetailImage.as_view()),
+    path(IMAGE_GALLERY.addURL(), AddImage.as_view()),
+    path("{0}{1}/".format(IMAGE_GALLERY.editURL(), "<int:pk>"), EditImage.as_view()),
+    path("{0}{1}/".format(IMAGE_GALLERY.editGalleryURL(), "<int:pk>"), EditGalleryImage.as_view()),
+    path("{0}{1}/".format(IMAGE_GALLERY.delURL(), "<int:pk>"), DeleteImage.as_view()),
 ]

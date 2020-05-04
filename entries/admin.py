@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import EntryNews, CategoriesNews, EntryArticle, CategoriesArticle, EntryFile, CategoriesFiles, Games, \
-    Author, CategoriesMods, EntryMod
+    Author, CategoriesMods, EntryMod, CategoriesImages, EntryImageGallery
 
 
 # ////--------
@@ -117,3 +117,27 @@ class ModAdmin(admin.ModelAdmin):
     list_display = ['id', 'file', 'categories']
     search_fields = ['id', 'file', 'categories']
     list_filter = ('id', 'file', 'categories')
+
+
+# /////////////---------------------
+# IMAGEgALLERY: ГАЛЕРЕЯ ИЗОБРАЖЕНИЙ
+# /////////////---------------------
+
+
+@admin.register(CategoriesImages)
+class CategoriesImagesAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug']
+    search_fields = ['name', 'slug']
+
+
+@admin.register(EntryImageGallery)
+class ImageGalleryAdmin(admin.ModelAdmin):
+    list_display = ['title', 'categories', 'tag_list']
+    search_fields = ['title', 'slug', 'tags']
+    list_filter = ('categories', 'datetime', 'tags')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('tags')
+
+    def tag_list(self, obj):
+        return u", ".join(o.name for o in obj.tags.all())

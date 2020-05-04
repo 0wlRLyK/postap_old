@@ -2,7 +2,7 @@
 VARIABLES.PY - file with variables of that app.
 It's was created with goal to doesn't forget main words and tags of project and save all.
 """
-from .models import EntryNews, EntryArticle, EntryFile, EntryMod
+from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGallery
 
 
 class Vars:
@@ -43,3 +43,4 @@ NEWS = Vars('news', 'news', EntryNews)
 ARTICLES = Vars('article', 'articles', EntryArticle)
 FILES = Vars('file', 'files', EntryFile)
 MODS = Vars('mod', 'mods', EntryMod)
+IMAGE_GALLERY = Vars('image', 'gallery', EntryImageGallery)
