@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Каталог модов {{ page_obj.number }}</title>
+</head>
+<body>
+<Div style="text-align: right"><a href="/mods/add/">Добавить мод</a></Div>
+{% if modsList %}
+    {% for mod in modsList %}
+        <div style="float: left; padding: 10px;">
+            <h3><a href="/mod/{{ mod.slug }}/">{{ mod.title }}</a></h3>
+            <hr>
+            <p>{{ mod.id | safe }}</p>
+            <p>{{ mod.shortDescript | safe }}</p>
+            <p>Author: <i>{{ mod.file.author }}</i></p>
+            <p>Gallery: <i>{{ mod.objgallery.slug }}</i></p>
+            <p><i>{{ mod.objgallery.slug }}</i></p>
+            <p><img src="/media/{{ mod.file.image }}" alt=""></p>
+            <hr>
+            <a href="/mods/edit/file/{{ mod.id }}">Редактировать запись</a><br>
+            <a href="/mods/edit/{{ mod.id }}">Редактировать мод</a><br>
+            <a href="/mods/edit_gallery/{{ mod.objgallery_id }}">Редактировать
+                галлерею {{ mod.file.objgallery_id }}</a><br>
+            <a href="/mods/del/{{ mod.file.objgallery_id }}">Удалить</a>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>OH, SHIT! THERE IS nihuya.obj AGAIN!</p>
+{% endif %}
+<div style="float: none">
+    <hr>
+    {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo; first</a>
+        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+    {% endif %}
+
+    <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+    {% endif %}
+</div>
+</body>
+</html>

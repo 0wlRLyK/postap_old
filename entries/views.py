@@ -4,8 +4,8 @@ from extra_views import UpdateWithInlinesView, InlineFormSetFactory
 from gallery.models import Gallery
 from gallery.models import GalleryItem
 
-from .forms import NewsAddForm, ArticleAddForm, FileAddForm
-from .models import EntryNews, EntryArticle, EntryFile
+from .forms import NewsAddForm, ArticleAddForm, FileAddForm, ModAddForm
+from .models import EntryNews, EntryArticle, EntryFile, EntryMod
 from .variables import NEWS
 
 
@@ -229,5 +229,91 @@ class EditFileGallery(UpdateWithInlinesView):
 
 class DeleteFile(DeleteView):
     success_url = "/files/"
+    template_name = "entries/files/delete.html"
+    model = Gallery
+
+
+# //////-----
+# MODS: МОДЫ
+# //////-----
+
+
+class ListMods(ListView):
+    paginate_by = 2
+    model = EntryMod
+    context_object_name = "modsList"
+    template_name = "entries/mods/list.html"
+
+
+class DetailMod(DetailView):
+    model = EntryMod
+    context_object_name = "mod"
+    template_name = "entries/mods/details.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['some'] = GalleryItem.objects.filter(entry__entryfile__entrymod=self.object)
+        return context
+
+
+class AddMod(CreateView):
+    form_class = ModAddForm
+    success_url = "/mods/"
+    template_name = "entries/mods/add.html"
+
+    def form_valid(self, form):
+        mods_form = form['mod'].save(commit=False)
+        files_form = form['file'].save(commit=False)
+        gallery = form['gallery'].save(commit=False)
+        item = form['item'].save(commit=False)
+        files_form.author = self.request.user
+        gallery.name = files_form.title
+        nid = EntryNews.objects.count()
+        gallery.slug = "file{0}".format(nid + 1)
+        files_form.objgallery = gallery
+        gallery.save()
+        for i in item:
+            i.entry = gallery
+            i.save()
+
+        files_form.title = mods_form.title
+        files_form.slug = "mod-{0}".format(mods_form.slug)
+        files_form.save()
+        mods_form.file = files_form
+        mods_form.save()
+        return redirect("/mods/")
+
+
+class EditMod(UpdateView):
+    success_url = "/mods/"
+    template_name = "entries/mods/edit.html"
+    model = EntryMod
+    fields = '__all__'
+    exclude = ['file']
+
+
+class EditModFile(UpdateView):
+    success_url = "/files/"
+    template_name = "entries/mods/edit.html"
+    model = EntryFile
+    fields = '__all__'
+    exclude = ['title', 'slug', 'objgallery', 'author']
+
+
+class ImageModInline(InlineFormSetFactory):
+    model = GalleryItem
+    fields = ['image']
+
+
+class EditModGallery(UpdateWithInlinesView):
+    success_url = "/mods/"
+    template_name = "entries/mods/edit.html"
+    model = Gallery
+    inlines = [ImageInline]
+    fields = '__all__'
+
+
+class DeleteMod(DeleteView):
+    success_url = "/mods/"
     template_name = "entries/files/delete.html"
     model = Gallery

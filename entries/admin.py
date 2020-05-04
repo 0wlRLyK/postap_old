@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import EntryNews, CategoriesNews, EntryArticle, CategoriesArticle, EntryFile, CategoriesFiles
+from .models import EntryNews, CategoriesNews, EntryArticle, CategoriesArticle, EntryFile, CategoriesFiles, Games, \
+    Author, CategoriesMods, EntryMod
 
 
 # ////--------
@@ -77,3 +78,42 @@ class FileAdmin(admin.ModelAdmin):
 
     def tag_list(self, obj):
         return u", ".join(o.name for o in obj.tags.all())
+
+
+# //////-------
+# GAMES: ИГРЫ
+# //////-------
+
+
+@admin.register(Games)
+class GamesAdmin(admin.ModelAdmin):
+    list_display = ['title', 'slug']
+    search_fields = ['title', 'slug']
+
+
+# ////////--------
+# AUTHORS: АВТОРЫ
+# ////////--------
+
+@admin.register(Author)
+class AuthorsAdmin(admin.ModelAdmin):
+    list_display = ['name', 'nickname']
+    search_fields = ['name', 'nickname']
+
+
+# //////-----
+# MODS: МОДЫ
+# //////-----
+
+
+@admin.register(CategoriesMods)
+class CategoriesModsAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug']
+    search_fields = ['name', 'slug']
+
+
+@admin.register(EntryMod)
+class ModAdmin(admin.ModelAdmin):
+    list_display = ['id', 'file', 'categories']
+    search_fields = ['id', 'file', 'categories']
+    list_filter = ('id', 'file', 'categories')

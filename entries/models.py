@@ -93,7 +93,7 @@ class EntryNews(models.Model):
     descript = HTMLField(verbose_name="Описание")
     shortDescript = HTMLField(verbose_name="Короткое описание")
     source = models.URLField(blank=True, verbose_name="Источник")
-    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True)
+    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True, default=None)
     tags = TaggableManager(blank=True)
     image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
                           verbose_name="Илюстрация",
@@ -150,7 +150,7 @@ class EntryArticle(models.Model):
                           verbose_name="Илюстрация",
                           variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
                                       'big': (800, 600), })
-    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True)
+    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True, default=None)
     source = models.URLField(blank=True, verbose_name="Источник")
     tags = TaggableManager(blank=True)
     inTop = models.BooleanField(default=False, verbose_name="Закрепить материал", blank="True")
@@ -212,7 +212,7 @@ class EntryFile(models.Model):
                           verbose_name="Илюстрация",
                           variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
                                       'big': (800, 600), })
-    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True)
+    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True, default=None)
     file = models.FileField(upload_to=upload_to_file, verbose_name="Файл", blank=True)
     torrent1 = models.FileField(upload_to=upload_to_torrent,
                                 validators=[FileExtensionValidator(['torrent'])],
@@ -252,3 +252,152 @@ class EntryFile(models.Model):
     class Meta:
         verbose_name = "Файл"
         verbose_name_plural = "Файлы"
+
+
+# //////-------
+# GAMES: ИГРЫ
+# //////-------
+
+def upload_to_games(instance, filename):
+    return '/'.join(['games', str(instance.slug), filename])
+
+
+class Games(models.Model):
+    ModuleNAME = "games"
+    id = models.AutoField(primary_key=True)
+
+    title = models.CharField(max_length=250, verbose_name="Название игры")
+    slug = models.SlugField(max_length=50, help_text="Навзание, которое будет отображаться в URL", unique=True)
+    bg = models.ImageField(upload_to=upload_to_games, verbose_name="Фоновое изображение")
+    image = StdImageField(upload_to=upload_to_games, verbose_name="Обложка игры",
+                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
+                                      'big': (800, 600), 'thumbnail_sq': (120, 90, True), 'small_sq': (300, 225, True),
+                                      'middle_sq': (600, 450, True),
+                                      'big_sq': (800, 600, True)})
+    logo = models.FileField(upload_to=upload_to_games,
+                            validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
+                            verbose_name="Логотип игры", help_text="Форматы svg, png, gif", blank=True)
+    descript = HTMLField()
+    features = HTMLField(blank=True)
+    requirements = HTMLField(blank=True)
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if self.slug is None:
+            self.slug = slugify(self.title)
+        if self.id is None:
+            saved_image, saved_bg, saved_bg = self.image, self.bg, self.logo
+            self.image, self.bg, self.logo = None, None, None
+            super(Games, self).save(*args, **kwargs)
+            self.image, self.bg, self.logo = saved_image, saved_bg, saved_bg
+            if 'force_insert' in kwargs:
+                kwargs.pop('force_insert')
+
+        super(Games, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Игра"
+        verbose_name_plural = "Игры"
+
+
+# ////////--------
+# AUTHORS: АВТОРЫ
+# ////////--------
+
+def upload_to_authors(instance, filename):
+    return '/'.join(['entries', 'authors', str(instance.slug), filename])
+
+
+class Author(models.Model):
+    AUTHORdOMAIN = (
+        ("youtuber", "Видео блогер"),
+        ("bloger", "Блогер"),
+        ("moder", "Мододел"),
+        ("musician", "Музыкант"),
+        ("painter", "Художник"),
+        ("artist", "Творец"),
+        ("writer", "Писатель"),
+        ("unique_person", "Уникальная персона"),
+    )
+    name = models.CharField(max_length=200, verbose_name="Имя автора")
+    slug = models.SlugField(max_length=50, help_text="Навзание, которое будет отображаться в URL", unique=True)
+    nickname = models.CharField(max_length=200, verbose_name="Никнейм автора")
+    bio = HTMLField()
+    domain = models.CharField(choices=AUTHORdOMAIN, max_length=200, verbose_name="Сфера деятельности")
+    avatar = StdImageField(upload_to=upload_to_authors, verbose_name="Аватар автора",
+                           variations={'thumbnail': (50, 50), 'small': (100, 100), 'middle': (250, 250),
+                                       'big': (500, 500)})
+    bg = StdImageField(upload_to=upload_to_authors, verbose_name="Аватар автора", variations={'bg': (1900, 500, True)})
+    vk = models.URLField(blank=True)
+    discord = models.URLField(blank=True)
+    tg = models.URLField(blank=True)
+    youtube = models.URLField(blank=True)
+    twitch = models.URLField(blank=True)
+    artstation = models.URLField(blank=True)
+    devianart = models.URLField(blank=True)
+    site = models.URLField(blank=True)
+    other1 = models.URLField(blank=True)
+    other2 = models.URLField(blank=True)
+
+    def __str__(self):
+        return self.nickname
+
+    def save(self, *args, **kwargs):
+        if self.slug is None:
+            self.slug = slugify(self.nickname)
+        if self.id is None:
+            saved_avatar, saved_bg = self.avatar, self.bg
+            self.avatar, self.bg = None, None
+            super(Author, self).save(*args, **kwargs)
+            self.avatar, self.bg = saved_avatar, saved_bg
+            if 'force_insert' in kwargs:
+                kwargs.pop('force_insert')
+
+        super(Author, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Автор"
+        verbose_name_plural = "Авторы"
+
+
+# //////-----
+# MODS: МОДЫ
+# //////-----
+
+
+class CategoriesMods(Categories):
+    pass
+
+    class Meta:
+        verbose_name = "Категория модов"
+        verbose_name_plural = "Категории модов"
+
+
+class EntryMod(models.Model):
+    ModuleNAME = "mods"
+    id = models.AutoField(primary_key=True)
+
+    title = models.CharField(max_length=250, verbose_name="Название мода", default=None)
+    slug = models.SlugField(max_length=50, help_text="Навзание, которое будет отображаться в URL", unique=True,
+                            default=None)
+    categories = models.ForeignKey(CategoriesMods, on_delete=models.DO_NOTHING, verbose_name="Категория модов")
+    gameobj = models.ForeignKey(Games, on_delete=models.DO_NOTHING, verbose_name="Модифицируемая игра", default=None,
+                                blank=False)
+    file = models.ForeignKey(EntryFile, on_delete=models.DO_NOTHING, verbose_name="Файл")
+    plot = HTMLField(blank=True, verbose_name="Коротко о сюжете")
+    features = HTMLField(blank=True, verbose_name="Особенности")
+    innovations = HTMLField(blank=True, verbose_name="Нововведения")
+    gameplay = HTMLField(blank=True, verbose_name="Гемйплей")
+    locations = HTMLField(blank=True, verbose_name="Локации")
+    weapons = HTMLField(blank=True, verbose_name="Другое")
+    other = HTMLField(blank=True, verbose_name="Другие особенности и нововведения модификации")
+    author = models.ForeignKey(Author, null=True, blank=True, default=None, on_delete=models.DO_NOTHING,
+                               verbose_name="Автор модификации")
+
+    # guide = Guide
+
+    class Meta:
+        verbose_name = "Мод"
+        verbose_name_plural = "Моды"
