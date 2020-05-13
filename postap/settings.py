@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # EXTENSIONS OF DEFAULT DJANGO FUNCTIONALITY
     'betterforms',
     'extra_views',
+
     'tinymce',
     'taggit',
     'stdimage',
@@ -50,6 +51,8 @@ INSTALLED_APPS = [
     'entries',
     'gallery',
 
+    'ckeditor_uploader',
+    'ckeditor',
     'django_cleanup.apps.CleanupConfig',
 ]
 
@@ -146,9 +149,14 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# ENTRIES
+ENTRIES_PER_PAGE = 2
 # /////////-------
 # ADMIN INTERFACE
 # /////////-------
+CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_ALLOW_NONIMAGE_FILES = False
 _ = lambda s: s
 
 NUCLEUS = {

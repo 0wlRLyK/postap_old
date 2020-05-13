@@ -1,11 +1,12 @@
 from django.urls import path
 
-from .variables import NEWS, ARTICLES, FILES, MODS, IMAGE_GALLERY
+from .variables import NEWS, ARTICLES, FILES, MODS, IMAGE_GALLERY, GUIDES
 from .views import HomePage, AddNews, ListNews, DetailNews, EditNews, EditGallery, DeleteNews, \
     ListArticles, DetailArticle, AddArticle, EditArticle, EditArticleGallery, DeleteArticle, \
     ListFiles, DetailFile, AddFile, EditFile, EditFileGallery, DeleteFile, \
     ListMods, DetailMod, AddMod, EditMod, EditModFile, EditModGallery, DeleteMod, \
-    ListImages, DetailImage, AddImage, EditImage, EditGalleryImage, DeleteImage
+    ListImages, DetailImage, AddImage, EditImage, EditGalleryImage, DeleteImage, \
+    ListGuides, ListModsGuides, AddGuide, EditGuide, DeleteGuide
 
 urlpatterns = [
     path('', HomePage.as_view()),
@@ -55,4 +56,13 @@ urlpatterns = [
     path("{0}{1}/".format(IMAGE_GALLERY.editURL(), "<int:pk>"), EditImage.as_view()),
     path("{0}{1}/".format(IMAGE_GALLERY.editGalleryURL(), "<int:pk>"), EditGalleryImage.as_view()),
     path("{0}{1}/".format(IMAGE_GALLERY.delURL(), "<int:pk>"), DeleteImage.as_view()),
+    # ///////----------------------
+    # GUIDES: ГАЙДЫ ПО ПРОХОЖДЕНИЮ
+    # ///////----------------------
+    path(GUIDES.mainURL(), ListModsGuides.as_view()),
+    path("{0}{1}/".format(GUIDES.detailURL(), "<int:pk>"), ListGuides.as_view()),
+    path(GUIDES.addURL(), AddGuide.as_view()),
+    path("{0}{1}/".format(GUIDES.editURL(), "<int:pk>"), EditGuide.as_view()),
+    path("{0}{1}/".format(GUIDES.delURL(), "<int:pk>"), DeleteGuide.as_view()),
+
 ]

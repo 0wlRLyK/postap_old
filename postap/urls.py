@@ -16,12 +16,13 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, re_path, include
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('', include('entries.urls')),
                   path('tinymce/', include('tinymce.urls')),
+                  re_path(r'^uploads/', include('ckeditor_uploader.urls')),
 
               ] + static(settings.STATIC_URL, docuent_root=settings.STATICFILES_DIRS)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Гайд {{ mod.title }}</title>
+</head>
+<body>
+
+<h2>{{ mod.title }}</h2>
+<hr>
+
+{% for foo in some %}
+    <img src="/media/{{ foo.image }}" alt="">
+
+{% endfor %}
+
+
+</body>
+</html>

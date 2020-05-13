@@ -1,9 +1,10 @@
 from betterforms.multiform import MultiForm
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 from django.forms.models import inlineformset_factory
 from gallery.models import Gallery, GalleryItem
 
-from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGallery
+from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGallery, EntryGuide
 
 
 # ////--------
@@ -12,6 +13,9 @@ from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGall
 
 
 class NewsForm(forms.ModelForm):
+    shortDescript = forms.CharField(widget=CKEditorUploadingWidget())
+    descript = forms.CharField(widget=CKEditorUploadingWidget())
+
     class Meta:
         model = EntryNews
         fields = ['title', 'slug', 'categories', 'shortDescript',
@@ -51,6 +55,9 @@ class NewsAddForm(MultiForm):
 
 
 class ArticleForm(forms.ModelForm):
+    shortDescript = forms.CharField(widget=CKEditorUploadingWidget())
+    descript = forms.CharField(widget=CKEditorUploadingWidget())
+
     class Meta:
         model = EntryArticle
         fields = ['title', 'slug', 'categories', 'shortDescript',
@@ -71,6 +78,9 @@ class ArticleAddForm(MultiForm):
 
 
 class FileForm(forms.ModelForm):
+    shortDescript = forms.CharField(widget=CKEditorUploadingWidget())
+    descript = forms.CharField(widget=CKEditorUploadingWidget())
+
     class Meta:
         model = EntryFile
         fields = '__all__'
@@ -90,6 +100,9 @@ class FileAddForm(MultiForm):
 # //////-----
 
 class FileModForm(forms.ModelForm):
+    shortDescript = forms.CharField(widget=CKEditorUploadingWidget())
+    descript = forms.CharField(widget=CKEditorUploadingWidget())
+
     class Meta:
         model = EntryFile
         fields = '__all__'
@@ -97,6 +110,14 @@ class FileModForm(forms.ModelForm):
 
 
 class ModForm(forms.ModelForm):
+    plot = forms.CharField(widget=CKEditorUploadingWidget())
+    features = forms.CharField(widget=CKEditorUploadingWidget())
+    innovations = forms.CharField(widget=CKEditorUploadingWidget())
+    gameplay = forms.CharField(widget=CKEditorUploadingWidget())
+    locations = forms.CharField(widget=CKEditorUploadingWidget())
+    weapons = forms.CharField(widget=CKEditorUploadingWidget())
+    other = forms.CharField(widget=CKEditorUploadingWidget())
+
     class Meta:
         model = EntryMod
         fields = '__all__'
@@ -118,6 +139,9 @@ class ModAddForm(MultiForm):
 
 
 class ImageGalleryForm(forms.ModelForm):
+    shortDescript = forms.CharField(widget=CKEditorUploadingWidget())
+    descript = forms.CharField(widget=CKEditorUploadingWidget())
+
     class Meta:
         model = EntryImageGallery
         fields = '__all__'
@@ -129,4 +153,34 @@ class ImageGalleryAddForm(MultiForm):
         'image_gallery': ImageGalleryForm,
         'gallery': GalleryForm,
         'item': GalleryItemFormSet,
+    }
+
+
+# ///////----------------------
+# GUIDES: ГАЙДЫ ПО ПРОХОЖДЕНИЮ
+# ///////----------------------
+
+
+class GuideItemForm(forms.ModelForm):
+    descript = forms.CharField(widget=CKEditorUploadingWidget())
+    solution = forms.CharField(widget=CKEditorUploadingWidget())
+
+    class Meta:
+        model = EntryGuide
+        fields = '__all__'
+
+
+class GuideKostilForm(forms.ModelForm):
+    class Meta:
+        model = EntryGuide
+        fields = ['mod']
+
+
+GuideFormSet = inlineformset_factory(EntryMod, EntryGuide, form=GuideItemForm, extra=5, max_num=5, min_num=1)
+
+
+class GuidesAddForm(MultiForm):
+    form_classes = {
+        'guide': GuideKostilForm,
+        'guides': GuideFormSet,
     }

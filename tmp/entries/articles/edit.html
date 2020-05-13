@@ -4,14 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Редактирование статьи</title>
-    <script type="text/javascript" src="{% static "tinymce/tinymce.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "tinymce/jquery.tinymce.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "django_tinymce/init_tinymce.js" %}"></script>
 </head>
 <body>
 <form id="post_form" method="post" action="" enctype="multipart/form-data">
 
     {% csrf_token %}
+     {{ form.media }}
     {{ form.as_p }}
 
     <input type="submit" name="submit" value="Submit"/>

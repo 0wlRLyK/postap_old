@@ -3,18 +3,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Редактирование новости</title>
-
+    <title>Добавление гайда</title>
 </head>
 <body>
 <form id="post_form" method="post" action="" enctype="multipart/form-data">
 
     {% csrf_token %}
+    <hr>
+    {{ item.management_form }}
+    <hr>
     {{ form.media }}
-    {{ form.as_p }}
-    {% for formset in inlines %}
-        {{ formset }}
-    {% endfor %}
+    {{ form.mod }}
+    {{ form.as_ul }}
 
     <input type="submit" name="submit" value="Submit"/>
 </form>

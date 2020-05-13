@@ -12,6 +12,7 @@
 <form id="post_form" method="post" action="" enctype="multipart/form-data">
 
     {% csrf_token %}
+     {{ form.media }}
     {{ form.as_p }}
     {% for formset in inlines %}
         {{ formset }}

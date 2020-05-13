@@ -1,11 +1,13 @@
+from django.core.paginator import Paginator
 from django.shortcuts import redirect
 from django.views.generic import CreateView, TemplateView, ListView, UpdateView, DeleteView, DetailView
 from extra_views import UpdateWithInlinesView, InlineFormSetFactory
 from gallery.models import Gallery
 from gallery.models import GalleryItem
 
-from .forms import NewsAddForm, ArticleAddForm, FileAddForm, ModAddForm, ImageGalleryAddForm
-from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGallery
+from .forms import NewsForm, NewsAddForm, ArticleForm, ArticleAddForm, FileForm, FileAddForm, FileModForm, \
+    ModForm, ModAddForm, ImageGalleryForm, ImageGalleryAddForm, GuidesAddForm
+from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGallery, EntryGuide
 from .variables import NEWS
 
 
@@ -65,9 +67,8 @@ class AddNews(CreateView):
 class EditNews(UpdateView):
     success_url = "/news/"
     template_name = "entries/news/edit.html"
+    form_class = NewsForm
     model = EntryNews
-    fields = ['title', 'slug', 'categories', 'shortDescript',
-              'descript', 'image', 'inTop', 'atMain', 'source']
 
 
 class ImageInline(InlineFormSetFactory):
@@ -138,8 +139,7 @@ class EditArticle(UpdateView):
     success_url = "/articles/"
     template_name = "entries/articles/edit.html"
     model = EntryArticle
-    fields = ['title', 'slug', 'categories', 'shortDescript',
-              'descript', 'image', 'inTop', 'atMain', 'source']
+    form_class = ArticleForm
 
 
 class ImageArticleInline(InlineFormSetFactory):
@@ -209,8 +209,7 @@ class EditFile(UpdateView):
     success_url = "/files/"
     template_name = "entries/files/edit.html"
     model = EntryFile
-    fields = '__all__'
-    exclude = ['objgallery', 'author']
+    form_class = FileForm
 
 
 class ImageFileInline(InlineFormSetFactory):
@@ -268,7 +267,7 @@ class AddMod(CreateView):
         files_form.author = self.request.user
         gallery.name = files_form.title
         nid = EntryNews.objects.count()
-        gallery.slug = "file{0}".format(nid + 1)
+        gallery.slug = "mod{0}".format(nid + 1)
         files_form.objgallery = gallery
         gallery.save()
         for i in item:
@@ -287,16 +286,14 @@ class EditMod(UpdateView):
     success_url = "/mods/"
     template_name = "entries/mods/edit.html"
     model = EntryMod
-    fields = '__all__'
-    exclude = ['file']
+    form_class = ModForm
 
 
 class EditModFile(UpdateView):
     success_url = "/files/"
     template_name = "entries/mods/edit.html"
     model = EntryFile
-    fields = '__all__'
-    exclude = ['title', 'slug', 'objgallery', 'author']
+    form_class = FileModForm
 
 
 class ImageModInline(InlineFormSetFactory):
@@ -352,7 +349,7 @@ class AddImage(CreateView):
         images_form.author = self.request.user
         gallery.name = images_form.title
         nid = EntryNews.objects.count()
-        gallery.slug = "article{0}".format(nid + 1)
+        gallery.slug = "gallery{0}".format(nid + 1)
         images_form.objgallery = gallery
         gallery.save()
         for i in item:
@@ -367,7 +364,7 @@ class EditImage(UpdateView):
     success_url = "/gallery/"
     template_name = "entries/gallery/edit.html"
     model = EntryImageGallery
-    fields = "__all__"
+    form_class = ImageGalleryForm
 
 
 class GalleryImageArticleInline(InlineFormSetFactory):
@@ -387,3 +384,72 @@ class DeleteImage(DeleteView):
     success_url = "/gallery/"
     template_name = "entries/gallery/delete.html"
     model = Gallery
+
+
+# ///////----------------------
+# GUIDES: ГАЙДЫ ПО ПРОХОЖДЕНИЮ
+# ///////----------------------
+
+class ListModsGuides(ListView):
+    paginate_by = 2
+    context_object_name = "mods"
+    template_name = "entries/guides/list_mods.html"
+    queryset = EntryMod.objects.filter(modguides__isnull=False).distinct()
+
+
+class ListGuides(DetailView):
+    context_object_name = "mod"
+    template_name = "entries/guides/list.html"
+    model = EntryMod
+
+    def get_context_data(self, **kwargs):
+        context = super(ListGuides, self).get_context_data(**kwargs)
+        activities = self.get_related_activities()
+        context['related_activities'] = activities
+        context['page_obj'] = activities
+        return context
+
+    def get_related_activities(self):
+        queryset = EntryGuide.objects.filter(mod=self.get_object())
+        paginator = Paginator(queryset, 2)  # paginate_by
+        page = self.request.GET.get('page')
+        activities = paginator.get_page(page)
+        return activities
+
+    # def get_context_data(self, **kwargs):
+    #     object_list = EntryGuide.objects.filter(mod=self.get_object())
+    #     context = super(ListGuides, self).get_context_data(object_list=object_list, **kwargs)
+    #     return context
+
+
+class DetailGuide(DetailView):
+    model = EntryGuide
+    context_object_name = "guide"
+    template_name = "entries/guides/details.html"
+
+
+class AddGuide(CreateView):
+    form_class = GuidesAddForm
+    success_url = "/guides/"
+    template_name = "entries/guides/add.html"
+
+    def form_valid(self, form):
+        guide = form['guide'].save(commit=False)
+        guides_form = form['guides'].save(commit=False)
+        for g in guides_form:
+            g.mod = guide.mod
+            g.save()
+        return redirect("/guides/")
+
+
+class EditGuide(UpdateView):
+    success_url = "/guides/"
+    template_name = "entries/guides/edit.html"
+    model = EntryGuide
+    fields = '__all__'
+
+
+class DeleteGuide(DeleteView):
+    success_url = "/guides/"
+    template_name = "entries/guides/delete.html"
+    model = EntryGuide

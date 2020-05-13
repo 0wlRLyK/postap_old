@@ -4,9 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Добавление изображения</title>
-    <script type="text/javascript" src="{% static "tinymce/tinymce.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "tinymce/jquery.tinymce.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "django_tinymce/init_tinymce.js" %}"></script>
 </head>
 <body>
 <form id="post_form" method="post" action="" enctype="multipart/form-data">
@@ -15,6 +12,7 @@
     <hr>
     {{ item.management_form }}
     <hr>
+     {{ form.media }}
     {{ form.as_ul }}
 
     <input type="submit" name="submit" value="Submit"/>

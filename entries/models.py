@@ -1,3 +1,4 @@
+from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.models import ContentType
@@ -8,7 +9,6 @@ from django.utils.text import slugify
 from gallery.models import Gallery
 from stdimage import StdImageField
 from taggit.managers import TaggableManager
-from tinymce.models import HTMLField
 
 
 # def upload_to(instance, filename):
@@ -43,7 +43,7 @@ from tinymce.models import HTMLField
 class Categories(models.Model):
     name = models.CharField(max_length=150, verbose_name="Название категории")
     slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
-    descript = HTMLField(verbose_name="Описание")
+    descript = RichTextUploadingField(verbose_name="Описание")
     image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True,
                           variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
                                       'big': (800, 600), })
@@ -88,10 +88,10 @@ class EntryNews(models.Model):
     title = models.CharField(max_length=200, verbose_name="Заголовок")
     slug = models.SlugField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
     author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
-    datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
     categories = models.ForeignKey(CategoriesNews, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
-    descript = HTMLField(verbose_name="Описание")
-    shortDescript = HTMLField(verbose_name="Короткое описание")
+    datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
+    shortDescript = RichTextUploadingField(verbose_name="Короткое описание")
+    descript = RichTextUploadingField(verbose_name="Описание")
     source = models.URLField(blank=True, verbose_name="Источник")
     objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True, default=None)
     tags = TaggableManager(blank=True)
@@ -144,8 +144,8 @@ class EntryArticle(models.Model):
     author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
     datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
     categories = models.ForeignKey(CategoriesArticle, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
-    shortDescript = HTMLField(verbose_name="Короткое описание")
-    descript = HTMLField(verbose_name="Описание")
+    shortDescript = RichTextUploadingField(verbose_name="Короткое описание")
+    descript = RichTextUploadingField(verbose_name="Описание")
     image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
                           verbose_name="Илюстрация",
                           variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
@@ -206,8 +206,8 @@ class EntryFile(models.Model):
     author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
     datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
     categories = models.ForeignKey(CategoriesFiles, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
-    shortDescript = HTMLField(verbose_name="Короткое описание")
-    descript = HTMLField(verbose_name="Описание")
+    shortDescript = RichTextUploadingField(verbose_name="Короткое описание")
+    descript = RichTextUploadingField(verbose_name="Описание")
     image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
                           verbose_name="Илюстрация",
                           variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
@@ -277,9 +277,9 @@ class Games(models.Model):
     logo = models.FileField(upload_to=upload_to_games,
                             validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
                             verbose_name="Логотип игры", help_text="Форматы svg, png, gif", blank=True)
-    descript = HTMLField()
-    features = HTMLField(blank=True)
-    requirements = HTMLField(blank=True)
+    descript = RichTextUploadingField()
+    features = RichTextUploadingField(blank=True)
+    requirements = RichTextUploadingField(blank=True)
 
     def __str__(self):
         return self.title
@@ -324,7 +324,7 @@ class Author(models.Model):
     name = models.CharField(max_length=200, verbose_name="Имя автора")
     slug = models.SlugField(max_length=50, help_text="Навзание, которое будет отображаться в URL", unique=True)
     nickname = models.CharField(max_length=200, verbose_name="Никнейм автора")
-    bio = HTMLField()
+    bio = RichTextUploadingField()
     domain = models.CharField(choices=AUTHORdOMAIN, max_length=200, verbose_name="Сфера деятельности")
     avatar = StdImageField(upload_to=upload_to_authors, verbose_name="Аватар автора",
                            variations={'thumbnail': (50, 50), 'small': (100, 100), 'middle': (250, 250),
@@ -386,17 +386,20 @@ class EntryMod(models.Model):
     gameobj = models.ForeignKey(Games, on_delete=models.DO_NOTHING, verbose_name="Модифицируемая игра", default=None,
                                 blank=False)
     file = models.ForeignKey(EntryFile, on_delete=models.DO_NOTHING, verbose_name="Файл")
-    plot = HTMLField(blank=True, verbose_name="Коротко о сюжете")
-    features = HTMLField(blank=True, verbose_name="Особенности")
-    innovations = HTMLField(blank=True, verbose_name="Нововведения")
-    gameplay = HTMLField(blank=True, verbose_name="Гемйплей")
-    locations = HTMLField(blank=True, verbose_name="Локации")
-    weapons = HTMLField(blank=True, verbose_name="Другое")
-    other = HTMLField(blank=True, verbose_name="Другие особенности и нововведения модификации")
+    plot = RichTextUploadingField(blank=True, verbose_name="Коротко о сюжете")
+    features = RichTextUploadingField(blank=True, verbose_name="Особенности")
+    innovations = RichTextUploadingField(blank=True, verbose_name="Нововведения")
+    gameplay = RichTextUploadingField(blank=True, verbose_name="Гемйплей")
+    locations = RichTextUploadingField(blank=True, verbose_name="Локации")
+    weapons = RichTextUploadingField(blank=True, verbose_name="Другое")
+    other = RichTextUploadingField(blank=True, verbose_name="Другие особенности и нововведения модификации")
     author = models.ForeignKey(Author, null=True, blank=True, default=None, on_delete=models.DO_NOTHING,
                                verbose_name="Автор модификации")
 
     # guide = Guide
+
+    def __str__(self):
+        return self.title
 
     class Meta:
         verbose_name = "Мод"
@@ -425,8 +428,8 @@ class EntryImageGallery(models.Model):
     author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
     datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
     categories = models.ForeignKey(CategoriesImages, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
-    shortDescript = HTMLField(verbose_name="Короткое описание")
-    descript = HTMLField(verbose_name="Описание")
+    shortDescript = RichTextUploadingField(verbose_name="Короткое описание")
+    descript = RichTextUploadingField(verbose_name="Описание")
     image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
                           verbose_name="Илюстрация",
                           variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
@@ -455,3 +458,32 @@ class EntryImageGallery(models.Model):
     class Meta:
         verbose_name = "Изображение"
         verbose_name_plural = "Изображения"
+
+
+# ///////----------------------
+# GUIDES: ГАЙДЫ ПО ПРОХОЖДЕНИЮ
+# ///////----------------------
+
+class EntryGuide(models.Model):
+    TYPE_OF_GUIDE = (
+        ("main", "Сюжетный квест"),
+        ("side", "Побочный квест"),
+        ("additional", "Дополнительный"),
+        ("items", "Метонахождение квестовых предметов"),
+        ("tools", "Метонахождение инстурментов"),
+        ("interesting", "Интересности"),
+        ("easter_eggs", "Пасхалки"),
+        ("other", "Другое"),
+    )
+    mod = models.ForeignKey(EntryMod, on_delete=models.DO_NOTHING, verbose_name="Модификация", related_name="modguides")
+    name = models.CharField(max_length=300, verbose_name="Навзание квеста")
+    type0f = models.CharField(max_length=100, choices=TYPE_OF_GUIDE, verbose_name="Тип гайда")
+    descript = RichTextUploadingField(verbose_name="Описание квеста")
+    solution = RichTextUploadingField(verbose_name="Решение квеста")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Гайд по прохождению"
+        verbose_name_plural = "Гайды по прохождению"

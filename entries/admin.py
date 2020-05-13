@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import EntryNews, CategoriesNews, EntryArticle, CategoriesArticle, EntryFile, CategoriesFiles, Games, \
-    Author, CategoriesMods, EntryMod, CategoriesImages, EntryImageGallery
+    Author, CategoriesMods, EntryMod, CategoriesImages, EntryImageGallery, EntryGuide
 
 
 # ////--------
@@ -104,7 +104,8 @@ class AuthorsAdmin(admin.ModelAdmin):
 # //////-----
 # MODS: МОДЫ
 # //////-----
-
+class GuideItemInline(admin.StackedInline):
+    model = EntryGuide
 
 @admin.register(CategoriesMods)
 class CategoriesModsAdmin(admin.ModelAdmin):
@@ -114,6 +115,7 @@ class CategoriesModsAdmin(admin.ModelAdmin):
 
 @admin.register(EntryMod)
 class ModAdmin(admin.ModelAdmin):
+    inlines = [GuideItemInline]
     list_display = ['id', 'file', 'categories']
     search_fields = ['id', 'file', 'categories']
     list_filter = ('id', 'file', 'categories')
@@ -141,3 +143,15 @@ class ImageGalleryAdmin(admin.ModelAdmin):
 
     def tag_list(self, obj):
         return u", ".join(o.name for o in obj.tags.all())
+
+
+# ///////----------------------
+# GUIDES: ГАЙДЫ ПО ПРОХОЖДЕНИЮ
+# ///////----------------------
+
+
+@admin.register(EntryGuide)
+class GuidesAdmin(admin.ModelAdmin):
+    list_display = ['name', 'mod', 'type0f']
+    search_fields = ['name', 'mod']
+    list_filter = ('name', 'mod', 'type0f')
