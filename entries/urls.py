@@ -6,7 +6,8 @@ from .views import HomePage, AddNews, ListNews, DetailNews, EditNews, EditGaller
     ListFiles, DetailFile, AddFile, EditFile, EditFileGallery, DeleteFile, \
     ListMods, DetailMod, AddMod, EditMod, EditModFile, EditModGallery, DeleteMod, \
     ListImages, DetailImage, AddImage, EditImage, EditGalleryImage, DeleteImage, \
-    ListGuides, ListModsGuides, AddGuide, EditGuide, DeleteGuide
+    ListGuides, ListModsGuides, AddGuide, EditGuide, DeleteGuide, \
+    ListQuestions, AddQuestion, AskQuestion, EditQuestion, EditUserQuestion, AnswerQuestion, EditFaqGallery, DeleteFaq
 
 urlpatterns = [
     path('', HomePage.as_view()),
@@ -64,5 +65,15 @@ urlpatterns = [
     path(GUIDES.addURL(), AddGuide.as_view()),
     path("{0}{1}/".format(GUIDES.editURL(), "<int:pk>"), EditGuide.as_view()),
     path("{0}{1}/".format(GUIDES.delURL(), "<int:pk>"), DeleteGuide.as_view()),
-
+    # ////--------------------------
+    # FAQ: ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ
+    # ////--------------------------
+    path("faq/", ListQuestions.as_view()),
+    path("faq/add/", AddQuestion.as_view()),
+    path("faq/ask/", AskQuestion.as_view()),
+    path("faq/edit/<int:pk>", EditQuestion.as_view()),
+    path("faq/edit/u/<int:pk>", EditUserQuestion.as_view()),
+    path("faq/answer/<int:pk>", AnswerQuestion.as_view()),
+    path("faq/edit_gallery/<int:pk>", EditFaqGallery.as_view()),
+    path("faq/del/<int:pk>", DeleteFaq.as_view()),
 ]

@@ -40,7 +40,23 @@ from taggit.managers import TaggableManager
 #         super(Gallery, self).save(*args, **kwargs)
 
 
-class Categories(models.Model):
+
+
+
+def upload_to_entries(instance, filename):
+    return '/'.join(['entries', str(instance.ModuleNAME), str(instance.pk), filename])
+
+
+# ------------
+# START-of-MODULES
+# ------------
+# ////--------
+# NEWS: НОВОСТИ
+# ////--------
+
+
+class CategoriesNews(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=150, verbose_name="Название категории")
     slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
     descript = RichTextUploadingField(verbose_name="Описание")
@@ -58,22 +74,6 @@ class Categories(models.Model):
         if self.slug is None:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
-
-
-def upload_to_entries(instance, filename):
-    return '/'.join(['entries', str(instance.ModuleNAME), str(instance.pk), filename])
-
-
-# ------------
-# START-of-MODULES
-# ------------
-# ////--------
-# NEWS: НОВОСТИ
-# ////--------
-
-
-class CategoriesNews(Categories):
-    pass
 
     class Meta:
         verbose_name = "Категория новостей"
@@ -127,8 +127,25 @@ class EntryNews(models.Model):
 # ARTICLES: СТАТЬИ
 # /////////-------
 
-class CategoriesArticle(Categories):
-    pass
+class CategoriesArticle(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=150, verbose_name="Название категории")
+    slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
+    descript = RichTextUploadingField(verbose_name="Описание")
+    image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True,
+                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
+                                      'big': (800, 600), })
+    icon = models.FileField(upload_to='entries/categories',
+                            validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
+                            verbose_name="Иконка категории", help_text="Форматы svg, png, gif", blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.slug is None:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Категория статей"
@@ -181,8 +198,25 @@ class EntryArticle(models.Model):
 # FILES: ФАЙЛЫ
 # //////-------
 
-class CategoriesFiles(Categories):
-    pass
+class CategoriesFiles(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=150, verbose_name="Название категории")
+    slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
+    descript = RichTextUploadingField(verbose_name="Описание")
+    image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True,
+                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
+                                      'big': (800, 600), })
+    icon = models.FileField(upload_to='entries/categories',
+                            validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
+                            verbose_name="Иконка категории", help_text="Форматы svg, png, gif", blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.slug is None:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Категория файлов"
@@ -367,8 +401,25 @@ class Author(models.Model):
 # //////-----
 
 
-class CategoriesMods(Categories):
-    pass
+class CategoriesMods(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=150, verbose_name="Название категории")
+    slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
+    descript = RichTextUploadingField(verbose_name="Описание")
+    image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True,
+                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
+                                      'big': (800, 600), })
+    icon = models.FileField(upload_to='entries/categories',
+                            validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
+                            verbose_name="Иконка категории", help_text="Форматы svg, png, gif", blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.slug is None:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Категория модов"
@@ -411,8 +462,25 @@ class EntryMod(models.Model):
 # /////////////---------------------
 
 
-class CategoriesImages(Categories):
-    pass
+class CategoriesImages(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=150, verbose_name="Название категории")
+    slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
+    descript = RichTextUploadingField(verbose_name="Описание")
+    image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True,
+                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
+                                      'big': (800, 600), })
+    icon = models.FileField(upload_to='entries/categories',
+                            validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
+                            verbose_name="Иконка категории", help_text="Форматы svg, png, gif", blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.slug is None:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Категория галереи"
@@ -487,3 +555,53 @@ class EntryGuide(models.Model):
     class Meta:
         verbose_name = "Гайд по прохождению"
         verbose_name_plural = "Гайды по прохождению"
+
+
+# ////--------------------------
+# FAQ: ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ
+# ////--------------------------
+
+
+class CategoriesFaq(models.Model):
+    id = models.AutoField(primary_key=True, )
+    name = models.CharField(max_length=150, verbose_name="Название категории", default="", blank=False)
+    slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True,
+                            default="", blank=False)
+    descript = RichTextUploadingField(verbose_name="Описание", default="")
+    image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True, null=True,
+                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
+                                      'big': (800, 600), })
+    icon = models.FileField(upload_to='entries/categories', blank=True, null=True,
+                            validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
+                            verbose_name="Иконка категории", help_text="Форматы svg, png, gif")
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.slug is None:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Категория FAQ"
+        verbose_name_plural = "Категории FAQ"
+
+
+class EntryFaq(models.Model):
+    question = models.CharField(max_length=400, verbose_name="Вопрос")
+    category = models.ForeignKey(CategoriesFaq, on_delete=models.DO_NOTHING, verbose_name="Категория")
+    author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
+    datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
+    questionDescript = RichTextUploadingField(verbose_name="Описание вопроса", blank=True)
+    answer = RichTextUploadingField(verbose_name="Описание ответа", blank=True)
+    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True, default=None)
+
+    posted = models.BooleanField(default=True, verbose_name="Материал опубликован")
+
+    def __str__(self):
+        return self.question
+
+    class Meta:
+        verbose_name = "Вопрос"
+        verbose_name_plural = "Часто задаваемые вопросы"

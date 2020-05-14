@@ -4,7 +4,7 @@ from django import forms
 from django.forms.models import inlineformset_factory
 from gallery.models import Gallery, GalleryItem
 
-from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGallery, EntryGuide
+from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGallery, EntryGuide, EntryFaq
 
 
 # ////--------
@@ -32,10 +32,10 @@ class GalleryForm(forms.ModelForm):
 class GalleryItemForm(forms.ModelForm):
     class Meta:
         model = GalleryItem
-        fields = ['image']
+        fields = "__all__"
 
 
-GalleryItemFormSet = inlineformset_factory(Gallery, GalleryItem, fields=['image'],
+GalleryItemFormSet = inlineformset_factory(Gallery, GalleryItem,
                                            form=GalleryItemForm, extra=5, max_num=5)
 
 
@@ -183,4 +183,53 @@ class GuidesAddForm(MultiForm):
     form_classes = {
         'guide': GuideKostilForm,
         'guides': GuideFormSet,
+    }
+
+
+# ////--------------------------
+# FAQ: ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ
+# ////--------------------------
+class FaqForm(forms.ModelForm):
+    questionDescript = forms.CharField(widget=CKEditorUploadingWidget())
+    answer = forms.CharField(widget=CKEditorUploadingWidget())
+
+    class Meta:
+        model = EntryFaq
+        fields = '__all__'
+        exclude = ['objgallery', 'author']
+
+
+class FaqAskForm(forms.ModelForm):
+    questionDescript = forms.CharField(widget=CKEditorUploadingWidget())
+
+    class Meta:
+        model = EntryFaq
+        fields = '__all__'
+        exclude = ['objgallery', 'author', 'answer']
+
+
+class FaqAnswerForm(forms.ModelForm):
+    question = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+    questionDescript = forms.CharField(widget=CKEditorUploadingWidget(attrs={'readonly': 'readonly'}))
+    answer = forms.CharField(widget=CKEditorUploadingWidget())
+
+    class Meta:
+        model = EntryFaq
+        fields = '__all__'
+        exclude = ['objgallery', 'author', 'answer']
+
+
+class FaqAddForm(MultiForm):
+    form_classes = {
+        'faq': FaqForm,
+        'gallery': GalleryForm,
+        'item': GalleryItemFormSet,
+    }
+
+
+class FaqAskAddForm(MultiForm):
+    form_classes = {
+        'faq': FaqAskForm,
+        'gallery': GalleryForm,
+        'item': GalleryItemFormSet,
     }

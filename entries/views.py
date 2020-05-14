@@ -6,8 +6,9 @@ from gallery.models import Gallery
 from gallery.models import GalleryItem
 
 from .forms import NewsForm, NewsAddForm, ArticleForm, ArticleAddForm, FileForm, FileAddForm, FileModForm, \
-    ModForm, ModAddForm, ImageGalleryForm, ImageGalleryAddForm, GuidesAddForm
-from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGallery, EntryGuide
+    ModForm, ModAddForm, ImageGalleryForm, ImageGalleryAddForm, GuidesAddForm, FaqAddForm, FaqAskAddForm, \
+    FaqAnswerForm, FaqForm, FaqAskForm
+from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGallery, EntryGuide, EntryFaq
 from .variables import NEWS
 
 
@@ -123,7 +124,7 @@ class AddArticle(CreateView):
         item = form['item'].save(commit=False)
         articles_form.author = self.request.user
         gallery.name = articles_form.title
-        nid = EntryNews.objects.count()
+        nid = EntryArticle.objects.count()
         gallery.slug = "article{0}".format(nid + 1)
         articles_form.objgallery = gallery
         gallery.save()
@@ -193,7 +194,7 @@ class AddFile(CreateView):
         item = form['item'].save(commit=False)
         files_form.author = self.request.user
         gallery.name = files_form.title
-        nid = EntryNews.objects.count()
+        nid = EntryFile.objects.count()
         gallery.slug = "file{0}".format(nid + 1)
         files_form.objgallery = gallery
         gallery.save()
@@ -266,7 +267,7 @@ class AddMod(CreateView):
         item = form['item'].save(commit=False)
         files_form.author = self.request.user
         gallery.name = files_form.title
-        nid = EntryNews.objects.count()
+        nid = EntryMod.objects.count()
         gallery.slug = "mod{0}".format(nid + 1)
         files_form.objgallery = gallery
         gallery.save()
@@ -347,8 +348,8 @@ class AddImage(CreateView):
         gallery = form['gallery'].save(commit=False)
         item = form['item'].save(commit=False)
         images_form.author = self.request.user
-        gallery.name = images_form.title
-        nid = EntryNews.objects.count()
+        gallery.name = images_form.name
+        nid = EntryImageGallery.objects.count()
         gallery.slug = "gallery{0}".format(nid + 1)
         images_form.objgallery = gallery
         gallery.save()
@@ -453,3 +454,111 @@ class DeleteGuide(DeleteView):
     success_url = "/guides/"
     template_name = "entries/guides/delete.html"
     model = EntryGuide
+
+
+# ////--------------------------
+# FAQ: ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ
+# ////--------------------------
+
+class ListQuestions(ListView):
+    paginate_by = 2
+    model = EntryFaq
+    context_object_name = "faqList"
+    template_name = "entries/faq/list.html"
+
+
+# class DetailFile(DetailView):
+#     model = EntryFile
+#     context_object_name = "file"
+#     template_name = "entries/files/details.html"
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['some'] = GalleryItem.objects.filter(entry__entryfile=self.object)
+#         return context
+
+
+class AddQuestion(CreateView):
+    form_class = FaqAddForm
+    success_url = "/faq/"
+    template_name = "entries/faq/add.html"
+
+    def form_valid(self, form):
+        faq_form = form['faq'].save(commit=False)
+        gallery = form['gallery'].save(commit=False)
+        item = form['item'].save(commit=False)
+        faq_form.author = self.request.user
+        gallery.name = faq_form.question
+        nid = EntryFaq.objects.count()
+        gallery.slug = "faq{0}".format(nid + 1)
+        faq_form.objgallery = gallery
+        gallery.save()
+        for i in item:
+            i.entry = gallery
+            i.save()
+
+        faq_form.save()
+        return redirect("/faq/")
+
+
+class AskQuestion(CreateView):
+    form_class = FaqAskAddForm
+    success_url = "/faq/"
+    template_name = "entries/faq/add.html"
+
+    def form_valid(self, form):
+        faq_form = form['faq'].save(commit=False)
+        gallery = form['gallery'].save(commit=False)
+        item = form['item'].save(commit=False)
+        faq_form.author = self.request.user
+        gallery.name = faq_form.question
+        nid = EntryFaq.objects.count()
+        gallery.slug = "faq{0}".format(nid + 1)
+        faq_form.objgallery = gallery
+        gallery.save()
+        for i in item:
+            i.entry = gallery
+            i.save()
+
+        faq_form.save()
+        return redirect("/faq/")
+
+
+class EditQuestion(UpdateView):
+    success_url = "/faq/"
+    template_name = "entries/faq/edit.html"
+    model = EntryFaq
+    form_class = FaqForm
+
+
+class EditUserQuestion(UpdateView):
+    success_url = "/faq/"
+    template_name = "entries/faq/edit.html"
+    model = EntryFaq
+    form_class = FaqAskForm
+
+
+class AnswerQuestion(UpdateView):
+    success_url = "/faq/"
+    template_name = "entries/files/edit.html"
+    model = EntryFaq
+    form_class = FaqAnswerForm
+
+
+class ImageFaqInline(InlineFormSetFactory):
+    model = GalleryItem
+    fields = ['image']
+
+
+class EditFaqGallery(UpdateWithInlinesView):
+    success_url = "/faq/"
+    template_name = "entries/faq/edit.html"
+    model = Gallery
+    inlines = [ImageFaqInline]
+    fields = '__all__'
+
+
+class DeleteFaq(DeleteView):
+    success_url = "/faq/"
+    template_name = "entries/faq/delete.html"
+    model = Gallery

@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FAQ {{ page_obj.number }}</title>
+</head>
+<body>
+<Div style="text-align: right"><a href="/faq/ask/">Задать вопрос</a></Div>
+<Div style="text-align: right"><a href="/faq/add/">Добавить вопрос &lt;admin&gt;</a></Div>
+{% if faqList %}
+    {% for qst in faqList %}
+        <div style="float: left; padding: 10px;">
+            <h3>{{ qst.question }}</h3>
+            <hr>
+            <p>{{ qst.id | safe }}</p>
+            <p>{{ qst.questionDescript | safe }}</p>
+            <p>Author: <i>{{ qst.author }}</i></p>
+            <p>Gallery: <i>{{ qst.objgallery.slug }}</i></p>
+            <p><i>{{ qst.objgallery.slug }}</i></p>
+            <p><img src="/media/{{ qst.image }}" alt=""></p>
+            <hr>
+            <a href="/faq/answer/{{ qst.id }}">Ответить на вопрос</a><br>
+            <a href="/faq/edit/{{ qst.id }}">Редактировать вопрос</a><br>
+            <a href="/faq/edit_gallery/{{ qst.objgallery_id }}">Редактировать
+                галлерею {{ qst.file.objgallery_id }}</a><br>
+            <a href="/faq/del/{{ qst.objgallery_id }}">Удалить</a>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>OH, SHIT! THERE IS nihuya.obj AGAIN!</p>
+{% endif %}
+<div style="float: none">
+    <hr>
+    {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo; first</a>
+        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+    {% endif %}
+
+    <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+    {% endif %}
+</div>
+</body>
+</html>

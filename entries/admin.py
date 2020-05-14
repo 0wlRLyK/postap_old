@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import EntryNews, CategoriesNews, EntryArticle, CategoriesArticle, EntryFile, CategoriesFiles, Games, \
-    Author, CategoriesMods, EntryMod, CategoriesImages, EntryImageGallery, EntryGuide
+    Author, CategoriesMods, EntryMod, CategoriesImages, EntryImageGallery, EntryGuide, CategoriesFaq, EntryFaq
 
 
 # ////--------
@@ -155,3 +155,21 @@ class GuidesAdmin(admin.ModelAdmin):
     list_display = ['name', 'mod', 'type0f']
     search_fields = ['name', 'mod']
     list_filter = ('name', 'mod', 'type0f')
+
+
+# ////--------------------------
+# FAQ: ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ
+# ////--------------------------
+
+
+@admin.register(CategoriesFaq)
+class CategoriesModsAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug']
+    search_fields = ['name', 'slug']
+
+
+@admin.register(EntryFaq)
+class ModAdmin(admin.ModelAdmin):
+    list_display = ['question', 'id', 'category']
+    search_fields = ['question', 'id', 'category']
+    list_filter = ('question', 'datetime', 'author', 'category')
