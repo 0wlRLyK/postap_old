@@ -11,38 +11,6 @@ from stdimage import StdImageField
 from taggit.managers import TaggableManager
 
 
-# def upload_to(instance, filename):
-#     return '/'.join(['entries', 'gallery', str(instance.slug), str(instance.pk), filename])
-#
-#
-# class Gallery(models.Model):
-#     id = models.AutoField(primary_key=True)
-#
-#     title = models.CharField(max_length=100, verbose_name="Название", blank=True)
-#     entry = models.ForeignKey(ContentType, on_delete=models.DO_NOTHING, blank=True, null=True)
-#     slug = models.SlugField(max_length=50, default="none")
-#     image = models.ImageField(upload_to=upload_to, blank=True)
-#
-#     def __str__(self):
-#         if self.entry:
-#             return "{0} - {1}".format(self.entry.name, self.title)
-#         return "none - {0}".format(self.title)
-#
-#     def save(self, *args, **kwargs):
-#         if self.id is None:
-#             saved_image = self.image
-#             self.image = None
-#             super(Gallery, self).save(*args, **kwargs)
-#             self.image = saved_image
-#             if 'force_insert' in kwargs:
-#                 kwargs.pop('force_insert')
-#
-#         super(Gallery, self).save(*args, **kwargs)
-
-
-
-
-
 def upload_to_entries(instance, filename):
     return '/'.join(['entries', str(instance.ModuleNAME), str(instance.pk), filename])
 

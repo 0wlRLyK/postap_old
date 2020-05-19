@@ -21,6 +21,8 @@ from django.urls import path, re_path, include
 urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('', include('entries.urls')),
+                  path('users/', include('userena.urls')),
+                  path('polls/', include('voting.urls')),
                   path('tinymce/', include('tinymce.urls')),
                   re_path(r'^uploads/', include('ckeditor_uploader.urls')),
 

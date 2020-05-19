@@ -12,9 +12,11 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+from django.utils.translation import gettext_lazy as _
+from easy_thumbnails.conf import Settings as thumbnail_settings
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -37,7 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
+    'userena',
+    'users',
+    'guardian',
+    'easy_thumbnails',
+    'image_cropping',
+    'cities_light',
+    # '',
 
     # EXTENSIONS OF DEFAULT DJANGO FUNCTIONALITY
     'betterforms',
@@ -50,6 +60,7 @@ INSTALLED_APPS = [
     # POSTAP APPS
     'entries',
     'gallery',
+    'voting',
 
     'ckeditor_uploader',
     'ckeditor',
@@ -89,7 +100,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'postap.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -99,8 +109,9 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
-
+# ---------
+# SECURITY
+# ---------
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -119,11 +130,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'userena.backends.UserenaAuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
@@ -149,7 +165,44 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# --------
+# USERENA
+# --------
+ANONYMOUS_USER_NAME = 'AnonymousUser'
+AUTH_PROFILE_MODULE = 'users.UsersProfiles'
+
+USERENA_SIGNIN_REDIRECT_URL = '/pda/%(username)s/'
+
+CITIES_LIGHT_TRANSLATION_LANGUAGES = ['ru', 'uk', 'be', 'en']
+CITIES_LIGHT_INCLUDE_CITY_TYPES = ['PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA4']
+LOGIN_URL = '/users/signin/'
+LOGOUT_URL = '/users/signout/'
+EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+SITE_ID = 1
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'yourgmailaccount@gmail.com'
+EMAIL_HOST_PASSWORD = 'yourgmailpassword'
+# -----
+# USERS
+# -----
+
+GENDERS = (
+    ("male", _("Male")),
+    ("female", _("Female")),
+)
+# -------....___________
+# IMAGES AND THUMBNAILS
+# -------....___________
+
+THUMBNAIL_PROCESSORS = (
+                           'image_cropping.thumbnail_processors.crop_corners',
+                       ) + thumbnail_settings.THUMBNAIL_PROCESSORS
+
+# --------
 # ENTRIES
+# --------
 ENTRIES_PER_PAGE = 2
 # /////////-------
 # ADMIN INTERFACE

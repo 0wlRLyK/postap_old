@@ -121,7 +121,7 @@ class ModForm(forms.ModelForm):
     class Meta:
         model = EntryMod
         fields = '__all__'
-        exclude = ['file']
+        exclude = ['file', 'vote_score', 'num_vote_up', 'num_vote_down']
 
 
 class ModAddForm(MultiForm):
