@@ -29,7 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -53,6 +52,7 @@ INSTALLED_APPS = [
     'betterforms',
     'extra_views',
 
+    'ajax_select',
     'tinymce',
     'taggit',
     'stdimage',
@@ -187,7 +187,8 @@ EMAIL_HOST_PASSWORD = 'yourgmailpassword'
 # -----
 # USERS
 # -----
-
+AJAX_LOOKUP_CHANNELS = {'cities_light_country': ('cities_light.contrib.ajax_selects_lookups', 'CountryLookup'),
+                        'cities_light_city': ('cities_light.contrib.ajax_selects_lookups', 'CityLookup'), }
 GENDERS = (
     ("male", _("Male")),
     ("female", _("Female")),

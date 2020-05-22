@@ -45,6 +45,13 @@ class Equipment(models.Model):
 class RplAvatarCategory(models.Model):
     name = models.CharField(max_length=200, verbose_name="Имя категории")
 
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Категория аватаров персонажей"
+        verbose_name_plural = "Категории аватаров персонажей"
+
 
 class RplAvatar(models.Model):
     name = models.CharField(max_length=200, verbose_name="Название аватара")
@@ -52,11 +59,18 @@ class RplAvatar(models.Model):
     image = ImageCropField(blank=True, upload_to='avatars/base', verbose_name="Аватар")
     cropping = ImageRatioField('avatar', "{0}x{0}".format(userena_settings.USERENA_MUGSHOT_SIZE))
 
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Аватар персонажа"
+        verbose_name_plural = "Аватары персонажей"
+
 
 class Faction(models.Model):
     name = models.CharField(max_length=200, verbose_name="Имя категории")
     description = RichTextField(verbose_name="Описание группировки")
-    logo = StdImageField(upload_to='users/factions', default='postap.png', verbose_name="Изображение", blank=True,
+    logo = StdImageField(upload_to='users/factions', default='postap.png', verbose_name="Лого", blank=True,
                          variations={'thumbnail': (120, 90), 'small': (300, 225)})
     image = StdImageField(upload_to='users/factions', default='postap.png', verbose_name="Изображение", blank=True,
                           variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
@@ -115,9 +129,23 @@ class Faction(models.Model):
     legends = models.ManyToManyField(User, verbose_name="Легендарные участники группировки", blank=True,
                                      related_name="gr_legends")
 
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Группировка"
+        verbose_name_plural = "Группировки"
+
 
 class AvatarCategory(models.Model):
     name = models.CharField(max_length=200, verbose_name="Имя категории")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Категория аватаров"
+        verbose_name_plural = "Категории аватаров"
 
 
 class Avatar(models.Model):
@@ -125,6 +153,13 @@ class Avatar(models.Model):
     category = models.ForeignKey(AvatarCategory, on_delete=models.DO_NOTHING, blank=True, null=True, )
     image = ImageCropField(blank=True, upload_to='avatars/base', verbose_name="Аватар")
     cropping = ImageRatioField('avatar', "{0}x{0}".format(userena_settings.USERENA_MUGSHOT_SIZE))
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Аватар"
+        verbose_name_plural = "Аватары"
 
 
 class UsersProfiles(UserenaBaseProfile):
@@ -163,37 +198,37 @@ class UsersProfiles(UserenaBaseProfile):
 
     user = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='users_profiles',
                                 on_delete=models.CASCADE)
-    faction = models.ForeignKey(Faction, verbose_name=_('user'), on_delete=models.CASCADE, null=True)
+    faction = models.ForeignKey(Faction, verbose_name=_('Faction'), on_delete=models.CASCADE, null=True)
 
-    mugshot = ImageCropField(_("avatar"), blank=True, null=True, upload_to=upload_to_mugshot)
-    cropping = ImageRatioField('avatar', "{0}x{0}".format(userena_settings.USERENA_MUGSHOT_SIZE),
+    mugshot = ImageCropField(_("Avatar"), blank=True, null=True, upload_to=upload_to_mugshot)
+    cropping = ImageRatioField('Cropping avatar', "{0}x{0}".format(userena_settings.USERENA_MUGSHOT_SIZE),
                                verbose_name=_("cropping"), )
     avatar = models.ForeignKey(Avatar, on_delete=models.DO_NOTHING, blank=True, null=True, )
-    birthday = models.DateField(_('birthday'), default=datetime.strptime('01-06-2020', '%m-%d-%Y').date())
+    birthday = models.DateField(_('Birthday'), default=datetime.strptime('01-06-2020', '%m-%d-%Y').date())
     # objects = BirthdayManager()
-    gender = models.CharField(_('gender'), max_length=100, choices=settings.GENDERS, default="None")
+    gender = models.CharField(_('Gender'), max_length=100, choices=settings.GENDERS, default="None")
     country = models.ForeignKey(Country, on_delete=models.DO_NOTHING, blank=True, null=True, )
     city = models.ForeignKey(City, on_delete=models.DO_NOTHING, blank=True, null=True, )
 
-    signature = RichTextField(_('signature'), default="")
-    sign_image = ImageCropField(_("avatar"), blank=True, null=True, upload_to=upload_to_mugshot)
-    sign_image_crop = ImageRatioField('avatar', "600x200", verbose_name=_("cropping"), )
+    signature = RichTextField(_('Signature'), default="")
+    sign_image = ImageCropField(_("Avatar of hero"), blank=True, null=True, upload_to=upload_to_mugshot)
+    sign_image_crop = ImageRatioField('Cropping avatar', "600x200", verbose_name=_("cropping"), )
 
     rpl_nickname = models.CharField(_('Nickname of hero'), max_length=50, default="Stalker", blank=True)
     rpl_first_name = models.CharField(_('First name of hero'), max_length=50, default="", blank=True)
     rpl_second_name = models.CharField(_('Second name of hero'), max_length=50, default="", blank=True)
 
-    rpl_bio = RichTextField(_('biography'), default="", blank=True)
+    rpl_bio = RichTextField(_('Biography of hero'), default="", blank=True)
     rpl_avatar = models.ForeignKey(RplAvatar, verbose_name=_('avatar'), on_delete=models.CASCADE, blank=True, null=True)
-    speciality = models.CharField(_('Speciality'), max_length=200, choices=SPECIALITIES, default="no")
-    rpl_xp = models.IntegerField(_('experience'), default=0)
-    rpl_lvl = models.IntegerField(_('level'), default=0)
-    rank = models.IntegerField(_('rank'), default=0)
+    speciality = models.CharField(_('Speciality of hero'), max_length=200, choices=SPECIALITIES, default="no")
+    rpl_xp = models.IntegerField(_('Experience of hero'), default=0)
+    rpl_lvl = models.IntegerField(_('Level of hero'), default=0)
+    rank = models.IntegerField(_('Rank of hero'), default=0)
 
-    reputation = models.IntegerField(_('reputation'), default=0)
-    money = models.IntegerField(_('reputation'), default=0)
-    xp = models.IntegerField(_('experience'), default=0)
-    level = models.IntegerField(_('level'), default=0)
+    reputation = models.IntegerField(_('Reputation'), default=0)
+    money = models.IntegerField(_('Money'), default=0)
+    xp = models.IntegerField(_('Experience'), default=0)
+    level = models.IntegerField(_('Level'), default=0)
 
     permissions = MultiSelectField(_('permissions'), max_length=200, choices=PERMISIONS, null=True, blank=True)
     geo_permissions = models.CharField(_('Location permissions'), max_length=200, choices=GEO_PERMISSIONS,
