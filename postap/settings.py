@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     'gallery',
     'voting',
 
+    # TEMPORARY APPS
+
     'ckeditor_uploader',
     'ckeditor',
     'django_cleanup.apps.CleanupConfig',
@@ -196,7 +198,8 @@ GENDERS = (
 # -------....___________
 # IMAGES AND THUMBNAILS
 # -------....___________
-
+IMAGE_CROPPING_BACKEND = 'image_cropping.backends.easy_thumbs.EasyThumbnailsBackend'
+IMAGE_CROPPING_BACKEND_PARAMS = {}
 THUMBNAIL_PROCESSORS = (
                            'image_cropping.thumbnail_processors.crop_corners',
                        ) + thumbnail_settings.THUMBNAIL_PROCESSORS

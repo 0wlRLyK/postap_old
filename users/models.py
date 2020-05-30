@@ -5,7 +5,6 @@ from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User, Group
 from django.db import models
 from django.utils.translation import gettext as _
-from image_cropping import ImageCropField, ImageRatioField
 from multiselectfield import MultiSelectField
 from postap import settings
 from stdimage import StdImageField
@@ -54,10 +53,14 @@ class RplAvatarCategory(models.Model):
 
 
 class RplAvatar(models.Model):
+    """
+    RPL :: RolePlay
+    ---------------
+    RolePlay Avatar of User Character
+    """
     name = models.CharField(max_length=200, verbose_name="Название аватара")
     category = models.ForeignKey(RplAvatarCategory, on_delete=models.DO_NOTHING, blank=True, null=True, )
-    image = ImageCropField(blank=True, upload_to='avatars/base', verbose_name="Аватар")
-    cropping = ImageRatioField('avatar', "{0}x{0}".format(userena_settings.USERENA_MUGSHOT_SIZE))
+    image = models.ImageField(blank=True, upload_to='avatars/base', verbose_name="Аватар")
 
     def __str__(self):
         return self.name
@@ -151,8 +154,7 @@ class AvatarCategory(models.Model):
 class Avatar(models.Model):
     name = models.CharField(max_length=200, verbose_name="Название аватара")
     category = models.ForeignKey(AvatarCategory, on_delete=models.DO_NOTHING, blank=True, null=True, )
-    image = ImageCropField(blank=True, upload_to='avatars/base', verbose_name="Аватар")
-    cropping = ImageRatioField('avatar', "{0}x{0}".format(userena_settings.USERENA_MUGSHOT_SIZE))
+    image = models.ImageField(blank=True, upload_to='avatars/base', verbose_name="Аватар")
 
     def __str__(self):
         return self.name
@@ -198,21 +200,21 @@ class UsersProfiles(UserenaBaseProfile):
 
     user = models.OneToOneField(User, unique=True, verbose_name=_('user'), related_name='users_profiles',
                                 on_delete=models.CASCADE)
+    slug = models.SlugField(_("Slug"), unique=True, null=True, editable=False, blank=True, max_length=300)
     faction = models.ForeignKey(Faction, verbose_name=_('Faction'), on_delete=models.CASCADE, null=True)
 
-    mugshot = ImageCropField(_("Avatar"), blank=True, null=True, upload_to=upload_to_mugshot)
-    cropping = ImageRatioField('Cropping avatar', "{0}x{0}".format(userena_settings.USERENA_MUGSHOT_SIZE),
-                               verbose_name=_("cropping"), )
+    mugshot = models.ImageField(_("Avatar"), blank=True, null=True, upload_to=upload_to_mugshot, )
     avatar = models.ForeignKey(Avatar, on_delete=models.DO_NOTHING, blank=True, null=True, )
-    birthday = models.DateField(_('Birthday'), default=datetime.strptime('01-06-2020', '%m-%d-%Y').date())
+
+    birthday = models.DateField(_('Birthday'), default=datetime.strptime('01-06-1990', '%m-%d-%Y').date())
     # objects = BirthdayManager()
     gender = models.CharField(_('Gender'), max_length=100, choices=settings.GENDERS, default="None")
     country = models.ForeignKey(Country, on_delete=models.DO_NOTHING, blank=True, null=True, )
-    city = models.ForeignKey(City, on_delete=models.DO_NOTHING, blank=True, null=True, )
+    # OLD: city = models.ForeignKey(City, on_delete=models.DO_NOTHING, blank=True, null=True, )
+    city = models.CharField(_('City'), max_length=50, default=" ", blank=True)
 
-    signature = RichTextField(_('Signature'), default="")
-    sign_image = ImageCropField(_("Avatar of hero"), blank=True, null=True, upload_to=upload_to_mugshot)
-    sign_image_crop = ImageRatioField('Cropping avatar', "600x200", verbose_name=_("cropping"), )
+    signature = RichTextField(_('Signature'), default="", blank=True)
+    sign_image = models.ImageField(_("Signature image"), blank=True, null=True, upload_to=upload_to_mugshot)
 
     rpl_nickname = models.CharField(_('Nickname of hero'), max_length=50, default="Stalker", blank=True)
     rpl_first_name = models.CharField(_('First name of hero'), max_length=50, default="", blank=True)
@@ -225,13 +227,22 @@ class UsersProfiles(UserenaBaseProfile):
     rpl_lvl = models.IntegerField(_('Level of hero'), default=0)
     rank = models.IntegerField(_('Rank of hero'), default=0)
 
+    hp = models.PositiveSmallIntegerField(_('Health points'), default=100)
+    rad = models.SmallIntegerField(_('Radiation points'), default=0)
+    satiety = models.SmallIntegerField(_('Satiety points'), default=20)
+
     reputation = models.IntegerField(_('Reputation'), default=0)
     money = models.IntegerField(_('Money'), default=0)
     xp = models.IntegerField(_('Experience'), default=0)
     level = models.IntegerField(_('Level'), default=0)
 
     permissions = MultiSelectField(_('permissions'), max_length=200, choices=PERMISIONS, null=True, blank=True)
+    # ! On delete
     geo_permissions = models.CharField(_('Location permissions'), max_length=200, choices=GEO_PERMISSIONS,
                                        default="show_no_details")
 
     equipment = models.ForeignKey(Equipment, on_delete=models.DO_NOTHING, blank=True, null=True, )
+
+    def save(self, *args, **kwargs):
+        self.slug = self.user.get_username()
+        super(UsersProfiles, self).save(*args, **kwargs)

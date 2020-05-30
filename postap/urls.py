@@ -26,6 +26,8 @@ urlpatterns = [
                   path('polls/', include('voting.urls')),
                   path('tinymce/', include('tinymce.urls')),
                   re_path(r'^uploads/', include('ckeditor_uploader.urls')),
+                  # !| TEMPORARY APPS AND PATHS |!
+                  #    ! DELETE BEFORE DEPLOY !
 
               ] + static(settings.STATIC_URL, docuent_root=settings.STATICFILES_DIRS)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

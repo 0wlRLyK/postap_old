@@ -1,10 +1,11 @@
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
+from django.urls import path
 from django.urls import reverse_lazy
 from userena import settings as userena_settings
 from userena import views as userena_views
 
-from .views import profile_edit
+from .views import EditUserProfile
 
 urlpatterns = [
     # Signup, signin and signout
@@ -119,10 +120,12 @@ urlpatterns = [
         name="userena_password_change_complete",
     ),
     # Edit profile
-    url(r"^(?P<username>[\@\.\+\w-]+)/edit/$",
-        profile_edit,
-        name="userena_profile_edit",
-        ),
+    # url(r"^(?P<username>[\@\.\+\w-]+)/edit/$",
+    #     EditUserProfile,
+    #     # name="userena_profile_edit",
+    #     ),
+
+    path("<slug:slug>/edit/", EditUserProfile.as_view(), name="userena_profile_edit", ),
     # View profiles
     url(
         r"^(?P<username>(?!(signout|signup|signin)/)[\@\.\+\w-]+)/$",
