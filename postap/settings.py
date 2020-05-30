@@ -174,6 +174,17 @@ ANONYMOUS_USER_NAME = 'AnonymousUser'
 AUTH_PROFILE_MODULE = 'users.UsersProfiles'
 
 USERENA_SIGNIN_REDIRECT_URL = '/pda/%(username)s/'
+USERENA_MUGSHOT_PATH = "user_profiles/"
+
+AVATAR_PROPORTIONS = 250  # 250.width X 250.height px
+ratio_ava = [50,  # 'thumbnail'
+             100,  # 'small'
+             200,  # 'middle'
+             500]  # 'orig'
+AVATAR_VARIATIONS = {'thumbnail': (ratio_ava[0], ratio_ava[0], True),
+                     'small': (ratio_ava[1], ratio_ava[1], True),
+                     'middle': (ratio_ava[2], ratio_ava[2], True),
+                     'orig': (ratio_ava[3], ratio_ava[3])}
 
 CITIES_LIGHT_TRANSLATION_LANGUAGES = ['ru', 'uk', 'be', 'en']
 CITIES_LIGHT_INCLUDE_CITY_TYPES = ['PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA4']

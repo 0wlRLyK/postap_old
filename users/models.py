@@ -24,13 +24,17 @@ def upload_to_mugshot(instance, filename):
 
     """
     extension = filename.split(".")[-1].lower()
+    username = "{}/".format(instance.user.username)
+    date = "{}/".format(get_datetime_now().date())
     path = userena_settings.USERENA_MUGSHOT_PATH % {
         "username": instance.user.username,
         "id": instance.user.id,
         "date": instance.user.date_joined,
         "date_now": get_datetime_now().date(),
     }
-    return "%(path)s%(hash)s.%(extension)s" % {
+    return "%(path)s%(username)s%(date)s%(hash)s.%(extension)s" % {
+        "username": username,
+        "date": date,
         "path": path,
         "hash": generate_nonce()[:10],
         "extension": extension,
@@ -203,7 +207,8 @@ class UsersProfiles(UserenaBaseProfile):
     slug = models.SlugField(_("Slug"), unique=True, null=True, editable=False, blank=True, max_length=300)
     faction = models.ForeignKey(Faction, verbose_name=_('Faction'), on_delete=models.CASCADE, null=True)
 
-    mugshot = models.ImageField(_("Avatar"), blank=True, null=True, upload_to=upload_to_mugshot, )
+    mugshot = StdImageField(_("Avatar"), blank=True, null=True, upload_to=upload_to_mugshot,
+                            variations=settings.AVATAR_VARIATIONS)
     avatar = models.ForeignKey(Avatar, on_delete=models.DO_NOTHING, blank=True, null=True, )
 
     birthday = models.DateField(_('Birthday'), default=datetime.strptime('01-06-1990', '%m-%d-%Y').date())

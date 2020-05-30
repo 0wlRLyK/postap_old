@@ -1,9 +1,12 @@
+import os
+
 from PIL import Image
 from cities_light.models import Country
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import UpdateView
 from guardian.decorators import permission_required_or_403
+from postap import settings
 from userena.decorators import secure_required
 
 from .forms import EditFormExtra
@@ -36,12 +39,21 @@ class EditUserProfile(UpdateView):
             print(x, y, w, h)
             image = Image.open(form_save.mugshot)
             cropped_image = image.crop((x, y, w + x, h + y))
-            resized_image = cropped_image.resize((200, 200), Image.ANTIALIAS)
+            resized_image = cropped_image.resize((settings.AVATAR_PROPORTIONS, settings.AVATAR_PROPORTIONS),
+                                                 Image.ANTIALIAS)
             resized_image.save(form_save.mugshot.path, commit=True)
+            for variation, value in zip(settings.AVATAR_VARIATIONS, settings.ratio_ava):
+                cropped_image = image.crop((x, y, w + x, h + y))
+                resized_image = cropped_image.resize((value, value), Image.ANTIALIAS)
+                file_path = os.path.splitext(form_save.mugshot.path)
+                path = "{0}.{1}{2}".format(file_path[0], variation, file_path[1])
+                # print(form_save.mugshot, ":", os.path.splitext(form_save.mugshot.path))
+                resized_image.save(path, commit=True)
 
         country_obj = Country.objects.get(name=form.data["country"])
         form_save.country = country_obj
         form_save.save()
+        print(self.model.mugshot)
         return super(EditUserProfile, self).form_valid(form)
 
     @method_decorator(secure_required)
