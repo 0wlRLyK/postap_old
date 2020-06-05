@@ -6,72 +6,18 @@
 {% block content_title %}<h2>{% blocktrans with profile.user.username as username %}Account &raquo;
     {{ username }}{% endblocktrans %}</h2>{% endblock %}
 {% block javascript %}
-    <script>
-        $(function () {
-
-            /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
-            $("#id_mugshot").change(function () {
-                if (this.files && this.files[0]) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        $("#image").attr("src", e.target.result);
-                        $("#modalCrop").modal("show");
-                    }
-                    reader.readAsDataURL(this.files[0]);
-                }
-            });
-
-            /* SCRIPTS TO HANDLE THE CROPPER BOX */
-            var $image = $("#image");
-            var cropBoxData;
-            var canvasData;
-            $("#modalCrop").on("shown.bs.modal", function () {
-                $image.cropper({
-                    viewMode: 1,
-                    aspectRatio: 1,
-                    minCropBoxWidth: 200,
-                    minCropBoxHeight: 200,
-                    ready: function () {
-                        $image.cropper("setCanvasData", canvasData);
-                        $image.cropper("setCropBoxData", cropBoxData);
-                    }
-                });
-            }).on("hidden.bs.modal", function () {
-                cropBoxData = $image.cropper("getCropBoxData");
-                canvasData = $image.cropper("getCanvasData");
-                $image.cropper("destroy");
-            });
-
-            $(".js-zoom-in").click(function () {
-                $image.cropper("zoom", 0.1);
-            });
-
-            $(".js-zoom-out").click(function () {
-                $image.cropper("zoom", -0.1);
-            });
-
-            /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
-            $(".js-crop-and-upload").click(function () {
-                var cropData = $image.cropper("getData");
-                console.log(cropData)
-                $("#id_x").val(cropData["x"]);
-                $("#id_y").val(cropData["y"]);
-                $("#id_height").val(cropData["height"]);
-                $("#id_width").val(cropData["width"]);
-                $("#modalCrop").modal('hide');
-            });
-
-        });
-    </script>
+    <script src="{% static 'js/users/profile_edit.js' %}"></script>
 {% endblock %}
 {% block content %}
     <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
     {{ form.media }}
     {#$('#modalCrop').modal('hide');#}
     <!-- Font Icon -->
-    <link rel="stylesheet" href="{% static "vendor/nouislider/nouislider.min.css" %}">
+    <link rel="stylesheet" href="{% static "fonts/material-icon/css/material-design-iconic-font.min.css" %}">
+    <link rel="stylesheet" href="{% static "vendor/jquery-ui/jquery-ui.min.css" %}">
     <!-- Main css -->
     <link rel="stylesheet" href="{% static "css/forms.css" %}">
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
     <ul id="box-nav">
         <li class="first"><a
                 href="{% url 'userena_profile_detail' user.username %}"><span>{% trans 'View profile' %}</span></a></li>
@@ -85,98 +31,128 @@
 
     <div class="main">
 
-        <div class="container">
-            {#            <div class="signup-content">#}
-            {#                <div class="signup-img">#}
-            {#                    <img src="images/form-img.jpg" alt="">#}
-            {#                    <div class="signup-img-content">#}
-            {#                        <h2>Register now </h2>#}
-            {#                        <p>while seats are available !</p>#}
-            {#                    </div>#}
-            {#                </div>#}
-            <div class="signup-form">
-                <form method="POST" class="register-form" enctype="multipart/form-data" id="profileEditForm">
-                    {% csrf_token %}
-                    {#                        {{ form.as_p }}#}
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            {{ form.errors }}
-                            <div class="form-input">
+        <section class="signup">
+            <!-- <img src="images/signup-bg.jpg" alt=""> -->
+            <div class="container">
+                <div class="signup-content">
+                    <form method="POST" class="register-form" enctype="multipart/form-data" id="profileEditForm">
+                        {% csrf_token %}
+                        {% if form.errors %}
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <b style="color: #5a090c">{{ field.id|escape }}</b> - {{ error|escape }} <br>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
+                        {#                        {{ form.as_p }}#}
+                        {{ form.x }}{{ form.y }} {{ form.width }} {{ form.height }}
+                        {{ form.x_sign }}{{ form.y_sign }} {{ form.width_sign }} {{ form.height_sign }}
+                        {{ form.x_bg }}{{ form.y_bg }} {{ form.width_bg }} {{ form.height_bg }}
+                        {#                    <b>Avatar:</b>#}
+                        {#                    {{ form.x.label_tag }}{{ form.x }} {{ form.y.label_tag  }} {{ form.y }} {{ form.width.label_tag  }} {{ form.width }} {{ form.height.label_tag  }} {{ form.height }}#}
+                        {#                    <b>Sign_Image:</b>#}
+                        {#                    {{ form.x.label_tag }}{{ form.x_sign }} {{ form.y.label_tag  }} {{ form.y_sign }} {{ form.width.label_tag  }} {{ form.width_sign }} {{ form.height.label_tag  }} {{ form.height_sign }}#}
+                        {#                    <b>Background:</b>#}
+                        {#                    {{ form.x.label_tag }}{{ form.x_bg }} {{ form.y.label_tag  }} {{ form.y_bg }} {{ form.width.label_tag  }} {{ form.width_bg }} {{ form.height.label_tag  }} {{ form.height_bg }}#}
+                        <div class="form-row">
+                            <div class="form-group">
                                 {{ form.first_name.errors }}
                                 <label for="first_name">{{ form.first_name.label_tag }}</label>
+                                <input type="text" name="{{ form.first_name.name }}" maxlength="30"
+                                       id="{{ form.first_name.id_for_label }}" value="{{ object.user.first_name }}">
 
-                                {{ form.first_name }}
-                                {{ object.first_name }}
                             </div>
+                            <div class="form-group">
+                                {{ form.last_name.errors }}
+                                <label for="first_name">{{ form.last_name.label_tag }}</label>
+                                <input type="text" name="{{ form.last_name.name }}" maxlength="30"
+                                       id="{{ form.last_name.id_for_label }}" value="{{ object.user.last_name }}">
+                                {{ object.last_name }}
+                            </div>
+                        </div>
 
-                            <div class="form-input">
+                        <div class="form-row">
+                            <div class="form-group">
                                 {{ form.birthday.errors }}
-                                <label for="first_name">{{ form.birthday.label_tag }}</label>
+                                <label for="first_name">День рождения:</label>
                                 {{ form.birthday }}
                             </div>
+                            <div class="form-group">
+                                {{ form.gender.errors }}
+                                <label for="first_name">Пол: </label>
+                                {{ form.gender }}
+                            </div>
+                        </div>
 
-                            <div class="form-input">
+                        <div class="form-row">
+                            <div class="form-group">
                                 {{ form.country.errors }}
-                                <label for="first_name">{{ form.country.label_tag }}</label>
-                                <input type="text" name="country" id="{{ form.country.id }}"
+                                <label for="first_name">Страна: </label>
+                                <input type="text" name="{{ form.country.name }}" id="{{ form.country.id_for_label }}"
                                        value="{{ object.country }}" autocomplete="off" data-ajax-select="autocomplete"
                                        data-plugin-options="{&quot;initial&quot;: 231, &quot;source&quot;: &quot;/ajax_select/ajax_lookup/cities_light_country&quot;, &quot;html&quot;: true}"
                                        maxlength="255" class="ui-autocomplete-input">
                             </div>
-
-                            <div class="form-input">
+                            <div class="form-group">
+                                {{ form.city.errors }}
+                                <label for="first_name">Город: {% comment %}{{ form.city.label_tag }}{% endcomment %}</label>
+                                {{ form.city }}
+                                {{ object.last_name }}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
                                 {{ form.signature.errors }}
-                                <label for="first_name">{{ form.signature.label_tag }}</label>
+                                <label for="first_name">Подпись: {% comment %}{{ form.signature.label_tag }}{% endcomment %}</label>
                                 {{ form.signature }}
                             </div>
+                        </div>
 
-                            <div class="form-input">
+                        <div class="form-row">
+                            <div class="form-group">
                                 {{ form.mugshot.errors }}
-                                <label for="first_name">{{ form.mugshot.label_tag }}</label>
-                                {{ form.mugshot }} {{ form.mugshot.delete }}{{ object.mugshot }}
+                                <label for="first_name">Аватар: {% comment %}{{ form.mugshot.label_tag }}{% endcomment %}</label>
+                                {{ form.mugshot }} {{ form.mugshot.delete }}
+
+                                <img src="http://127.0.0.1:8025/media/{{ object.mugshot }}" height="100" width="100"
+                                     alt="">
+
                             </div>
-                            {{ form.x.label_tag }}<br>{{ form.x }}
-                            {{ form.y.label_tag }}<br>{{ form.y }}
-                            {{ form.width.label_tag }}<br>{{ form.width }}
-                            {{ form.height.label_tag }}<br>{{ form.height }}
+                            <div class="form-group">
+                                {{ form.quote.errors }}
+                                <label for="first_name">{{ form.quote.label_tag }}</label>
 
-
+                                {{ form.quote }}
+                            </div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                {{ form.sign_image.errors }}
+                                <label for="{{ form.sign_image.name }}">Изображение для подписи:</label>
+                                {{ form.sign_image }}
+                            </div>
+                            <div class="form-group">
+                                {{ form.bg.errors }}
+                                <label for="{{ form.bg.name }}">Фоновое изображение:</label>
+                                {{ form.bg }}
+                            </div>
+                        </div>
+
+
                         <div class="form-group">
-                            <div class="form-input">
-                                {{ form.last_name.errors }}
-                                <label for="first_name">{{ form.last_name.label_tag }}</label>
-                                {{ form.last_name }}
-                            </div>
-
-                            <div class="form-input">
-                                {{ form.gender.errors }}
-                                <label for="first_name">{{ form.gender.label_tag }}</label>
-                                {{ form.gender }}
-                            </div>
-
-                            <div class="form-input">
-                                {{ form.city.errors }}
-                                <label for="first_name">{{ form.city.label_tag }}</label>
-                                {{ form.city }}
-                            </div>
-
+                            <input type="submit" name="submit" id="submit" class="form-submit" value="Submit"/>
                         </div>
-                    </div>
-                    <div class="form-submit">
-                        <input type="submit" value="{% trans "Save changes" %}" class="submit" id="submit"
-                               name="submit"/>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
+        </section>
+
     </div>
 
 
 
 
-    <!-- MODAL TO CROP THE IMAGE -->
+    {% comment %}AVATAR CROPING MODAL{% endcomment %}
     <div class="modal fade" id="modalCrop">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -184,7 +160,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title">Crop the photo</h4>
+                    <h4 class="modal-title">Загрузить аватар</h4>
                 </div>
                 <div class="modal-body">
                     <img src="" id="image" style="max-width: 100%;">
@@ -198,17 +174,75 @@
                             <span class="glyphicon glyphicon-zoom-out"></span>
                         </button>
                     </div>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
-                    <button type="button" class="btn btn-primary js-crop-and-upload">Crop and upload</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Отменить</button>
+                    <button type="button" class="btn btn-primary js-crop-and-upload">Обрезать</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% comment %}SIGNATURE IMAGE CROPING MODAL{% endcomment %}
+    <div class="modal fade" id="modalCrop_sign">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Загрузить аватар</h4>
+                </div>
+                <div class="modal-body">
+                    <img src="" id="image_sign" style="max-width: 100%;">
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group pull-left" role="group">
+                        <button type="button" class="btn btn-default js-zoom-in">
+                            <span class="glyphicon glyphicon-zoom-in_sign"></span>
+                        </button>
+                        <button type="button" class="btn btn-default js-zoom-out">
+                            <span class="glyphicon glyphicon-zoom-out_sign"></span>
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Отменить</button>
+                    <button type="button" class="btn btn-primary js-crop-and-upload_sign">Обрезать</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% comment %}BACKGROUND CROPING MODAL{% endcomment %}
+    <div class="modal fade" id="modalCrop_bg">
+        <div class="modal-dialog modal-lg" style="max-width: 100%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Загрузить аватар</h4>
+                </div>
+                <div class="modal-body">
+                    <img src="" id="image_bg" style="">
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group pull-left" role="group">
+                        <button type="button" class="btn btn-default js-zoom-in">
+                            <span class="glyphicon glyphicon-zoom-in_bg"></span>
+                        </button>
+                        <button type="button" class="btn btn-default js-zoom-out">
+                            <span class="glyphicon glyphicon-zoom-out_bg"></span>
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Отменить</button>
+                    <button type="button" class="btn btn-primary js-crop-and-upload_bg">Обрезать</button>
                 </div>
             </div>
         </div>
     </div>
 
 
+
     <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
-    <script src="{% static "vendor/nouislider/nouislider.min.js" %}"></script>
-    <script src="{% static "vendor/wnumb/wNumb.js" %}"></script>
+    <script src="{% static "vendor/jquery-ui/jquery-ui.min.js" %}"></script>
     <script src="{% static "vendor/jquery-validation/dist/jquery.validate.min.js" %}"></script>
     <script src="{% static "vendor/jquery-validation/dist/additional-methods.min.js" %}"></script>
     <script src="{% static "js/main.js" %}"></script>

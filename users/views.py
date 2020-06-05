@@ -31,6 +31,8 @@ class EditUserProfile(UpdateView):
 
     def form_valid(self, form):
         form_save = form.save(commit=False)
+        country_obj = Country.objects.get(name=form.data["country"])
+        form_save.country = country_obj
         if 'mugshot' in form.changed_data:
             x = form.cleaned_data['x']
             y = form.cleaned_data['y']
@@ -49,9 +51,26 @@ class EditUserProfile(UpdateView):
                 path = "{0}.{1}{2}".format(file_path[0], variation, file_path[1])
                 # print(form_save.mugshot, ":", os.path.splitext(form_save.mugshot.path))
                 resized_image.save(path, commit=True)
+        if 'sign_image' in form.changed_data:
+            x_s = form.cleaned_data['x_sign']
+            y_s = form.cleaned_data['y_sign']
+            w_s = form.cleaned_data['width_sign']
+            h_s = form.cleaned_data['height_sign']
+            print(x_s, y_s, w_s, h_s)
+            image_sign = Image.open(form_save.sign_image)
+            cropped_sign = image_sign.crop((x_s, y_s, w_s + x_s, h_s + y_s))
+            cropped_sign.save(form_save.sign_image.path, commit=True)
+        if 'bg' in form.changed_data:
+            xl_bg = form.cleaned_data['x_bg']
+            yl_bg = form.cleaned_data['y_bg']
+            xr_bg = form.cleaned_data['width_bg']
+            yr_bg = form.cleaned_data['height_bg']
+            print(xl_bg, yl_bg, xr_bg, xr_bg)
+            image_bg = Image.open(form_save.bg)
+            cropped_bg = image_bg.crop((xl_bg, yl_bg, xr_bg, yr_bg))
+            # resized_bg = cropped_bg.resize((width_bg, h_bg), Image.ANTIALIAS)
+            cropped_bg.save(form_save.bg.path, commit=True)
 
-        country_obj = Country.objects.get(name=form.data["country"])
-        form_save.country = country_obj
         form_save.save()
         print(self.model.mugshot)
         return super(EditUserProfile, self).form_valid(form)

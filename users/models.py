@@ -41,6 +41,69 @@ def upload_to_mugshot(instance, filename):
     }
 
 
+def upload_to_avatar(instance, filename):
+    extension = filename.split(".")[-1].lower()
+    type_img = "avatars/"
+    username = "{}/".format(instance.user.username)
+    date = "{}/".format(get_datetime_now().date())
+    path = userena_settings.USERENA_MUGSHOT_PATH % {
+        "username": instance.user.username,
+        "id": instance.user.id,
+        "date": instance.user.date_joined,
+        "date_now": get_datetime_now().date(),
+    }
+    return "%(path)s%(type_img)s%(username)s%(date)s%(hash)s.%(extension)s" % {
+        "path": path,
+        "type_img": type_img,
+        "username": username,
+        "date": date,
+        "hash": generate_nonce()[:10],
+        "extension": extension,
+    }
+
+
+def upload_to_sign(instance, filename):
+    extension = filename.split(".")[-1].lower()
+    type_img = "signs/"
+    username = "{}/".format(instance.user.username)
+    date = "{}/".format(get_datetime_now().date())
+    path = userena_settings.USERENA_MUGSHOT_PATH % {
+        "username": instance.user.username,
+        "id": instance.user.id,
+        "date": instance.user.date_joined,
+        "date_now": get_datetime_now().date(),
+    }
+    return "%(path)s%(type_img)s%(username)s%(date)s%(hash)s.%(extension)s" % {
+        "path": path,
+        "type_img": type_img,
+        "username": username,
+        "date": date,
+        "hash": generate_nonce()[:10],
+        "extension": extension,
+    }
+
+
+def upload_to_bg(instance, filename):
+    extension = filename.split(".")[-1].lower()
+    type_img = "bg/"
+    username = "{}/".format(instance.user.username)
+    date = "{}/".format(get_datetime_now().date())
+    path = userena_settings.USERENA_MUGSHOT_PATH % {
+        "username": instance.user.username,
+        "id": instance.user.id,
+        "date": instance.user.date_joined,
+        "date_now": get_datetime_now().date(),
+    }
+    return "%(path)s%(type_img)s%(username)s%(date)s%(hash)s.%(extension)s" % {
+        "path": path,
+        "type_img": type_img,
+        "username": username,
+        "date": date,
+        "hash": generate_nonce()[:10],
+        "extension": extension,
+    }
+
+
 class Equipment(models.Model):
     title = models.CharField(max_length=200)
 
@@ -207,7 +270,7 @@ class UsersProfiles(UserenaBaseProfile):
     slug = models.SlugField(_("Slug"), unique=True, null=True, editable=False, blank=True, max_length=300)
     faction = models.ForeignKey(Faction, verbose_name=_('Faction'), on_delete=models.CASCADE, null=True)
 
-    mugshot = StdImageField(_("Avatar"), blank=True, null=True, upload_to=upload_to_mugshot,
+    mugshot = StdImageField(_("Avatar"), blank=True, null=True, upload_to=upload_to_avatar,
                             variations=settings.AVATAR_VARIATIONS)
     avatar = models.ForeignKey(Avatar, on_delete=models.DO_NOTHING, blank=True, null=True, )
 
@@ -219,7 +282,9 @@ class UsersProfiles(UserenaBaseProfile):
     city = models.CharField(_('City'), max_length=50, default=" ", blank=True)
 
     signature = RichTextField(_('Signature'), default="", blank=True)
-    sign_image = models.ImageField(_("Signature image"), blank=True, null=True, upload_to=upload_to_mugshot)
+    sign_image = models.ImageField(_("Signature image"), blank=True, null=True, upload_to=upload_to_sign)
+    bg = models.ImageField(_("Signature image"), blank=True, null=True, upload_to=upload_to_bg)
+    quote = models.CharField(_("Status"), max_length=100, blank=True, default="")
 
     rpl_nickname = models.CharField(_('Nickname of hero'), max_length=50, default="Stalker", blank=True)
     rpl_first_name = models.CharField(_('First name of hero'), max_length=50, default="", blank=True)
@@ -242,9 +307,6 @@ class UsersProfiles(UserenaBaseProfile):
     level = models.IntegerField(_('Level'), default=0)
 
     permissions = MultiSelectField(_('permissions'), max_length=200, choices=PERMISIONS, null=True, blank=True)
-    # ! On delete
-    geo_permissions = models.CharField(_('Location permissions'), max_length=200, choices=GEO_PERMISSIONS,
-                                       default="show_no_details")
 
     equipment = models.ForeignKey(Equipment, on_delete=models.DO_NOTHING, blank=True, null=True, )
 
