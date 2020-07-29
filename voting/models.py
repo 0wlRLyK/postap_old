@@ -4,7 +4,7 @@ from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.text import slugify
-from entries.models import EntryMod
+from entries.models import Mod
 from stdimage import StdImageField
 
 
@@ -118,7 +118,7 @@ class ModVoting(PollBase):
 
 class ModChoice(models.Model):
     question = models.ForeignKey(ModVoting, on_delete=models.CASCADE)
-    mod = models.ForeignKey(EntryMod, on_delete=models.DO_NOTHING)
+    mod = models.ForeignKey(Mod, on_delete=models.DO_NOTHING)
     votes = models.IntegerField(default=0)
 
     def __str__(self):

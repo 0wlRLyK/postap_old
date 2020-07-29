@@ -12,7 +12,86 @@ from taggit.managers import TaggableManager
 
 
 def upload_to_entries(instance, filename):
-    return '/'.join(['entries', str(instance.ModuleNAME), str(instance.pk), filename])
+    return '/'.join(['entries', str(instance.module_name), str(instance.pk), filename])
+
+
+# ------------
+# ABSTRACT CLASSES
+# ------------
+
+class EntryBase(models.Model):
+    id = models.AutoField(primary_key=True)
+
+    title = models.CharField(max_length=200, verbose_name="Заголовок")
+    slug = models.SlugField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        abstract = True
+
+
+class EntryDescr(EntryBase):
+    descript = RichTextUploadingField(verbose_name="Описание")
+
+    class Meta:
+        abstract = True
+
+
+class EntryAuthor(EntryBase):
+    author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
+
+    class Meta:
+        abstract = True
+
+
+class EntryFull(EntryAuthor):
+    datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления материала")
+    short_descript = RichTextUploadingField(verbose_name="Короткое описание")
+    descript = RichTextUploadingField(verbose_name="Описание")
+    tags = TaggableManager(blank=True)
+    image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
+                          verbose_name="Илюстрация",
+                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
+                                      'big': (800, 600), })
+    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True, default=None)
+
+    class Meta:
+        abstract = True
+
+
+class EntryFullMain(EntryFull):
+    in_top = models.BooleanField(default=False, verbose_name="Закрепить материал", blank="True")
+    at_main = models.BooleanField(default=False, verbose_name="Вывести материал на главную страницу", blank="True")
+    posted = models.BooleanField(default=True, verbose_name="Материал опубликован")
+
+    class Meta:
+        abstract = True
+
+
+class Category(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=150, verbose_name="Название категории")
+    slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
+    descript = RichTextUploadingField(verbose_name="Описание")
+    image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True,
+                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
+                                      'big': (800, 600), })
+    icon = models.FileField(upload_to='entries/categories', default='postap.png',
+                            validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
+                            verbose_name="Иконка категории", help_text="Форматы svg, png, gif", blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.slug is None:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
 
 
 # ------------
@@ -23,55 +102,19 @@ def upload_to_entries(instance, filename):
 # ////--------
 
 
-class CategoriesNews(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=150, verbose_name="Название категории")
-    slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
-    descript = RichTextUploadingField(verbose_name="Описание")
-    image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True,
-                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
-                                      'big': (800, 600), })
-    icon = models.FileField(upload_to='entries/categories',
-                            validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
-                            verbose_name="Иконка категории", help_text="Форматы svg, png, gif", blank=True)
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if self.slug is None:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
+class NewsCategory(Category):
+    pass
 
     class Meta:
         verbose_name = "Категория новостей"
         verbose_name_plural = "Категории новостей"
 
 
-class EntryNews(models.Model):
-    ModuleNAME = "news"
+class News(EntryFullMain):
+    module_name = "news"
 
-    id = models.AutoField(primary_key=True)
-
-    title = models.CharField(max_length=200, verbose_name="Заголовок")
-    slug = models.SlugField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
-    author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
-    categories = models.ForeignKey(CategoriesNews, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
-    datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
-    shortDescript = RichTextUploadingField(verbose_name="Короткое описание")
-    descript = RichTextUploadingField(verbose_name="Описание")
+    categories = models.ForeignKey(NewsCategory, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
     source = models.URLField(blank=True, verbose_name="Источник")
-    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True, default=None)
-    tags = TaggableManager(blank=True)
-    image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
-                          verbose_name="Илюстрация",
-                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
-                                      'big': (800, 600), })
-    inTop = models.BooleanField(default=False, verbose_name="Закрепить материал", blank="True")
-    atMain = models.BooleanField(default=False, verbose_name="Вывести материал на главную страницу", blank="True")
-
-    def __str__(self):
-        return self.title
 
     def save(self, *args, **kwargs):
         if self.slug is None:
@@ -79,12 +122,12 @@ class EntryNews(models.Model):
         if self.id is None:
             saved_image = self.image
             self.image = None
-            super(EntryNews, self).save(*args, **kwargs)
+            super(News, self).save(*args, **kwargs)
             self.image = saved_image
             if 'force_insert' in kwargs:
                 kwargs.pop('force_insert')
 
-        super(EntryNews, self).save(*args, **kwargs)
+        super(News, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Новость"
@@ -95,54 +138,18 @@ class EntryNews(models.Model):
 # ARTICLES: СТАТЬИ
 # /////////-------
 
-class CategoriesArticle(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=150, verbose_name="Название категории")
-    slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
-    descript = RichTextUploadingField(verbose_name="Описание")
-    image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True,
-                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
-                                      'big': (800, 600), })
-    icon = models.FileField(upload_to='entries/categories',
-                            validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
-                            verbose_name="Иконка категории", help_text="Форматы svg, png, gif", blank=True)
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if self.slug is None:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
+class ArticleCategory(Category):
+    pass
 
     class Meta:
         verbose_name = "Категория статей"
         verbose_name_plural = "Категории статей"
 
 
-class EntryArticle(models.Model):
-    ModuleNAME = "articles"
-    id = models.AutoField(primary_key=True)
-
-    title = models.CharField(max_length=200, verbose_name="Заголовок")
-    slug = models.SlugField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
-    author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
-    datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
-    categories = models.ForeignKey(CategoriesArticle, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
-    shortDescript = RichTextUploadingField(verbose_name="Короткое описание")
-    descript = RichTextUploadingField(verbose_name="Описание")
-    image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
-                          verbose_name="Илюстрация",
-                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
-                                      'big': (800, 600), })
-    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True, default=None)
+class Article(EntryFullMain):
+    module_name = "articles"
+    categories = models.ForeignKey(ArticleCategory, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
     source = models.URLField(blank=True, verbose_name="Источник")
-    tags = TaggableManager(blank=True)
-    inTop = models.BooleanField(default=False, verbose_name="Закрепить материал", blank="True")
-    atMain = models.BooleanField(default=False, verbose_name="Вывести материал на главную страницу", blank="True")
-
-    def __str__(self):
-        return self.title
 
     def save(self, *args, **kwargs):
         if self.slug is None:
@@ -150,12 +157,12 @@ class EntryArticle(models.Model):
         if self.id is None:
             saved_image = self.image
             self.image = None
-            super(EntryArticle, self).save(*args, **kwargs)
+            super(Article, self).save(*args, **kwargs)
             self.image = saved_image
             if 'force_insert' in kwargs:
                 kwargs.pop('force_insert')
 
-        super(EntryArticle, self).save(*args, **kwargs)
+        super(Article, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Статья"
@@ -166,25 +173,8 @@ class EntryArticle(models.Model):
 # FILES: ФАЙЛЫ
 # //////-------
 
-class CategoriesFiles(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=150, verbose_name="Название категории")
-    slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
-    descript = RichTextUploadingField(verbose_name="Описание")
-    image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True,
-                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
-                                      'big': (800, 600), })
-    icon = models.FileField(upload_to='entries/categories',
-                            validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
-                            verbose_name="Иконка категории", help_text="Форматы svg, png, gif", blank=True)
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if self.slug is None:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
+class FileCategory(Category):
+    pass
 
     class Meta:
         verbose_name = "Категория файлов"
@@ -199,22 +189,11 @@ def upload_to_file(instance, filename):
     return '/'.join(['entries', 'files', 'torrent', str(instance.pk), filename])
 
 
-class EntryFile(models.Model):
-    ModuleNAME = "files"
-    id = models.AutoField(primary_key=True)
+class File(EntryFullMain):
+    module_name = "files"
 
-    title = models.CharField(max_length=200, verbose_name="Заголовок")
-    slug = models.SlugField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
-    author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
-    datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
-    categories = models.ForeignKey(CategoriesFiles, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
-    shortDescript = RichTextUploadingField(verbose_name="Короткое описание")
-    descript = RichTextUploadingField(verbose_name="Описание")
-    image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
-                          verbose_name="Илюстрация",
-                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
-                                      'big': (800, 600), })
-    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True, default=None)
+    categories = models.ForeignKey(FileCategory, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
+
     file = models.FileField(upload_to=upload_to_file, verbose_name="Файл", blank=True)
     torrent1 = models.FileField(upload_to=upload_to_torrent,
                                 validators=[FileExtensionValidator(['torrent'])],
@@ -231,12 +210,6 @@ class EntryFile(models.Model):
     source1 = models.URLField(blank=True, verbose_name="Другой источник #1")
     source2 = models.URLField(blank=True, verbose_name="Другой источник #2")
     source3 = models.URLField(blank=True, verbose_name="Другой источник #3")
-    tags = TaggableManager(blank=True)
-    inTop = models.BooleanField(default=False, verbose_name="Закрепить материал", blank="True")
-    atMain = models.BooleanField(default=False, verbose_name="Вывести материал на главную страницу", blank="True")
-
-    def __str__(self):
-        return self.title
 
     def save(self, *args, **kwargs):
         if self.slug is None:
@@ -244,12 +217,12 @@ class EntryFile(models.Model):
         if self.id is None:
             saved_image, saved_file, saved_tor1, saved_tor2, saved_tor3 = self.image, self.file, self.torrent1, self.torrent2, self.torrent3
             self.image, self.file, self.torrent1, self.torrent2, self.torrent3 = None, None, None, None, None
-            super(EntryFile, self).save(*args, **kwargs)
+            super(File, self).save(*args, **kwargs)
             self.image, self.file, self.torrent1, self.torrent2, self.torrent3 = saved_image, saved_file, saved_tor1, saved_tor2, saved_tor3
             if 'force_insert' in kwargs:
                 kwargs.pop('force_insert')
 
-        super(EntryFile, self).save(*args, **kwargs)
+        super(File, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Файл"
@@ -257,19 +230,15 @@ class EntryFile(models.Model):
 
 
 # //////-------
-# GAMES: ИГРЫ
+# GAME: ИГРЫ
 # //////-------
 
 def upload_to_games(instance, filename):
     return '/'.join(['games', str(instance.slug), filename])
 
 
-class Games(models.Model):
-    ModuleNAME = "games"
-    id = models.AutoField(primary_key=True)
-
-    title = models.CharField(max_length=250, verbose_name="Название игры")
-    slug = models.SlugField(max_length=50, help_text="Навзание, которое будет отображаться в URL", unique=True)
+class Game(EntryDescr):
+    module_name = "games"
     bg = models.ImageField(upload_to=upload_to_games, verbose_name="Фоновое изображение")
     image = StdImageField(upload_to=upload_to_games, verbose_name="Обложка игры",
                           variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
@@ -279,12 +248,9 @@ class Games(models.Model):
     logo = models.FileField(upload_to=upload_to_games,
                             validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
                             verbose_name="Логотип игры", help_text="Форматы svg, png, gif", blank=True)
-    descript = RichTextUploadingField()
+    release_date = models.DateField(verbose_name="Дата релиза", blank=True)
     features = RichTextUploadingField(blank=True)
     requirements = RichTextUploadingField(blank=True)
-
-    def __str__(self):
-        return self.title
 
     def save(self, *args, **kwargs):
         if self.slug is None:
@@ -292,12 +258,12 @@ class Games(models.Model):
         if self.id is None:
             saved_image, saved_bg, saved_bg = self.image, self.bg, self.logo
             self.image, self.bg, self.logo = None, None, None
-            super(Games, self).save(*args, **kwargs)
+            super(Game, self).save(*args, **kwargs)
             self.image, self.bg, self.logo = saved_image, saved_bg, saved_bg
             if 'force_insert' in kwargs:
                 kwargs.pop('force_insert')
 
-        super(Games, self).save(*args, **kwargs)
+        super(Game, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Игра"
@@ -305,7 +271,7 @@ class Games(models.Model):
 
 
 # ////////--------
-# AUTHORS: АВТОРЫ
+# AUTHOR: АВТОРЫ
 # ////////--------
 
 def upload_to_authors(instance, filename):
@@ -369,42 +335,20 @@ class Author(models.Model):
 # //////-----
 
 
-class CategoriesMods(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=150, verbose_name="Название категории")
-    slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
-    descript = RichTextUploadingField(verbose_name="Описание")
-    image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True,
-                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
-                                      'big': (800, 600), })
-    icon = models.FileField(upload_to='entries/categories',
-                            validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
-                            verbose_name="Иконка категории", help_text="Форматы svg, png, gif", blank=True)
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if self.slug is None:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
+class ModCategory(Category):
+    pass
 
     class Meta:
         verbose_name = "Категория модов"
         verbose_name_plural = "Категории модов"
 
 
-class EntryMod(models.Model):
-    ModuleNAME = "mods"
-    id = models.AutoField(primary_key=True)
-
-    title = models.CharField(max_length=250, verbose_name="Название мода", default=None)
-    slug = models.SlugField(max_length=50, help_text="Навзание, которое будет отображаться в URL", unique=True,
-                            default=None)
-    categories = models.ForeignKey(CategoriesMods, on_delete=models.DO_NOTHING, verbose_name="Категория модов")
-    gameobj = models.ForeignKey(Games, on_delete=models.DO_NOTHING, verbose_name="Модифицируемая игра", default=None,
+class Mod(EntryBase):
+    module_name = "mods"
+    categories = models.ForeignKey(ModCategory, on_delete=models.DO_NOTHING, verbose_name="Категория модов")
+    gameobj = models.ForeignKey(Game, on_delete=models.DO_NOTHING, verbose_name="Модифицируемая игра", default=None,
                                 blank=False)
-    file = models.ForeignKey(EntryFile, on_delete=models.DO_NOTHING, verbose_name="Файл")
+    file = models.ForeignKey(File, on_delete=models.DO_NOTHING, verbose_name="Файл")
     plot = RichTextUploadingField(blank=True, verbose_name="Коротко о сюжете")
     features = RichTextUploadingField(blank=True, verbose_name="Особенности")
     innovations = RichTextUploadingField(blank=True, verbose_name="Нововведения")
@@ -414,11 +358,6 @@ class EntryMod(models.Model):
     other = RichTextUploadingField(blank=True, verbose_name="Другие особенности и нововведения модификации")
     author = models.ForeignKey(Author, null=True, blank=True, default=None, on_delete=models.DO_NOTHING,
                                verbose_name="Автор модификации")
-
-    # guide = Guide
-
-    def __str__(self):
-        return self.title
 
     class Meta:
         verbose_name = "Мод"
@@ -430,53 +369,18 @@ class EntryMod(models.Model):
 # /////////////---------------------
 
 
-class CategoriesImages(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=150, verbose_name="Название категории")
-    slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
-    descript = RichTextUploadingField(verbose_name="Описание")
-    image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True,
-                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
-                                      'big': (800, 600), })
-    icon = models.FileField(upload_to='entries/categories',
-                            validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
-                            verbose_name="Иконка категории", help_text="Форматы svg, png, gif", blank=True)
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if self.slug is None:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
+class ImageGalleryCategory(Category):
+    pass
 
     class Meta:
         verbose_name = "Категория галереи"
         verbose_name_plural = "Категории галереи"
 
 
-class EntryImageGallery(models.Model):
-    ModuleNAME = "gallery"
-    id = models.AutoField(primary_key=True)
-
-    title = models.CharField(max_length=200, verbose_name="Заголовок")
-    slug = models.SlugField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True)
-    author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
-    datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
-    categories = models.ForeignKey(CategoriesImages, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
-    shortDescript = RichTextUploadingField(verbose_name="Короткое описание")
-    descript = RichTextUploadingField(verbose_name="Описание")
-    image = StdImageField(upload_to=upload_to_entries, default='postap.png', null=True, unique=False,
-                          verbose_name="Илюстрация",
-                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
-                                      'big': (800, 600), })
-    objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True, default=None)
-    tags = TaggableManager(blank=True)
-    inTop = models.BooleanField(default=False, verbose_name="Закрепить материал", blank="True")
-    atMain = models.BooleanField(default=False, verbose_name="Вывести материал на главную страницу", blank="True")
-
-    def __str__(self):
-        return self.title
+class ImageGallery(EntryFullMain):
+    module_name = "gallery"
+    categories = models.ForeignKey(ImageGalleryCategory, on_delete=models.DO_NOTHING, verbose_name="Категория",
+                                   null=True)
 
     def save(self, *args, **kwargs):
         if self.slug is None:
@@ -484,12 +388,12 @@ class EntryImageGallery(models.Model):
         if self.id is None:
             saved_image = self.image
             self.image = None
-            super(EntryImageGallery, self).save(*args, **kwargs)
+            super(ImageGallery, self).save(*args, **kwargs)
             self.image = saved_image
             if 'force_insert' in kwargs:
                 kwargs.pop('force_insert')
 
-        super(EntryImageGallery, self).save(*args, **kwargs)
+        super(ImageGallery, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Изображение"
@@ -500,7 +404,7 @@ class EntryImageGallery(models.Model):
 # GUIDES: ГАЙДЫ ПО ПРОХОЖДЕНИЮ
 # ///////----------------------
 
-class EntryGuide(models.Model):
+class Guide(models.Model):
     TYPE_OF_GUIDE = (
         ("main", "Сюжетный квест"),
         ("side", "Побочный квест"),
@@ -511,7 +415,7 @@ class EntryGuide(models.Model):
         ("easter_eggs", "Пасхалки"),
         ("other", "Другое"),
     )
-    mod = models.ForeignKey(EntryMod, on_delete=models.DO_NOTHING, verbose_name="Модификация", related_name="modguides")
+    mod = models.ForeignKey(Mod, on_delete=models.DO_NOTHING, verbose_name="Модификация", related_name="modguides")
     name = models.CharField(max_length=300, verbose_name="Навзание квеста")
     type0f = models.CharField(max_length=100, choices=TYPE_OF_GUIDE, verbose_name="Тип гайда")
     descript = RichTextUploadingField(verbose_name="Описание квеста")
@@ -530,38 +434,20 @@ class EntryGuide(models.Model):
 # ////--------------------------
 
 
-class CategoriesFaq(models.Model):
-    id = models.AutoField(primary_key=True, )
-    name = models.CharField(max_length=150, verbose_name="Название категории", default="", blank=False)
-    slug = models.CharField(max_length=25, help_text="Навзание, которое будет отображаться в URL", unique=True,
-                            default="", blank=False)
-    descript = RichTextUploadingField(verbose_name="Описание", default="")
-    image = StdImageField(upload_to='entries', default='postap.png', verbose_name="Изображение", blank=True, null=True,
-                          variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
-                                      'big': (800, 600), })
-    icon = models.FileField(upload_to='entries/categories', blank=True, null=True,
-                            validators=[FileExtensionValidator(['png', 'gif', 'svg'])],
-                            verbose_name="Иконка категории", help_text="Форматы svg, png, gif")
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if self.slug is None:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
+class FaqCategory(Category):
+    pass
 
     class Meta:
         verbose_name = "Категория FAQ"
         verbose_name_plural = "Категории FAQ"
 
 
-class EntryFaq(models.Model):
+class Faq(models.Model):
     question = models.CharField(max_length=400, verbose_name="Вопрос")
-    category = models.ForeignKey(CategoriesFaq, on_delete=models.DO_NOTHING, verbose_name="Категория")
+    category = models.ForeignKey(FaqCategory, on_delete=models.DO_NOTHING, verbose_name="Категория")
     author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
     datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
-    questionDescript = RichTextUploadingField(verbose_name="Описание вопроса", blank=True)
+    question_descript = RichTextUploadingField(verbose_name="Описание вопроса", blank=True)
     answer = RichTextUploadingField(verbose_name="Описание ответа", blank=True)
     objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True, default=None)
 

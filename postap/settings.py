@@ -247,19 +247,19 @@ NUCLEUS = {
                 'title': _('Записи'),  # Override title
                 'icon': 'admin/ui/img/entries/entries.svg'  # Optional
             },
-            'EntryNews': {
+            'News': {
                 'title': _('Новости'),
                 'icon': 'admin/ui/img/entries/news.svg'  # Optional
             },
-            'CategoriesNews': {
+            'NewsCategory': {
                 'title': _('Категории новостей'),
                 'icon': 'admin/ui/img/entries/category.svg'  # Optional
             },
-            'EntryArticle': {
+            'Article': {
                 'title': _('Статьи'),
                 'icon': 'admin/ui/img/entries/news.svg'  # Optional
             },
-            'CategoriesArticle': {
+            'ArticleCategory': {
                 'title': _('Категории статей'),
                 'icon': 'admin/ui/img/entries/category.svg'  # Optional
             },

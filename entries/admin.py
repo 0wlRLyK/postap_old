@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import EntryNews, CategoriesNews, EntryArticle, CategoriesArticle, EntryFile, CategoriesFiles, Games, \
-    Author, CategoriesMods, EntryMod, CategoriesImages, EntryImageGallery, EntryGuide, CategoriesFaq, EntryFaq
+from .models import News, NewsCategory, Article, ArticleCategory, File, FileCategory, Game, \
+    Author, ModCategory, Mod, ImageGalleryCategory, ImageGallery, Guide, FaqCategory, Faq
 
 
 # ////--------
@@ -9,16 +9,16 @@ from .models import EntryNews, CategoriesNews, EntryArticle, CategoriesArticle, 
 # ////--------
 
 
-@admin.register(CategoriesNews)
+@admin.register(NewsCategory)
 class CategoriesNewsAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug']
     search_fields = ['name', 'slug']
 
 
-@admin.register(EntryNews)
+@admin.register(News)
 class NewsAdmin(admin.ModelAdmin):
-    fields = ['title', 'slug', 'author', 'categories', 'shortDescript',
-              'descript', 'image', 'objgallery', 'inTop', 'atMain', 'source', 'tags']
+    fields = ['title', 'slug', 'author', 'categories', 'short_descript',
+              'descript', 'image', 'objgallery', 'in_top', 'at_main', 'source', 'tags']
     list_display = ['title', 'categories', 'tag_list']
     search_fields = ['title', 'slug', 'tags']
     list_filter = ('categories', 'datetime', 'tags')
@@ -35,16 +35,16 @@ class NewsAdmin(admin.ModelAdmin):
 # /////////-------
 
 
-@admin.register(CategoriesArticle)
+@admin.register(ArticleCategory)
 class CategoriesArticleAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug']
     search_fields = ['name', 'slug']
 
 
-@admin.register(EntryArticle)
+@admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    fields = ['title', 'slug', 'author', 'categories', 'shortDescript',
-              'descript', 'image', 'objgallery', 'inTop', 'atMain', 'source', 'tags']
+    fields = ['title', 'slug', 'author', 'categories', 'short_descript',
+              'descript', 'image', 'objgallery', 'in_top', 'at_main', 'source', 'tags']
     list_display = ['title', 'categories', 'tag_list']
     search_fields = ['title', 'slug', 'tags']
     list_filter = ('categories', 'datetime', 'tags')
@@ -61,13 +61,13 @@ class ArticleAdmin(admin.ModelAdmin):
 # //////-------
 
 
-@admin.register(CategoriesFiles)
+@admin.register(FileCategory)
 class CategoriesFilesAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug']
     search_fields = ['name', 'slug']
 
 
-@admin.register(EntryFile)
+@admin.register(File)
 class FileAdmin(admin.ModelAdmin):
     list_display = ['title', 'categories', 'tag_list']
     search_fields = ['title', 'slug', 'tags']
@@ -85,7 +85,7 @@ class FileAdmin(admin.ModelAdmin):
 # //////-------
 
 
-@admin.register(Games)
+@admin.register(Game)
 class GamesAdmin(admin.ModelAdmin):
     list_display = ['title', 'slug']
     search_fields = ['title', 'slug']
@@ -105,15 +105,16 @@ class AuthorsAdmin(admin.ModelAdmin):
 # MODS: МОДЫ
 # //////-----
 class GuideItemInline(admin.StackedInline):
-    model = EntryGuide
+    model = Guide
 
-@admin.register(CategoriesMods)
+
+@admin.register(ModCategory)
 class CategoriesModsAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug']
     search_fields = ['name', 'slug']
 
 
-@admin.register(EntryMod)
+@admin.register(Mod)
 class ModAdmin(admin.ModelAdmin):
     inlines = [GuideItemInline]
     list_display = ['id', 'file', 'categories']
@@ -126,13 +127,13 @@ class ModAdmin(admin.ModelAdmin):
 # /////////////---------------------
 
 
-@admin.register(CategoriesImages)
+@admin.register(ImageGalleryCategory)
 class CategoriesImagesAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug']
     search_fields = ['name', 'slug']
 
 
-@admin.register(EntryImageGallery)
+@admin.register(ImageGallery)
 class ImageGalleryAdmin(admin.ModelAdmin):
     list_display = ['title', 'categories', 'tag_list']
     search_fields = ['title', 'slug', 'tags']
@@ -150,7 +151,7 @@ class ImageGalleryAdmin(admin.ModelAdmin):
 # ///////----------------------
 
 
-@admin.register(EntryGuide)
+@admin.register(Guide)
 class GuidesAdmin(admin.ModelAdmin):
     list_display = ['name', 'mod', 'type0f']
     search_fields = ['name', 'mod']
@@ -162,13 +163,13 @@ class GuidesAdmin(admin.ModelAdmin):
 # ////--------------------------
 
 
-@admin.register(CategoriesFaq)
+@admin.register(FaqCategory)
 class CategoriesModsAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug']
     search_fields = ['name', 'slug']
 
 
-@admin.register(EntryFaq)
+@admin.register(Faq)
 class ModAdmin(admin.ModelAdmin):
     list_display = ['question', 'id', 'category']
     search_fields = ['question', 'id', 'category']

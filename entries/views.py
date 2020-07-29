@@ -8,14 +8,14 @@ from gallery.models import GalleryItem
 from .forms import NewsForm, NewsAddForm, ArticleForm, ArticleAddForm, FileForm, FileAddForm, FileModForm, \
     ModForm, ModAddForm, ImageGalleryForm, ImageGalleryAddForm, GuidesAddForm, FaqAddForm, FaqAskAddForm, \
     FaqAnswerForm, FaqForm, FaqAskForm
-from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGallery, EntryGuide, EntryFaq
+from .models import News, Article, File, Mod, ImageGallery, Guide, Faq
 from .variables import NEWS
 
 
 class HomePage(TemplateView):
     template_name = 'temporary/home.html'
     extra_context = {
-        "newsEntries": EntryNews.objects.filter(atMain=True, )[:5],
+        "newsEntries": News.objects.filter(at_main=True, )[:5],
         "newsURL": NEWS.mainURL(),
     }
 
@@ -26,13 +26,13 @@ class HomePage(TemplateView):
 
 class ListNews(ListView):
     paginate_by = 2
-    model = EntryNews
+    model = News
     context_object_name = "newsList"
     template_name = "entries/news/list.html"
 
 
 class DetailNews(DetailView):
-    model = EntryNews
+    model = News
     context_object_name = "news"
     template_name = "entries/news/details.html"
 
@@ -53,7 +53,7 @@ class AddNews(CreateView):
         item = form['item'].save(commit=False)
         news_form.author = self.request.user
         gallery.name = news_form.title
-        nid = EntryNews.objects.count()
+        nid = News.objects.count()
         gallery.slug = "news{0}".format(nid + 1)
         news_form.objgallery = gallery
         gallery.save()
@@ -69,7 +69,7 @@ class EditNews(UpdateView):
     success_url = "/news/"
     template_name = "entries/news/edit.html"
     form_class = NewsForm
-    model = EntryNews
+    model = News
 
 
 class ImageInline(InlineFormSetFactory):
@@ -97,13 +97,13 @@ class DeleteNews(DeleteView):
 
 class ListArticles(ListView):
     paginate_by = 2
-    model = EntryArticle
+    model = Article
     context_object_name = "articlesList"
     template_name = "entries/articles/list.html"
 
 
 class DetailArticle(DetailView):
-    model = EntryArticle
+    model = Article
     context_object_name = "article"
     template_name = "entries/articles/details.html"
 
@@ -124,7 +124,7 @@ class AddArticle(CreateView):
         item = form['item'].save(commit=False)
         articles_form.author = self.request.user
         gallery.name = articles_form.title
-        nid = EntryArticle.objects.count()
+        nid = Article.objects.count()
         gallery.slug = "article{0}".format(nid + 1)
         articles_form.objgallery = gallery
         gallery.save()
@@ -139,7 +139,7 @@ class AddArticle(CreateView):
 class EditArticle(UpdateView):
     success_url = "/articles/"
     template_name = "entries/articles/edit.html"
-    model = EntryArticle
+    model = Article
     form_class = ArticleForm
 
 
@@ -167,13 +167,13 @@ class DeleteArticle(DeleteView):
 # //////-------
 class ListFiles(ListView):
     paginate_by = 2
-    model = EntryFile
+    model = File
     context_object_name = "filesList"
     template_name = "entries/files/list.html"
 
 
 class DetailFile(DetailView):
-    model = EntryFile
+    model = File
     context_object_name = "file"
     template_name = "entries/files/details.html"
 
@@ -194,7 +194,7 @@ class AddFile(CreateView):
         item = form['item'].save(commit=False)
         files_form.author = self.request.user
         gallery.name = files_form.title
-        nid = EntryFile.objects.count()
+        nid = File.objects.count()
         gallery.slug = "file{0}".format(nid + 1)
         files_form.objgallery = gallery
         gallery.save()
@@ -209,7 +209,7 @@ class AddFile(CreateView):
 class EditFile(UpdateView):
     success_url = "/files/"
     template_name = "entries/files/edit.html"
-    model = EntryFile
+    model = File
     form_class = FileForm
 
 
@@ -239,13 +239,13 @@ class DeleteFile(DeleteView):
 
 class ListMods(ListView):
     paginate_by = 2
-    model = EntryMod
+    model = Mod
     context_object_name = "modsList"
     template_name = "entries/mods/list.html"
 
 
 class DetailMod(DetailView):
-    model = EntryMod
+    model = Mod
     context_object_name = "mod"
     template_name = "entries/mods/details.html"
 
@@ -267,7 +267,7 @@ class AddMod(CreateView):
         item = form['item'].save(commit=False)
         files_form.author = self.request.user
         gallery.name = files_form.title
-        nid = EntryMod.objects.count()
+        nid = Mod.objects.count()
         gallery.slug = "mod{0}".format(nid + 1)
         files_form.objgallery = gallery
         gallery.save()
@@ -286,14 +286,14 @@ class AddMod(CreateView):
 class EditMod(UpdateView):
     success_url = "/mods/"
     template_name = "entries/mods/edit.html"
-    model = EntryMod
+    model = Mod
     form_class = ModForm
 
 
 class EditModFile(UpdateView):
     success_url = "/files/"
     template_name = "entries/mods/edit.html"
-    model = EntryFile
+    model = File
     form_class = FileModForm
 
 
@@ -322,13 +322,13 @@ class DeleteMod(DeleteView):
 
 class ListImages(ListView):
     paginate_by = 2
-    model = EntryImageGallery
+    model = ImageGallery
     context_object_name = "imagesList"
     template_name = "entries/gallery/list.html"
 
 
 class DetailImage(DetailView):
-    model = EntryImageGallery
+    model = ImageGallery
     context_object_name = "image"
     template_name = "entries/gallery/details.html"
 
@@ -349,7 +349,7 @@ class AddImage(CreateView):
         item = form['item'].save(commit=False)
         images_form.author = self.request.user
         gallery.name = images_form.name
-        nid = EntryImageGallery.objects.count()
+        nid = ImageGallery.objects.count()
         gallery.slug = "gallery{0}".format(nid + 1)
         images_form.objgallery = gallery
         gallery.save()
@@ -364,7 +364,7 @@ class AddImage(CreateView):
 class EditImage(UpdateView):
     success_url = "/gallery/"
     template_name = "entries/gallery/edit.html"
-    model = EntryImageGallery
+    model = ImageGallery
     form_class = ImageGalleryForm
 
 
@@ -395,13 +395,13 @@ class ListModsGuides(ListView):
     paginate_by = 2
     context_object_name = "mods"
     template_name = "entries/guides/list_mods.html"
-    queryset = EntryMod.objects.filter(modguides__isnull=False).distinct()
+    queryset = Mod.objects.filter(modguides__isnull=False).distinct()
 
 
 class ListGuides(DetailView):
     context_object_name = "mod"
     template_name = "entries/guides/list.html"
-    model = EntryMod
+    model = Mod
 
     def get_context_data(self, **kwargs):
         context = super(ListGuides, self).get_context_data(**kwargs)
@@ -411,20 +411,20 @@ class ListGuides(DetailView):
         return context
 
     def get_related_activities(self):
-        queryset = EntryGuide.objects.filter(mod=self.get_object())
+        queryset = Guide.objects.filter(mod=self.get_object())
         paginator = Paginator(queryset, 2)  # paginate_by
         page = self.request.GET.get('page')
         activities = paginator.get_page(page)
         return activities
 
     # def get_context_data(self, **kwargs):
-    #     object_list = EntryGuide.objects.filter(mod=self.get_object())
+    #     object_list = Guide.objects.filter(mod=self.get_object())
     #     context = super(ListGuides, self).get_context_data(object_list=object_list, **kwargs)
     #     return context
 
 
 class DetailGuide(DetailView):
-    model = EntryGuide
+    model = Guide
     context_object_name = "guide"
     template_name = "entries/guides/details.html"
 
@@ -446,14 +446,14 @@ class AddGuide(CreateView):
 class EditGuide(UpdateView):
     success_url = "/guides/"
     template_name = "entries/guides/edit.html"
-    model = EntryGuide
+    model = Guide
     fields = '__all__'
 
 
 class DeleteGuide(DeleteView):
     success_url = "/guides/"
     template_name = "entries/guides/delete.html"
-    model = EntryGuide
+    model = Guide
 
 
 # ////--------------------------
@@ -462,13 +462,13 @@ class DeleteGuide(DeleteView):
 
 class ListQuestions(ListView):
     paginate_by = 2
-    model = EntryFaq
+    model = Faq
     context_object_name = "faqList"
     template_name = "entries/faq/list.html"
 
 
 # class DetailFile(DetailView):
-#     model = EntryFile
+#     model = File
 #     context_object_name = "file"
 #     template_name = "entries/files/details.html"
 #
@@ -489,7 +489,7 @@ class AddQuestion(CreateView):
         item = form['item'].save(commit=False)
         faq_form.author = self.request.user
         gallery.name = faq_form.question
-        nid = EntryFaq.objects.count()
+        nid = Faq.objects.count()
         gallery.slug = "faq{0}".format(nid + 1)
         faq_form.objgallery = gallery
         gallery.save()
@@ -512,7 +512,7 @@ class AskQuestion(CreateView):
         item = form['item'].save(commit=False)
         faq_form.author = self.request.user
         gallery.name = faq_form.question
-        nid = EntryFaq.objects.count()
+        nid = Faq.objects.count()
         gallery.slug = "faq{0}".format(nid + 1)
         faq_form.objgallery = gallery
         gallery.save()
@@ -527,21 +527,21 @@ class AskQuestion(CreateView):
 class EditQuestion(UpdateView):
     success_url = "/faq/"
     template_name = "entries/faq/edit.html"
-    model = EntryFaq
+    model = Faq
     form_class = FaqForm
 
 
 class EditUserQuestion(UpdateView):
     success_url = "/faq/"
     template_name = "entries/faq/edit.html"
-    model = EntryFaq
+    model = Faq
     form_class = FaqAskForm
 
 
 class AnswerQuestion(UpdateView):
     success_url = "/faq/"
     template_name = "entries/files/edit.html"
-    model = EntryFaq
+    model = Faq
     form_class = FaqAnswerForm
 
 

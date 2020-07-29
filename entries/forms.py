@@ -4,7 +4,7 @@ from django import forms
 from django.forms.models import inlineformset_factory
 from gallery.models import Gallery, GalleryItem
 
-from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGallery, EntryGuide, EntryFaq
+from .models import News, Article, File, Mod, ImageGallery, Guide, Faq
 
 
 # ////--------
@@ -13,13 +13,13 @@ from .models import EntryNews, EntryArticle, EntryFile, EntryMod, EntryImageGall
 
 
 class NewsForm(forms.ModelForm):
-    shortDescript = forms.CharField(widget=CKEditorUploadingWidget())
+    short_descript = forms.CharField(widget=CKEditorUploadingWidget())
     descript = forms.CharField(widget=CKEditorUploadingWidget())
 
     class Meta:
-        model = EntryNews
-        fields = ['title', 'slug', 'categories', 'shortDescript',
-                  'descript', 'image', 'inTop', 'atMain', 'source', 'tags']
+        model = News
+        fields = ['title', 'slug', 'categories', 'short_descript',
+                  'descript', 'image', 'in_top', 'at_main', 'source', 'tags']
 
 
 class GalleryForm(forms.ModelForm):
@@ -55,13 +55,13 @@ class NewsAddForm(MultiForm):
 
 
 class ArticleForm(forms.ModelForm):
-    shortDescript = forms.CharField(widget=CKEditorUploadingWidget())
+    short_descript = forms.CharField(widget=CKEditorUploadingWidget())
     descript = forms.CharField(widget=CKEditorUploadingWidget())
 
     class Meta:
-        model = EntryArticle
-        fields = ['title', 'slug', 'categories', 'shortDescript',
-                  'descript', 'image', 'inTop', 'atMain', 'source', 'tags']
+        model = Article
+        fields = ['title', 'slug', 'categories', 'short_descript',
+                  'descript', 'image', 'in_top', 'at_main', 'source', 'tags']
 
 
 class ArticleAddForm(MultiForm):
@@ -78,11 +78,11 @@ class ArticleAddForm(MultiForm):
 
 
 class FileForm(forms.ModelForm):
-    shortDescript = forms.CharField(widget=CKEditorUploadingWidget())
+    short_descript = forms.CharField(widget=CKEditorUploadingWidget())
     descript = forms.CharField(widget=CKEditorUploadingWidget())
 
     class Meta:
-        model = EntryFile
+        model = File
         fields = '__all__'
         exclude = ['objgallery', 'author']
 
@@ -100,11 +100,11 @@ class FileAddForm(MultiForm):
 # //////-----
 
 class FileModForm(forms.ModelForm):
-    shortDescript = forms.CharField(widget=CKEditorUploadingWidget())
+    short_descript = forms.CharField(widget=CKEditorUploadingWidget())
     descript = forms.CharField(widget=CKEditorUploadingWidget())
 
     class Meta:
-        model = EntryFile
+        model = File
         fields = '__all__'
         exclude = ['title', 'slug', 'objgallery', 'author']
 
@@ -119,7 +119,7 @@ class ModForm(forms.ModelForm):
     other = forms.CharField(widget=CKEditorUploadingWidget())
 
     class Meta:
-        model = EntryMod
+        model = Mod
         fields = '__all__'
         exclude = ['file', 'vote_score', 'num_vote_up', 'num_vote_down']
 
@@ -139,11 +139,11 @@ class ModAddForm(MultiForm):
 
 
 class ImageGalleryForm(forms.ModelForm):
-    shortDescript = forms.CharField(widget=CKEditorUploadingWidget())
+    short_descript = forms.CharField(widget=CKEditorUploadingWidget())
     descript = forms.CharField(widget=CKEditorUploadingWidget())
 
     class Meta:
-        model = EntryImageGallery
+        model = ImageGallery
         fields = '__all__'
         exclude = ['objgallery', 'author']
 
@@ -166,17 +166,17 @@ class GuideItemForm(forms.ModelForm):
     solution = forms.CharField(widget=CKEditorUploadingWidget())
 
     class Meta:
-        model = EntryGuide
+        model = Guide
         fields = '__all__'
 
 
 class GuideKostilForm(forms.ModelForm):
     class Meta:
-        model = EntryGuide
+        model = Guide
         fields = ['mod']
 
 
-GuideFormSet = inlineformset_factory(EntryMod, EntryGuide, form=GuideItemForm, extra=5, max_num=5, min_num=1)
+GuideFormSet = inlineformset_factory(Mod, Guide, form=GuideItemForm, extra=5, max_num=5, min_num=1)
 
 
 class GuidesAddForm(MultiForm):
@@ -194,7 +194,7 @@ class FaqForm(forms.ModelForm):
     answer = forms.CharField(widget=CKEditorUploadingWidget())
 
     class Meta:
-        model = EntryFaq
+        model = Faq
         fields = '__all__'
         exclude = ['objgallery', 'author']
 
@@ -203,7 +203,7 @@ class FaqAskForm(forms.ModelForm):
     questionDescript = forms.CharField(widget=CKEditorUploadingWidget())
 
     class Meta:
-        model = EntryFaq
+        model = Faq
         fields = '__all__'
         exclude = ['objgallery', 'author', 'answer']
 
@@ -214,7 +214,7 @@ class FaqAnswerForm(forms.ModelForm):
     answer = forms.CharField(widget=CKEditorUploadingWidget())
 
     class Meta:
-        model = EntryFaq
+        model = Faq
         fields = '__all__'
         exclude = ['objgallery', 'author', 'answer']
 
