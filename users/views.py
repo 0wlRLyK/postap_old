@@ -2,15 +2,16 @@ import os
 
 from PIL import Image
 from cities_light.models import Country
+from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import UpdateView
+from django.views.generic import CreateView, UpdateView
 from guardian.decorators import permission_required_or_403
 from postap import settings
 from userena.decorators import secure_required
 
-from .forms import EditFormExtra
-from .models import UsersProfiles
+from .forms import EditFormExtra, TransferMoneyForm
+from .models import UsersProfiles, MoneyTransaction
 
 
 class EditUserProfile(UpdateView):
@@ -80,54 +81,37 @@ class EditUserProfile(UpdateView):
     def dispatch(self, *args, **kwargs):
         return super(EditUserProfile, self).dispatch(*args, **kwargs)
 
-# @secure_required
-# @permission_required_or_403("change_profile", (UsersProfiles, "user__username", "username"))
-# def profile_edit(
-#         request,
-#         username,
-#         edit_profile_form=EditFormExtra,
-#         template_name="userena/profile_form.html",
-#         success_url=None,
-#         extra_context=None,
-#         **kwargs
-# ):
-#     user = get_object_or_404(get_user_model(), username__iexact=username)
-#
-#     profile = get_user_profile(user=user)
-#
-#     user_initial = {"first_name": user.first_name, "last_name": user.last_name}
-#
-#     form = edit_profile_form(instance=profile, initial=user_initial)
-#
-#     if request.method == "POST":
-#         form = edit_profile_form(
-#             request.POST, request.FILES, instance=profile, initial=user_initial
-#         )
-#         # country_obj = Country.objects.get(name=form.country)
-#         profile.country = form.country
-#         profile = form.save()
-#
-#         if form.is_valid():
-#
-#             if userena_settings.USERENA_USE_MESSAGES:
-#                 messages.success(
-#                     request, _("Your profile has been updated."), fail_silently=True
-#                 )
-#
-#             if success_url:
-#                 # Send a signal that the profile has changed
-#                 userena_signals.profile_change.send(sender=None, user=user)
-#                 redirect_to = success_url
-#             else:
-#                 redirect_to = reverse(
-#                     "userena_profile_detail", kwargs={"username": username}
-#                 )
-#             return redirect(redirect_to)
-#
-#     if not extra_context:
-#         extra_context = dict()
-#     extra_context["form"] = form
-#     extra_context["profile"] = profile
-#     return ExtraContextTemplateView.as_view(
-#         template_name=template_name, extra_context=extra_context
-#     )(request)
+
+class TransferMoney(CreateView):
+    model = MoneyTransaction
+    form_class = TransferMoneyForm
+    # fields = "__all__"
+    template_name = "users/profile/addmoney.html"
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        context['user'] = UsersProfiles.objects.get(user=self.request.user)
+        return context
+
+    def get_success_url(self):
+        username = self.request.user
+        return "{}".format(reverse("userena_profile_detail", kwargs={"username": username}))
+
+    def form_valid(self, form):
+        form.instance.sender = self.request.user
+        transfered_money = form.instance.amount
+        send_from = UsersProfiles.objects.get(user=self.request.user)
+        send_to = UsersProfiles.objects.get(user=form.instance.recipient)
+        if send_from == send_to:
+            return HttpResponse("Вы не можете переводить деньги самому себе")
+        # if form.instance.sender != send_from:
+        #     return HttpResponse("Вы не можете переводить деньги с чужого аккаунта")
+        elif transfered_money > send_from.money:
+            return HttpResponse("Недостаточно денег на вашем счету")
+        else:
+            send_from.money -= transfered_money
+            send_to.money += transfered_money
+            send_from.save()
+            send_to.save()
+            return super(TransferMoney, self).form_valid(form)

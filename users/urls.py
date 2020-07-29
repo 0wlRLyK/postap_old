@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from userena import settings as userena_settings
 from userena import views as userena_views
 
-from .views import EditUserProfile
+from .views import EditUserProfile, TransferMoney
 
 urlpatterns = [
     # Signup, signin and signout
@@ -138,4 +138,6 @@ urlpatterns = [
         name="userena_profile_list_paginated",
     ),
     url(r"^$", userena_views.ProfileListView.as_view(), name="userena_profile_list"),
+
+    path("transfer/money/", TransferMoney.as_view(), name="transfer_money")
 ]

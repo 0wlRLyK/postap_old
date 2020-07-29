@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'entries',
     'gallery',
     'voting',
+    'equipment',
 
     # TEMPORARY APPS
 

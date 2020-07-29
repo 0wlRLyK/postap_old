@@ -6,6 +6,10 @@
     <title>Main page</title>
 </head>
 <body>
+{% if user %}
+    <li><a href="{% url 'userena_profile_detail' user.username %}">Мой PDA</a>
+{% endif %}
+
 <img src="static/goose.jpg" alt="">
 <p><i>GOOSE</i></p>
 <h2>НОВОСТИ</h2>
@@ -29,7 +33,7 @@
         </div>
     {% endfor %}
 {% else %}
-    <p>OH, SHIT! THERE IS nihuya.obj AGAIN!</p>
+    <p>Новости не были найдены</p>
 {% endif %}
 
 <hr>

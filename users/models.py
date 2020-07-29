@@ -5,6 +5,7 @@ from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User, Group
 from django.db import models
 from django.utils.translation import gettext as _
+from equipment.models import Equip
 from multiselectfield import MultiSelectField
 from postap import settings
 from stdimage import StdImageField
@@ -104,8 +105,6 @@ def upload_to_bg(instance, filename):
     }
 
 
-class Equipment(models.Model):
-    title = models.CharField(max_length=200)
 
 
 class RplAvatarCategory(models.Model):
@@ -308,8 +307,34 @@ class UsersProfiles(UserenaBaseProfile):
 
     permissions = MultiSelectField(_('permissions'), max_length=200, choices=PERMISIONS, null=True, blank=True)
 
-    equipment = models.ForeignKey(Equipment, on_delete=models.DO_NOTHING, blank=True, null=True, )
+    equipment = models.ForeignKey(Equip, on_delete=models.DO_NOTHING, blank=True, null=True, )
 
     def save(self, *args, **kwargs):
         self.slug = self.user.get_username()
         super(UsersProfiles, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Профиль пользователя"
+        verbose_name_plural = "Профили пользователей"
+
+
+class MoneyTransaction(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Отправитель", related_name="money_from")
+    recipient = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Получатель", related_name="money_to")
+    amount = models.IntegerField(verbose_name="Сумма")
+    comment = RichTextField(max_length=250)
+
+    class Meta:
+        verbose_name = "Денежная транзакции"
+        verbose_name_plural = "Денежные транзакции"
+
+
+class ReputationTransaction(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Отправитель", related_name="rep_from")
+    recipient = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Получатель", related_name="rep_to")
+    amount = models.IntegerField(verbose_name="Сумма")
+    comment = RichTextField(max_length=250)
+
+    class Meta:
+        verbose_name = "Репутационная транзакции"
+        verbose_name_plural = "Репутационные транзакции"

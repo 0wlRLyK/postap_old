@@ -1,13 +1,16 @@
 {% extends 'userena/base_userena.html' %}
 {% load i18n %}
 
+
 {% block title %}{% blocktrans with profile.user.username as username %}{{ username }}'s profile.
 {% endblocktrans %}{% endblock %}
 {% block content_title %}
     <h2>{{ profile.user.username }} {% if profile.user.get_full_name %}({{ profile.user.get_full_name }}
         ){% endif %}</h2>{% endblock %}
 
+
 {% block content %}
+
     <div class="white-box">
         {% block profile_navigation %}
             {# Dirty hack. Will use django-guardian in the future. #}
@@ -25,17 +28,34 @@
                 </ul>
             {% endif %}
         {% endblock %}
-        <img class="mugshot" src="{{ profile.bg.url }}" alt="{% trans "Your mugshot" %}"/>
+
+
+
+
+        {% if profile.bg %}
+
+            <img class="mugshot" src="{{ profile.bg.url }}" alt="{% trans "Your mugshot" %}"/>
+        {% endif %}
         <div id="details">
             {% block profile_details %}
-                <img class="mugshot" src="{{ profile.mugshot.url }}" alt="{% trans "Your mugshot" %}"/><br>
+                {% if profile.mugshot %}
+                    <img class="mugshot" src="{{ profile.mugshot.url }}" alt="{% trans "Your mugshot" %}"/><br>
+                {% endif %}
 
+                {% if profile.money %}
+
+                    Деньги: {{ profile.money }} <br>
+                {% endif %}
 
                 <dl>
                     {% block profile_definition_list %}
                         {% if profile.user.get_full_name %}
                             <dt>{% trans "Name" %}</dt>
                             <dd>{{ profile.user.get_full_name }}</dd>
+                        {% endif %}
+                        {% if profile.user.get_full_name %}
+                            <dt>Статус</dt>
+                            <dd>{{ profile.quote }}</dd>
                         {% endif %}
                         {% if profile.user.email and not hide_email %}
                             <dt>{% trans "Email" %}</dt>
@@ -61,11 +81,18 @@
                             <dt>{% trans "Country" %}</dt>
                             <dd>{{ profile.country }}</dd>
                         {% endif %}
-                        Подпись: <br>
-                        <img class="mugshot" src="{{ profile.sign_image.url }}" alt="{% trans "Your mugshot" %}"/>
+                        {% if profile.signature %}
+                            <dt>Подпись:</dt>
+                            <dd>{{ profile.signature }}</dd>
+                        {% endif %}
+                        {% if profile.sign_image %}
+                            <img class="mugshot" src="{{ profile.sign_image.url }}" alt="{% trans "Your mugshot" %}"/>
+                        {% endif %}
                     {% endblock %}
                 </dl>
             {% endblock %}
         </div>
     </div>
 {% endblock %}
+
+
