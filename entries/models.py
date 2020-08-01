@@ -1,12 +1,14 @@
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.text import slugify
+from favorites.models import LikeDislike
 from gallery.models import Gallery
+from hitcount.models import HitCountMixin, HitCount
 from stdimage import StdImageField
 from taggit.managers import TaggableManager
 
@@ -46,8 +48,9 @@ class EntryAuthor(EntryBase):
         abstract = True
 
 
-class EntryFull(EntryAuthor):
-    datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления материала")
+class EntryFull(EntryAuthor, HitCountMixin):
+    module_name = None
+    publ_datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления материала")
     short_descript = RichTextUploadingField(verbose_name="Короткое описание")
     descript = RichTextUploadingField(verbose_name="Описание")
     tags = TaggableManager(blank=True)
@@ -56,6 +59,9 @@ class EntryFull(EntryAuthor):
                           variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
                                       'big': (800, 600), })
     objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True, default=None)
+    hit_count_generic = GenericRelation(HitCount, object_id_field='object_pk',
+                                        related_query_name='hit_count_generic_relation')
+    votes = GenericRelation(LikeDislike, related_query_name=module_name)
 
     class Meta:
         abstract = True
@@ -148,6 +154,7 @@ class ArticleCategory(Category):
 
 class Article(EntryFullMain):
     module_name = "articles"
+
     categories = models.ForeignKey(ArticleCategory, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
     source = models.URLField(blank=True, verbose_name="Источник")
 
@@ -239,6 +246,7 @@ def upload_to_games(instance, filename):
 
 class Game(EntryDescr):
     module_name = "games"
+
     bg = models.ImageField(upload_to=upload_to_games, verbose_name="Фоновое изображение")
     image = StdImageField(upload_to=upload_to_games, verbose_name="Обложка игры",
                           variations={'thumbnail': (120, 90), 'small': (300, 225), 'middle': (600, 450),
@@ -345,6 +353,7 @@ class ModCategory(Category):
 
 class Mod(EntryBase):
     module_name = "mods"
+
     categories = models.ForeignKey(ModCategory, on_delete=models.DO_NOTHING, verbose_name="Категория модов")
     gameobj = models.ForeignKey(Game, on_delete=models.DO_NOTHING, verbose_name="Модифицируемая игра", default=None,
                                 blank=False)
@@ -379,6 +388,7 @@ class ImageGalleryCategory(Category):
 
 class ImageGallery(EntryFullMain):
     module_name = "gallery"
+
     categories = models.ForeignKey(ImageGalleryCategory, on_delete=models.DO_NOTHING, verbose_name="Категория",
                                    null=True)
 
@@ -420,6 +430,7 @@ class Guide(models.Model):
     type0f = models.CharField(max_length=100, choices=TYPE_OF_GUIDE, verbose_name="Тип гайда")
     descript = RichTextUploadingField(verbose_name="Описание квеста")
     solution = RichTextUploadingField(verbose_name="Решение квеста")
+    votes = GenericRelation(LikeDislike, related_query_name='guides')
 
     def __str__(self):
         return self.name
@@ -446,12 +457,13 @@ class Faq(models.Model):
     question = models.CharField(max_length=400, verbose_name="Вопрос")
     category = models.ForeignKey(FaqCategory, on_delete=models.DO_NOTHING, verbose_name="Категория")
     author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
-    datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
+    publ_datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
     question_descript = RichTextUploadingField(verbose_name="Описание вопроса", blank=True)
     answer = RichTextUploadingField(verbose_name="Описание ответа", blank=True)
     objgallery = models.ForeignKey(Gallery, on_delete=models.CASCADE, blank=True, null=True, default=None)
 
     posted = models.BooleanField(default=True, verbose_name="Материал опубликован")
+    votes = GenericRelation(LikeDislike, related_query_name='faqs')
 
     def __str__(self):
         return self.question

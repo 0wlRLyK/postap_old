@@ -4,6 +4,7 @@ from django.views.generic import CreateView, TemplateView, ListView, UpdateView,
 from extra_views import UpdateWithInlinesView, InlineFormSetFactory
 from gallery.models import Gallery
 from gallery.models import GalleryItem
+from hitcount.views import HitCountDetailView
 
 from .forms import NewsForm, NewsAddForm, ArticleForm, ArticleAddForm, FileForm, FileAddForm, FileModForm, \
     ModForm, ModAddForm, ImageGalleryForm, ImageGalleryAddForm, GuidesAddForm, FaqAddForm, FaqAskAddForm, \
@@ -31,14 +32,15 @@ class ListNews(ListView):
     template_name = "entries/news/list.html"
 
 
-class DetailNews(DetailView):
+class DetailNews(HitCountDetailView):
     model = News
     context_object_name = "news"
     template_name = "entries/news/details.html"
+    count_hit = True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['some'] = GalleryItem.objects.filter(entry__entrynews=self.object)
+        context['some'] = GalleryItem.objects.filter(entry__news=self.object)
         return context
 
 

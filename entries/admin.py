@@ -21,7 +21,7 @@ class NewsAdmin(admin.ModelAdmin):
               'descript', 'image', 'objgallery', 'in_top', 'at_main', 'source', 'tags']
     list_display = ['title', 'categories', 'tag_list']
     search_fields = ['title', 'slug', 'tags']
-    list_filter = ('categories', 'datetime', 'tags')
+    list_filter = ('categories', 'publ_datetime', 'tags')
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related('tags')
@@ -47,7 +47,7 @@ class ArticleAdmin(admin.ModelAdmin):
               'descript', 'image', 'objgallery', 'in_top', 'at_main', 'source', 'tags']
     list_display = ['title', 'categories', 'tag_list']
     search_fields = ['title', 'slug', 'tags']
-    list_filter = ('categories', 'datetime', 'tags')
+    list_filter = ('categories', 'publ_datetime', 'tags')
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related('tags')
@@ -71,7 +71,7 @@ class CategoriesFilesAdmin(admin.ModelAdmin):
 class FileAdmin(admin.ModelAdmin):
     list_display = ['title', 'categories', 'tag_list']
     search_fields = ['title', 'slug', 'tags']
-    list_filter = ('categories', 'datetime', 'tags')
+    list_filter = ('categories', 'publ_datetime', 'tags')
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related('tags')
@@ -137,7 +137,7 @@ class CategoriesImagesAdmin(admin.ModelAdmin):
 class ImageGalleryAdmin(admin.ModelAdmin):
     list_display = ['title', 'categories', 'tag_list']
     search_fields = ['title', 'slug', 'tags']
-    list_filter = ('categories', 'datetime', 'tags')
+    list_filter = ('categories', 'publ_datetime', 'tags')
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related('tags')
@@ -164,13 +164,13 @@ class GuidesAdmin(admin.ModelAdmin):
 
 
 @admin.register(FaqCategory)
-class CategoriesModsAdmin(admin.ModelAdmin):
+class CategoriesFaqAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug']
     search_fields = ['name', 'slug']
 
 
 @admin.register(Faq)
-class ModAdmin(admin.ModelAdmin):
+class FaqAdmin(admin.ModelAdmin):
     list_display = ['question', 'id', 'category']
     search_fields = ['question', 'id', 'category']
-    list_filter = ('question', 'datetime', 'author', 'category')
+    list_filter = ('question', 'publ_datetime', 'author', 'category')

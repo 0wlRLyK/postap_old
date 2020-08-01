@@ -24,7 +24,10 @@ urlpatterns = [
                   path('', include('entries.urls')),
                   path('users/', include('users.urls')),
                   path('polls/', include('voting.urls')),
+                  path(r'comments/', include('django_comments_xtd.urls')),
                   path('tinymce/', include('tinymce.urls')),
+                  path('likes/', include('favorites.urls')),
+                  path('api-auth/', include('rest_framework.urls')),
                   re_path(r'^uploads/', include('ckeditor_uploader.urls')),
                   # !| TEMPORARY APPS AND PATHS |!
                   #    ! DELETE BEFORE DEPLOY !

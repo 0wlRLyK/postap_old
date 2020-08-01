@@ -46,6 +46,12 @@ INSTALLED_APPS = [
     'easy_thumbnails',
     'image_cropping',
     'cities_light',
+
+    # Comments
+    'django_comments_xtd',
+    'django_comments',
+
+    'hitcount',
     # '',
 
     # EXTENSIONS OF DEFAULT DJANGO FUNCTIONALITY
@@ -62,11 +68,15 @@ INSTALLED_APPS = [
     'gallery',
     'voting',
     'equipment',
+    'favorites',
 
     # TEMPORARY APPS
 
+    # Pinax apps
+
     'ckeditor_uploader',
     'ckeditor',
+    'rest_framework',
     'django_cleanup.apps.CleanupConfig',
 ]
 
@@ -220,6 +230,33 @@ THUMBNAIL_PROCESSORS = (
 # ENTRIES
 # --------
 ENTRIES_PER_PAGE = 2
+# --------
+# COMMENTS
+# --------
+COMMENTS_APP = 'django_comments_xtd'
+COMMENTS_XTD_APP_MODEL_OPTIONS = {
+    'entries.news': {
+        'allow_flagging': True,
+        'allow_feedback': True,
+        'show_feedback': True,
+    }
+}
+# -------
+# Pinax
+# -------...
+# Likes
+PINAX_LIKES_LIKABLE_MODELS = {
+    "entries.News": {},
+    "entries.Article": {},
+    "entries.File": {},
+    "entries.Game": {},
+    "entries.Author": {},
+    "entries.Mod": {},
+    "entries.ImageGallery": {},
+    "entries.Guide": {},
+    "entries.Faq": {},
+}
+
 # /////////-------
 # ADMIN INTERFACE
 # /////////-------
@@ -271,3 +308,4 @@ NUCLEUS = {
         }
     }
 }
+
