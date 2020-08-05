@@ -9,6 +9,7 @@ from .views import HomePage, AddNews, ListNews, DetailNews, EditNews, EditGaller
     ListGuides, ListModsGuides, AddGuide, EditGuide, DeleteGuide, \
     ListQuestions, AddQuestion, AskQuestion, EditQuestion, EditUserQuestion, AnswerQuestion, EditFaqGallery, DeleteFaq
 
+app_name = 'entries_app'
 urlpatterns = [
     path('', HomePage.as_view()),
     # ////--------

@@ -9,6 +9,7 @@ from django.utils.text import slugify
 from favorites.models import LikeDislike
 from gallery.models import Gallery
 from hitcount.models import HitCountMixin, HitCount
+from kp_html_meta.models import KPMetaHelper
 from stdimage import StdImageField
 from taggit.managers import TaggableManager
 
@@ -48,7 +49,7 @@ class EntryAuthor(EntryBase):
         abstract = True
 
 
-class EntryFull(EntryAuthor, HitCountMixin):
+class EntryFull(EntryAuthor, HitCountMixin, KPMetaHelper):
     module_name = None
     publ_datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления материала")
     short_descript = RichTextUploadingField(verbose_name="Короткое описание")
@@ -65,6 +66,37 @@ class EntryFull(EntryAuthor, HitCountMixin):
 
     class Meta:
         abstract = True
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse(f'entries_app:{self.module_name}_details', kwargs={'slug': self.slug})
+
+    def get_kp_meta_title(self):
+        return self.title
+
+    def get_kp_meta_description(self):
+        return self.short_descript[:160]
+
+    def get_kp_meta_keywords(self):
+        return None
+
+    def get_kp_meta_graph_type(self):
+        return None
+
+    def get_kp_meta_graph_image(self):
+        return self.image
+
+    def get_kp_meta_graph_url(self):
+        return None
+
+    def get_kp_meta_graph_locale(self):
+        return None
+
+    def get_kp_meta_graph_site_name(self):
+        return None
+
+    def get_kp_get_base_url(self):
+        return None
 
 
 class EntryFullMain(EntryFull):
@@ -153,7 +185,7 @@ class ArticleCategory(Category):
 
 
 class Article(EntryFullMain):
-    module_name = "articles"
+    module_name = "article"
 
     categories = models.ForeignKey(ArticleCategory, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
     source = models.URLField(blank=True, verbose_name="Источник")
@@ -197,7 +229,7 @@ def upload_to_file(instance, filename):
 
 
 class File(EntryFullMain):
-    module_name = "files"
+    module_name = "file"
 
     categories = models.ForeignKey(FileCategory, on_delete=models.DO_NOTHING, verbose_name="Категория", null=True)
 
@@ -245,7 +277,7 @@ def upload_to_games(instance, filename):
 
 
 class Game(EntryDescr):
-    module_name = "games"
+    module_name = "game"
 
     bg = models.ImageField(upload_to=upload_to_games, verbose_name="Фоновое изображение")
     image = StdImageField(upload_to=upload_to_games, verbose_name="Обложка игры",
@@ -351,8 +383,8 @@ class ModCategory(Category):
         verbose_name_plural = "Категории модов"
 
 
-class Mod(EntryBase):
-    module_name = "mods"
+class Mod(EntryBase, HitCountMixin, KPMetaHelper):
+    module_name = "mod"
 
     categories = models.ForeignKey(ModCategory, on_delete=models.DO_NOTHING, verbose_name="Категория модов")
     gameobj = models.ForeignKey(Game, on_delete=models.DO_NOTHING, verbose_name="Модифицируемая игра", default=None,
@@ -371,6 +403,37 @@ class Mod(EntryBase):
     class Meta:
         verbose_name = "Мод"
         verbose_name_plural = "Моды"
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse(f'entries_app:{self.module_name}_details', kwargs={'slug': self.slug})
+
+    def get_kp_meta_title(self):
+        return self.title
+
+    def get_kp_meta_description(self):
+        return self.descript[:160]
+
+    def get_kp_meta_keywords(self):
+        return None
+
+    def get_kp_meta_graph_type(self):
+        return None
+
+    def get_kp_meta_graph_image(self):
+        return self.image
+
+    def get_kp_meta_graph_url(self):
+        return None
+
+    def get_kp_meta_graph_locale(self):
+        return None
+
+    def get_kp_meta_graph_site_name(self):
+        return None
+
+    def get_kp_get_base_url(self):
+        return None
 
 
 # /////////////---------------------

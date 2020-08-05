@@ -1,20 +1,154 @@
-{% load static %}
+{% load static kp_meta comments hitcount_tags %}
+{% load comments_xtd %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Статья {{ article.title }}</title>
+    {% kp_meta %}
+
 </head>
 <body>
-
+<a href="{% url 'entries_app:article_list' %}">< Вернуться к списку материалов</a>
 <h2>{{ article.title }}</h2>
 <hr>
-
-{% for foo in some %}
-    <img src="/media/{{ foo.image }}" alt="">
-
+<p>{{ article.descript |safe }}</p>
+<hr>
+{% if some %}
+    <h3>Галерея</h3>
+{% endif %}
+{% for item in gallery %}
+    <div>
+        <img src="/media/{{ item.image }}" height="250" alt="">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.descript }}</p>
+    </div>
 {% endfor %}
+<hr>
+Просмотры: <b>{{ article.hit_count.hits }}</b>
 
 
+<ul>
+    <li data-id="{{ article.id }}" data-type="article" data-action="like" title="Нравится">
+        <span class="glyphicon glyphicon-thumbs-up">Like</span>
+        <span data-count="like">{{ article.votes.likes.count }}</span>
+    </li>
+    <li data-id="{{ article.id }}" data-type="article" data-action="dislike" title="Не нравится">
+        <span class="glyphicon glyphicon-thumbs-down">Dislike</span>
+        <span data-count="dislike">{{ article.votes.dislikes.count }}</span>
+    </li>
+</ul>
+
+
+{% get_comment_count for article as comment_count %}
+<div class="py-4 text-center">
+    {{ comment_count }} комментари{{ comment_count|pluralize:"й,ев" }} было добавлено.
+</div>
+
+<div class="comment">
+    <h4 class="text-center">Ваш комментарий</h4>
+    <div class="well">
+        {% render_comment_form for object %}
+    </div>
+</div>
+
+{% if comment_count %}
+    <ul class="media-list">
+        {% render_xtdcomment_tree for article allow_flagging allow_feedback show_feedback %}
+    </ul>
+{% endif %}
+
+{% block extra-js %}
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            crossorigin="anonymous"></script>
+    <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script
+            src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
+    <script>
+        // Получение переменной cookie по имени
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Настройка AJAX
+        $(function () {
+            $.ajaxSetup({
+                headers: {"X-CSRFToken": getCookie("csrftoken")}
+            });
+        });
+
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip({html: true});
+        });
+
+        function like() {
+            var like = $(this);
+            var type = like.data('type');
+            var pk = like.data('id');
+            var action = like.data('action');
+            var dislike = like.next();
+            console.log(like);
+
+            $.ajax({
+                url: "/likes/" + type + "/" + pk + "/" + action + "/",
+                type: 'POST',
+                data: {'obj': pk},
+
+                success: function (json) {
+                    like.find("[data-count='like']").text(json.like_count);
+                    dislike.find("[data-count='dislike']").text(json.dislike_count);
+                }
+            });
+
+            return false;
+        }
+
+        function dislike() {
+            var dislike = $(this);
+            var type = dislike.data('type');
+            var pk = dislike.data('id');
+            var action = dislike.data('action');
+            var like = dislike.prev();
+
+            $.ajax({
+                url: "/likes/" + type + "/" + pk + "/" + action + "/",
+                type: 'POST',
+                data: {'obj': pk},
+
+                success: function (json) {
+                    dislike.find("[data-count='dislike']").text(json.dislike_count);
+                    like.find("[data-count='like']").text(json.like_count);
+                }
+            });
+
+            return false;
+        }
+
+        // Подключение обработчиков
+        $(function () {
+            $('[data-action="like"]').click(like);
+            $('[data-action="dislike"]').click(dislike);
+        });
+    </script>
+{% endblock %}
 </body>
 </html>

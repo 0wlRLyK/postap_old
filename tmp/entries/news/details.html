@@ -1,4 +1,4 @@
-{% load static comments hitcount_tags %}
+{% load static kp_meta comments hitcount_tags %}
 {% load comments_xtd %}
 
 <!DOCTYPE html>
@@ -6,44 +6,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Новость {{ news.title }}</title>
+    {% kp_meta %}
+
 </head>
 <body>
-
+<a href="{% url 'entries_app:news_list' %}">< Вернуться к списку материалов</a>
 <h2>{{ news.title }}</h2>
 <hr>
-<p>{{ news.descript }}</p>
+<p>{{ news.descript |safe }}</p>
 <hr>
-Просмотры: <b>{{ news.hit_count.hits }}</b> <br>
-{% for foo in some %}
-    <img src="/media/{{ foo.image }}" alt="">
-
+{% if some %}
+    <h3>Галерея</h3>
+{% endif %}
+{% for item in gallery %}
+    <div>
+        <img src="/media/{{ item.image }}" height="250" alt="">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.descript }}</p>
+    </div>
 {% endfor %}
+<hr>
+Просмотры: <b>{{ news.hit_count.hits }}</b>
 
-LIKES <br>
+
 <ul>
     <li data-id="{{ news.id }}" data-type="news" data-action="like" title="Нравится">
         <span class="glyphicon glyphicon-thumbs-up">Like</span>
-        <span data-count="like">|{{ news.votes.likes.count }}|</span>
+        <span data-count="like">{{ news.votes.likes.count }}</span>
     </li>
     <li data-id="{{ news.id }}" data-type="news" data-action="dislike" title="Не нравится">
         <span class="glyphicon glyphicon-thumbs-down">Dislike</span>
-        <span data-count="dislike">|{{ news.votes.dislikes.count }}|</span>
+        <span data-count="dislike">{{ news.votes.dislikes.count }}</span>
     </li>
 </ul>
-<br>Likes end <br>
 
 
-COMMENTS
 {% get_comment_count for news as comment_count %}
 <div class="py-4 text-center">
-    <a href="/news">Back to the post list</a>
-    &nbsp;&sdot;&nbsp;
-    {{ comment_count }} comment{{ comment_count|pluralize }}
-    ha{{ comment_count|pluralize:"s,ve" }} been posted.
+    {{ comment_count }} комментари{{ comment_count|pluralize:"й,ев" }} было добавлено.
 </div>
 
 <div class="comment">
-    <h4 class="text-center">Your comment</h4>
+    <h4 class="text-center">Ваш комментарий</h4>
     <div class="well">
         {% render_comment_form for object %}
     </div>
@@ -54,7 +58,6 @@ COMMENTS
         {% render_xtdcomment_tree for news allow_flagging allow_feedback show_feedback %}
     </ul>
 {% endif %}
-COMMENTS
 
 {% block extra-js %}
     <script

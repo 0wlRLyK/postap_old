@@ -33,14 +33,14 @@ class ListNews(ListView):
 
 
 class DetailNews(HitCountDetailView):
+    count_hit = True
     model = News
     context_object_name = "news"
     template_name = "entries/news/details.html"
-    count_hit = True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['some'] = GalleryItem.objects.filter(entry__news=self.object)
+        context['gallery'] = GalleryItem.objects.filter(entry__news=self.object)
         return context
 
 
@@ -76,7 +76,7 @@ class EditNews(UpdateView):
 
 class ImageInline(InlineFormSetFactory):
     model = GalleryItem
-    fields = ['image']
+    fields = ['image', 'title', 'descript']
 
 
 class EditGallery(UpdateWithInlinesView):
@@ -104,14 +104,15 @@ class ListArticles(ListView):
     template_name = "entries/articles/list.html"
 
 
-class DetailArticle(DetailView):
+class DetailArticle(HitCountDetailView):
+    count_hit = True
     model = Article
     context_object_name = "article"
     template_name = "entries/articles/details.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['some'] = GalleryItem.objects.filter(entry__entryarticle=self.object)
+        context['gallery'] = GalleryItem.objects.filter(entry__article=self.object)
         return context
 
 
@@ -147,7 +148,7 @@ class EditArticle(UpdateView):
 
 class ImageArticleInline(InlineFormSetFactory):
     model = GalleryItem
-    fields = ['image']
+    fields = ['image', 'title', 'descript']
 
 
 class EditArticleGallery(UpdateWithInlinesView):
@@ -174,14 +175,15 @@ class ListFiles(ListView):
     template_name = "entries/files/list.html"
 
 
-class DetailFile(DetailView):
+class DetailFile(HitCountDetailView):
+    count_hit = True
     model = File
     context_object_name = "file"
     template_name = "entries/files/details.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['some'] = GalleryItem.objects.filter(entry__entryfile=self.object)
+        context['gallery'] = GalleryItem.objects.filter(entry__file=self.object)
         return context
 
 
@@ -217,7 +219,7 @@ class EditFile(UpdateView):
 
 class ImageFileInline(InlineFormSetFactory):
     model = GalleryItem
-    fields = ['image']
+    fields = ['image', 'title', 'descript']
 
 
 class EditFileGallery(UpdateWithInlinesView):
@@ -246,14 +248,15 @@ class ListMods(ListView):
     template_name = "entries/mods/list.html"
 
 
-class DetailMod(DetailView):
+class DetailMod(HitCountDetailView):
+    count_hit = True
     model = Mod
     context_object_name = "mod"
     template_name = "entries/mods/details.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['some'] = GalleryItem.objects.filter(entry__entryfile__entrymod=self.object)
+        context['gallery'] = GalleryItem.objects.filter(entry__file__mod=self.object)
         return context
 
 
@@ -301,7 +304,7 @@ class EditModFile(UpdateView):
 
 class ImageModInline(InlineFormSetFactory):
     model = GalleryItem
-    fields = ['image']
+    fields = ['image', 'title', 'descript']
 
 
 class EditModGallery(UpdateWithInlinesView):
@@ -329,14 +332,15 @@ class ListImages(ListView):
     template_name = "entries/gallery/list.html"
 
 
-class DetailImage(DetailView):
+class DetailImage(HitCountDetailView):
+    count_hit = True
     model = ImageGallery
     context_object_name = "image"
     template_name = "entries/gallery/details.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['some'] = GalleryItem.objects.filter(entry__entryimagegallery=self.object)
+        context['gallery'] = GalleryItem.objects.filter(entry__imagegallery=self.object)
         return context
 
 
@@ -350,7 +354,7 @@ class AddImage(CreateView):
         gallery = form['gallery'].save(commit=False)
         item = form['item'].save(commit=False)
         images_form.author = self.request.user
-        gallery.name = images_form.name
+        gallery.name = images_form.title
         nid = ImageGallery.objects.count()
         gallery.slug = "gallery{0}".format(nid + 1)
         images_form.objgallery = gallery
@@ -372,7 +376,7 @@ class EditImage(UpdateView):
 
 class GalleryImageArticleInline(InlineFormSetFactory):
     model = GalleryItem
-    fields = ['image']
+    fields = ['image', 'title', 'descript']
 
 
 class EditGalleryImage(UpdateWithInlinesView):
@@ -425,7 +429,8 @@ class ListGuides(DetailView):
     #     return context
 
 
-class DetailGuide(DetailView):
+class DetailGuide(HitCountDetailView):
+    count_hit = True
     model = Guide
     context_object_name = "guide"
     template_name = "entries/guides/details.html"
@@ -467,17 +472,6 @@ class ListQuestions(ListView):
     model = Faq
     context_object_name = "faqList"
     template_name = "entries/faq/list.html"
-
-
-# class DetailFile(DetailView):
-#     model = File
-#     context_object_name = "file"
-#     template_name = "entries/files/details.html"
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['some'] = GalleryItem.objects.filter(entry__entryfile=self.object)
-#         return context
 
 
 class AddQuestion(CreateView):
@@ -549,7 +543,7 @@ class AnswerQuestion(UpdateView):
 
 class ImageFaqInline(InlineFormSetFactory):
     model = GalleryItem
-    fields = ['image']
+    fields = ['image', 'title', 'descript']
 
 
 class EditFaqGallery(UpdateWithInlinesView):

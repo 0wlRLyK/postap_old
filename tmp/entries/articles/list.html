@@ -1,4 +1,5 @@
-{% load static %}
+{% load static comments %}
+{% load comments_xtd %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,24 +7,27 @@
     <title>Список статей {{ page_obj.number }}</title>
 </head>
 <body>
-<Div style="text-align: right"><a href="/articles/add/">Добавить статью</a></Div>
+<Div style="text-align: right"><a href="{% url 'entries_app:article_add' %}">Добавить статью</a></Div>
 {% if articlesList %}
     {% for article in articlesList %}
         <div style="float: left; padding: 10px;">
-            <h3><a href="/articles/a/{{ article.slug }}/">{{ article.title }}</a></h3>
+            <h3><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></h3>
             <hr>
-            <p>Author: <i>{{ article.author }}</i></p>
-            <p>Gallery: <i>{{ article.gallery.title }}</i></p>
-            <p><i>{{ article.objgallery.slug }}</i></p>
-            <p><img src="/media/{{ article.image }}" alt=""></p>
+            <img src="/media/{{ article.image }}" alt="" height="200">
+            <p>{{ article.short_descript | safe }}</p>
+            <p><b>Просмотры:</b> {{ article.hit_count.hits }}</p>
+            {% get_comment_count for article as comment_count %}
+            <p><b>Комментарии:</b> {{ comment_count }}</p>
+            <p><b>Автор:</b> <i>{{ article.author }}</i></p
             <hr>
-            <a href="/articles/edit/{{ article.id }}">Редактировать запись</a><br>
-            <a href="/articles/edit_gallery/{{ article.gallery_id }}">Редактировать галлерею</a><br>
-            <a href="/articles/del/{{ article.objgallery_id }}">Удалить</a>
+            <a href="{% url 'entries_app:article_edit' article.id %}">Редактировать запись</a><br>
+            <a href="{% url 'entries_app:article_edit_gal' article.objgallery_id %}">Редактировать
+                галлерею {{ article.objgallery_id }}</a><br>
+            <a href="{% url 'entries_app:article_del' article.objgallery_id %}">Удалить</a>
         </div>
     {% endfor %}
 {% else %}
-    <p>Статьи не были найдены</p>
+    <p>Cтатьи не были найдены</p>
 {% endif %}
 <div style="float: none">
     <hr>

@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'tinymce',
     'taggit',
     'stdimage',
+    'kp_html_meta',
 
     # POSTAP APPS
     'entries',
@@ -242,19 +243,20 @@ COMMENTS_XTD_APP_MODEL_OPTIONS = {
     }
 }
 # -------
-# Pinax
+# META DESCRIPTION
 # -------...
-# Likes
-PINAX_LIKES_LIKABLE_MODELS = {
-    "entries.News": {},
-    "entries.Article": {},
-    "entries.File": {},
-    "entries.Game": {},
-    "entries.Author": {},
-    "entries.Mod": {},
-    "entries.ImageGallery": {},
-    "entries.Guide": {},
-    "entries.Faq": {},
+KP_META = {
+    'kp_meta_title': "POSTAP.NET | Stalker network :: Все интересное из миров постапокалипсиса",
+    'kp_meta_description': "Postap.net - все самое интересное из постапокалиптических миров",
+    'kp_meta_keywords': "postap, постапокалипсис, stalker, metro 2033, fallout, survarium, сталкер, сталкер моды,"
+                        "сталкерская сеть, сталкер сайт, сталкер гайды по прохождению,  сталкер вебсайт,"
+                        "metro last light, metro exodus, metro книги",
+    'kp_meta_graph_type': "article ",
+    'kp_meta_graph_image': "https://postap.net/logo.jpg",
+    'kp_meta_graph_url': "https://postap.net",
+    'kp_meta_graph_locale': "ru_RU",
+    'kp_get_base_url': "https://postap.net",
+    'kp_meta_graph_site_name': "postap",
 }
 
 # /////////-------

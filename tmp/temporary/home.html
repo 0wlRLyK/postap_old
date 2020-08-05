@@ -18,7 +18,7 @@
 {% if newsEntries %}
     {% for news in newsEntries %}
         <div style="float: left; padding: 10px;">
-            <h3>{{ news.title }}</h3>
+            <h3><a href="{{ news.get_absolute_url }}">{{ news.title }}</a></h3>
             <hr>
             <p>{{ news.id | safe }}</p>
             <p>{{ news.shortDescript | safe }}</p>

@@ -1,28 +1,29 @@
-{% load static %}
+{% load static comments %}
+{% load comments_xtd %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Каталог файлов {{ page_obj.number }}</title>
+    <title>Список изображений {{ page_obj.number }}</title>
 </head>
 <body>
-<Div style="text-align: right"><a href="/gallery/add/">Добавить изображение</a></Div>
+<Div style="text-align: right"><a href="{% url 'entries_app:gallery_add' %}">Добавить изображение</a></Div>
 {% if imagesList %}
     {% for image in imagesList %}
         <div style="float: left; padding: 10px;">
-            <h3><a href="/image/{{ image.slug }}/">{{ image.title }}</a></h3>
+            <h3><a href="{{ image.get_absolute_url }}">{{ image.title }}</a></h3>
             <hr>
-            <p>{{ image.id | safe }}</p>
+            <img src="/media/{{ image.image }}" alt="" height="200">
             <p>{{ image.short_descript | safe }}</p>
-            <p>Author: <i>{{ image.author }}</i></p>
-            <p>Gallery: <i>{{ image.objgallery.slug }}</i></p>
-            <p><i>{{ image.objgallery.slug }}</i></p>
-            <p><img src="/media/{{ image.image }}" alt=""></p>
+            <p><b>Просмотры:</b> {{ image.hit_count.hits }}</p>
+            {% get_comment_count for image as comment_count %}
+            <p><b>Комментарии:</b> {{ comment_count }}</p>
+            <p><b>Автор:</b> <i>{{ image.author }}</i></p>
             <hr>
-            <a href="/gallery/edit/{{ image.id }}">Редактировать запись</a><br>
-            <a href="/gallery/edit_gallery/{{ image.objgallery_id }}">Редактировать
+            <a href="{% url 'entries_app:gallery_edit' image.id %}">Редактировать запись</a><br>
+            <a href="{% url 'entries_app:gallery_edit_gal' image.objgallery_id %}">Редактировать
                 галлерею {{ image.objgallery_id }}</a><br>
-            <a href="/gallery/del/{{ image.objgallery_id }}">Удалить</a>
+            <a href="{% url 'entries_app:gallery_del' image.objgallery_id %}">Удалить</a>
         </div>
     {% endfor %}
 {% else %}
