@@ -10,6 +10,7 @@ from favorites.models import LikeDislike
 from gallery.models import Gallery
 from hitcount.models import HitCountMixin, HitCount
 from kp_html_meta.models import KPMetaHelper
+from postap import settings
 from stdimage import StdImageField
 from taggit.managers import TaggableManager
 
@@ -43,7 +44,7 @@ class EntryDescr(EntryBase):
 
 
 class EntryAuthor(EntryBase):
-    author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, verbose_name="Автор")
 
     class Meta:
         abstract = True
@@ -519,7 +520,7 @@ class FaqCategory(Category):
 class Faq(models.Model):
     question = models.CharField(max_length=400, verbose_name="Вопрос")
     category = models.ForeignKey(FaqCategory, on_delete=models.DO_NOTHING, verbose_name="Категория")
-    author = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Автор")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, verbose_name="Автор")
     publ_datetime = models.DateTimeField(auto_now_add=True, verbose_name="Время добавления")
     question_descript = RichTextUploadingField(verbose_name="Описание вопроса", blank=True)
     answer = RichTextUploadingField(verbose_name="Описание ответа", blank=True)

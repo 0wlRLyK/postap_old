@@ -5,7 +5,8 @@ from django.urls import reverse_lazy
 from userena import settings as userena_settings
 from userena import views as userena_views
 
-from .views import EditUserProfile, TransferMoney
+from . import forms
+from .views import TransferMoney
 
 urlpatterns = [
     # Signup, signin and signout
@@ -119,13 +120,10 @@ urlpatterns = [
         {"template_name": "userena/password_complete.html"},
         name="userena_password_change_complete",
     ),
-    # Edit profile
-    # url(r"^(?P<username>[\@\.\+\w-]+)/edit/$",
-    #     EditUserProfile,
-    #     # name="userena_profile_edit",
-    #     ),
 
-    path("<slug:slug>/edit/", EditUserProfile.as_view(), name="userena_profile_edit", ),
+    url(r"^(?P<username>[\@\.\+\w-]+)/edit/$", userena_views.profile_edit,
+        {"edit_profile_form": forms.EditFormExtra}, name="userena_profile_edit"),
+    # path("<slug:slug>/edit/", EditUserProfile.as_view(), name="userena_profile_edit", ),
     # View profiles
     url(
         r"^(?P<username>(?!(signout|signup|signin)/)[\@\.\+\w-]+)/$",

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n cropping static %}
+{% load i18n cropping static in_ %}
 
 {% block title %}{% trans "Account setup" %}{% endblock %}
 
@@ -40,42 +40,47 @@
                         {% if form.errors %}
                             {% for field in form %}
                                 {% for error in field.errors %}
-                                    <b style="color: #5a090c">{{ field.id|escape }}</b> - {{ error|escape }} <br>
+                                    <b style="color: #5a090c">{{ field.name|escape }}</b> - {{ error|escape }} <br>
                                 {% endfor %}
                             {% endfor %}
                         {% endif %}
-                        {#                        {{ form.as_p }}#}
-                        {{ form.x }}{{ form.y }} {{ form.width }} {{ form.height }}
-                        {{ form.x_sign }}{{ form.y_sign }} {{ form.width_sign }} {{ form.height_sign }}
-                        {{ form.x_bg }}{{ form.y_bg }} {{ form.width_bg }} {{ form.height_bg }}
-                        {#                    <b>Avatar:</b>#}
-                        {#                    {{ form.x.label_tag }}{{ form.x }} {{ form.y.label_tag  }} {{ form.y }} {{ form.width.label_tag  }} {{ form.width }} {{ form.height.label_tag  }} {{ form.height }}#}
-                        {#                    <b>Sign_Image:</b>#}
-                        {#                    {{ form.x.label_tag }}{{ form.x_sign }} {{ form.y.label_tag  }} {{ form.y_sign }} {{ form.width.label_tag  }} {{ form.width_sign }} {{ form.height.label_tag  }} {{ form.height_sign }}#}
-                        {#                    <b>Background:</b>#}
-                        {#                    {{ form.x.label_tag }}{{ form.x_bg }} {{ form.y.label_tag  }} {{ form.y_bg }} {{ form.width.label_tag  }} {{ form.width_bg }} {{ form.height.label_tag  }} {{ form.height_bg }}#}
+                        {#                                                {{ form.as_p }}#}
+                        <b>Avatar:</b>
+                        {{ form.x.label_tag }}{{ form.x }} {{ form.y.label_tag }} {{ form.y }} {{ form.width.label_tag }} {{ form.width }} {{ form.height.label_tag }} {{ form.height }}
+                        <b>Sign_Image:</b>
+                        {{ form.x.label_tag }}{{ form.x_sign }} {{ form.y.label_tag }} {{ form.y_sign }} {{ form.width.label_tag }} {{ form.width_sign }} {{ form.height.label_tag }} {{ form.height_sign }}
+                        <b>Background:</b>
+                        {{ form.x.label_tag }}{{ form.x_bg }} {{ form.y.label_tag }} {{ form.y_bg }} {{ form.width.label_tag }} {{ form.width_bg }} {{ form.height.label_tag }} {{ form.height_bg }}
                         <div class="form-row">
                             <div class="form-group">
                                 {{ form.first_name.errors }}
                                 <label for="first_name">{{ form.first_name.label_tag }}</label>
                                 <input type="text" name="{{ form.first_name.name }}" maxlength="30"
-                                       id="{{ form.first_name.id_for_label }}" value="{{ object.user.first_name }}">
+                                       id="{{ form.first_name.id_for_label }}" value="{{ user.first_name }}">
 
                             </div>
                             <div class="form-group">
                                 {{ form.last_name.errors }}
                                 <label for="first_name">{{ form.last_name.label_tag }}</label>
                                 <input type="text" name="{{ form.last_name.name }}" maxlength="30"
-                                       id="{{ form.last_name.id_for_label }}" value="{{ object.user.last_name }}">
-                                {{ object.last_name }}
+                                       id="{{ form.last_name.id_for_label }}" value="{{ user.last_name }}">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
+                                {{ form.privacy.errors }}
+                                <label for="privacy">Приватность:</label>
+
+                                {{ form.privacy }} <br>
+                                {{ form.privacy.help_text }}
+                            </div>
+                            <div class="form-group">
                                 {{ form.birthday.errors }}
-                                <label for="first_name">День рождения:</label>
-                                {{ form.birthday }}
+                                <label for="birthday">День рождения:</label>
+                                <input type="text" name="{{ form.birthday.name }}" id="{{ form.birthday.id_for_label }}"
+                                       value="{{ user.birthday|date:"d.m.y" }}">
+
                             </div>
                             <div class="form-group">
                                 {{ form.gender.errors }}
@@ -89,15 +94,18 @@
                                 {{ form.country.errors }}
                                 <label for="first_name">Страна: </label>
                                 <input type="text" name="{{ form.country.name }}" id="{{ form.country.id_for_label }}"
-                                       value="{{ object.country }}" autocomplete="off" data-ajax-select="autocomplete"
+                                       value="{{ user.country }}" autocomplete="on" data-ajax-select="autocomplete"
                                        data-plugin-options="{&quot;initial&quot;: 231, &quot;source&quot;: &quot;/ajax_select/ajax_lookup/cities_light_country&quot;, &quot;html&quot;: true}"
-                                       maxlength="255" class="ui-autocomplete-input">
+                                       maxlength="255" class="ui-autocomplete-input"><br>
+                                {{ form.country.help_text }}
+
                             </div>
                             <div class="form-group">
                                 {{ form.city.errors }}
-                                <label for="first_name">Город: {% comment %}{{ form.city.label_tag }}{% endcomment %}</label>
-                                {{ form.city }}
-                                {{ object.last_name }}
+                                <label for="{{ form.city.id_for_label }}">Город:</label>
+                                <input type="text" name="{{ form.city.name }}" maxlength="30"
+                                       id="{{ form.city.id_for_label }}" value="{{ user.city }}">
+                                {{ user.city }}
                             </div>
                         </div>
                         <div class="form-row">
@@ -105,16 +113,17 @@
                                 {{ form.signature.errors }}
                                 <label for="first_name">Подпись: {% comment %}{{ form.signature.label_tag }}{% endcomment %}</label>
                                 {{ form.signature }}
+                                {{ user.signature }}
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                {{ form.mugshot.errors }}
+                                {{ form.avatar.errors }}
                                 <label for="first_name">Аватар: {% comment %}{{ form.mugshot.label_tag }}{% endcomment %}</label>
-                                {{ form.mugshot }} {{ form.mugshot.delete }}
+                                {{ form.avatar }} {{ form.avatar.delete }}
 
-                                <img src="http://127.0.0.1:8025/media/{{ object.mugshot }}" height="100" width="100"
+                                <img src="http://127.0.0.1:8025/media/{{ user.avatar }}" height="100" width="100"
                                      alt="">
 
                             </div>
@@ -137,6 +146,9 @@
                                 {{ form.bg }}
                             </div>
                         </div>
+
+                        <hr>
+                        <hr>
 
 
                         <div class="form-group">
@@ -221,7 +233,7 @@
                     <h4 class="modal-title">Загрузить аватар</h4>
                 </div>
                 <div class="modal-body">
-                    <img src="" id="image_bg" style="">
+                    <img src="" id="image_bg" style="background-size: 50%">
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group pull-left" role="group">

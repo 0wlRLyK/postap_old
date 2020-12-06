@@ -38,8 +38,9 @@
         {% endif %}
         <div id="details">
             {% block profile_details %}
-                {% if profile.mugshot %}
-                    <img class="mugshot" src="{{ profile.mugshot.url }}" alt="{% trans "Your mugshot" %}"/><br>
+
+                {% if profile.user.avatar %}
+                    <img class="mugshot" src="{{ profile.user.avatar.url }}" alt="{% trans "Your mugshot" %}"/><br>
                 {% endif %}
 
                 {% if profile.money %}

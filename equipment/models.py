@@ -1,6 +1,9 @@
 # Create your models here.
 from ckeditor.fields import RichTextField
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils.html import format_html
 from users.models import Group
 
 
@@ -10,12 +13,16 @@ class Item(models.Model):
     description = RichTextField(verbose_name="Описание")
 
     cost = models.PositiveIntegerField(default=0, verbose_name="Стоимость")
+    mass = models.FloatField(default=0, verbose_name="Масса")
+
+    def icon_admin(self):
+        return format_html('<center><img href="{0}" src="{0}" /></center>'.format(self.icon.url))
+
+    icon_admin.allow_tags = True
+    icon_admin.short_description = 'Иконка'
 
     def __str__(self):
         return self.name
-
-    class Meta:
-        abstract = True
 
 
 class Mass(models.Model):
@@ -26,6 +33,8 @@ class Mass(models.Model):
 
 
 class Ammo(Item, Mass):
+    eq_type = "ammo"
+
     quantity = models.PositiveIntegerField(default=0, verbose_name="Колличество патронов в пачке")
 
     class Meta:
@@ -34,6 +43,8 @@ class Ammo(Item, Mass):
 
 
 class Addon(Item, Mass):
+    eq_type = "addon"
+
     accuracy = models.IntegerField(default=0, verbose_name="Точность")
     damage = models.IntegerField(default=0, verbose_name="Повреждение")
     convenience = models.IntegerField(default=0, verbose_name="Удобность")
@@ -71,19 +82,19 @@ class WeaponAbstract(Item):
 
 
 class Weapon(WeaponAbstract, Mass):
-    one_handed = models.BooleanField(default=False, verbose_name="Является оружие одноручным",
-                                     help_text="Например нож, пистолет")
+    eq_type = "weapon"
 
-    addon1 = models.ManyToManyField(Addon, related_name="addon1", verbose_name="1 слот аддонов: Варианты",
-                                    help_text="Возможные аддоны для первого слота аддонов")
+    one_handed = models.BooleanField(default=False, verbose_name="Однорурчное",
+                                     help_text="Является ли оружие одноручным. (Например, нож, пистолет)")
+    ammo_type = models.ManyToManyField(Ammo, related_name="ammo_type", verbose_name="Тип боепприпасов",
+                                       help_text="Боеприпасы которые используются данным видом оружия", blank=True)
+
+    addons = models.ManyToManyField(Addon, related_name="addon1", verbose_name="1 слот аддонов: Варианты",
+                                    help_text="Возможные аддоны для первого слота аддонов", blank=True)
     addon1open = models.BooleanField(default=True, verbose_name="1 слот аддонов: Доступность",
                                      help_text="Отрыт ли слот изначально")
-    addon2 = models.ManyToManyField(Addon, related_name="addon2", verbose_name="2 слот аддонов: Варианты",
-                                    help_text="Возможные аддоны для первого слота аддонов")
     addon2open = models.BooleanField(default=True, verbose_name="2 слот аддонов: Доступность",
                                      help_text="Отрыт ли слот изначально")
-    addon3 = models.ManyToManyField(Addon, related_name="addon3", verbose_name="3 слот аддонов: Варианты",
-                                    help_text="Возможные аддоны для первого слота аддонов")
     addon3open = models.BooleanField(default=True, verbose_name="3 слот аддонов: Доступность",
                                      help_text="Отрыт ли слот изначально")
 
@@ -142,8 +153,18 @@ class OutfitAbstract(Item):
 
 
 class Outfit(OutfitAbstract, Mass):
-    helmet = models.BooleanField(default=False, verbose_name="Шлем", help_text="Присуствует ли всторенный шлем")
+    eq_type = "outfit"
+
+    equipped_icon = models.ImageField(default="postap.png", verbose_name="Иконка персонажа в костюме")
+    helmet_built_in = models.BooleanField(default=False, verbose_name="Шлем",
+                                          help_text="Присуствует ли всторенный шлем")
     unique = models.BooleanField(default=False, verbose_name="Уникальный костюм")
+
+    def equipped_icon_admin(self):
+        return format_html('<img href="{0}" src="{0}" style="width:75%;height:75%;" />'.format(self.equipped_icon.url))
+
+    equipped_icon_admin.allow_tags = True
+    equipped_icon_admin.short_description = 'Icon'
 
     class Meta:
         verbose_name = "Броня"
@@ -194,6 +215,8 @@ class HelmetUpgrade(HelmetAbstract):
 
 
 class Helmet(HelmetAbstract, Mass):
+    eq_type = "helmet"
+
     unique = models.BooleanField(default=False, verbose_name="Уникальный шлем")
 
     class Meta:
@@ -202,6 +225,8 @@ class Helmet(HelmetAbstract, Mass):
 
 
 class Backpack(Item, Mass):
+    eq_type = "backpack"
+
     carry_weight = models.IntegerField(default=0, verbose_name="Максимальный переносимый вес")
 
     class Meta:
@@ -214,6 +239,7 @@ class Device(Item, Mass):
         ('use', 'Использовать'),
         ('play', 'Играть'),
     ]
+    eq_type = "device"
 
     slot_setting = models.BooleanField(verbose_name="Возможность установить в слот устройств")
 
@@ -224,12 +250,13 @@ class Device(Item, Mass):
         verbose_name_plural = "Устройства"
 
 
-class FoodAndMedical(Item, Mass):
+class FoodAndMedicine(Item, Mass):
     ACTIONS_FOR_USE = [
         ('use', 'Использовать'),
         ('eat', 'Съесть'),
         ('drink', 'Выпить'),
     ]
+    eq_type = "food_medicine"
 
     ballistic = models.IntegerField(default=0, verbose_name="Балистическая защита")
     burst = models.IntegerField(default=0, verbose_name="Защита от разрыва")
@@ -253,11 +280,7 @@ class FoodAndMedical(Item, Mass):
 
 
 class Misc(Item, Mass):
-    name = models.CharField(max_length=200, verbose_name="Название")
-    icon = models.ImageField(verbose_name="Иконка")
-    description = RichTextField(verbose_name="Описание")
-
-    mass = models.IntegerField(default=0, verbose_name="Масса")
+    eq_type = "misc"
 
     class Meta:
         verbose_name = "Разное"
@@ -265,6 +288,16 @@ class Misc(Item, Mass):
 
 
 class Artifact(Item, Mass):
+    eq_type = "artifact"
+    HELMET_TYPES = [
+        ("rock", "Булыжник"),
+        ("first", "I уровня"),
+        ("second", "IІ уровня"),
+        ("third", "IІІ уровня"),
+        ("empty", "Пустышка"),
+    ]
+
+    sort = models.CharField(choices=HELMET_TYPES, default="rock", max_length=100, verbose_name="Тип артефакта")
     ballistic = models.IntegerField(default=0, verbose_name="Балистическая защита")
     burst = models.IntegerField(default=0, verbose_name="Защита от разрыва")
     kick = models.IntegerField(default=0, verbose_name="Гашение удара")
@@ -288,6 +321,7 @@ class QuestItem(Item, Mass):
     FEATURE_TYPES = [
         ("none", ""),
     ]
+    eq_type = "quest_item"
 
     tradable = models.BooleanField(default=False, verbose_name="Продаваемость", help_text="Возможность "
                                                                                           "продать/выкинуть предмет")
@@ -307,68 +341,72 @@ class QuestItem(Item, Mass):
         verbose_name_plural = "Квестовые предметы"
 
 
+class EquipItem(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Имя предмета")
+    limit = models.Q(app_label='equipment', model='ammo') | models.Q(app_label='equipment', model='addon') \
+            | models.Q(app_label='equipment', model='weapon') | models.Q(app_label='equipment', model='outfit') \
+            | models.Q(app_label='equipment', model='helmet') | models.Q(app_label='equipment', model='backpack') \
+            | models.Q(app_label='equipment', model='device') | models.Q(app_label='equipment', model='foodandmedicine') \
+            | models.Q(app_label='equipment', model='misc') | models.Q(app_label='equipment', model='artifact') \
+            | models.Q(app_label='equipment', model='questitem')
+
+    content_type = models.ForeignKey(ContentType, limit_choices_to=limit, on_delete=models.DO_NOTHING,
+                                     verbose_name="Тип предмета")
+    object_id = models.PositiveIntegerField(verbose_name="ID предмета")
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    quantity = models.PositiveSmallIntegerField(default=1, verbose_name="Колличество предметов")
+    condition = models.PositiveSmallIntegerField(default=100, verbose_name="Состояние предмета")
+    cost = models.PositiveIntegerField(default=0, verbose_name="Стоимость предмета")
+
+
 class Equip(models.Model):
     name = models.CharField(max_length=500, verbose_name="Имя, id профиля")
 
-    slot1 = models.ForeignKey(Weapon, related_name="weapons1", default=None, verbose_name="Первый слот",
+    slot1 = models.ForeignKey(EquipItem, related_name="weapons1", default=None, verbose_name="Первый слот",
                               on_delete=models.CASCADE, null=True, blank=True)
-    slot1_condition = models.PositiveSmallIntegerField(default=100, verbose_name="Состояние первого слота")
-    slot1_ups = models.ManyToManyField(WeaponUpgrade, related_name="weapons_ups1", verbose_name="Улучшения слота №1")
-
-    slot2 = models.ForeignKey(Weapon, related_name="weapons2", default=None, verbose_name="Второй слот",
+    slot2 = models.ForeignKey(EquipItem, related_name="weapons2", default=None, verbose_name="Второй слот",
                               on_delete=models.CASCADE, null=True, blank=True)
-    slot2_condition = models.PositiveSmallIntegerField(default=100, verbose_name="Состояние второго слота")
-    slot2_ups = models.ManyToManyField(WeaponUpgrade, related_name="weapons_ups2", verbose_name="Улучшения слота №2")
-
-    slot3 = models.ForeignKey(Weapon, related_name="weapons3", default=None, verbose_name="Третий слот",
+    slot3 = models.ForeignKey(EquipItem, related_name="weapons3", default=None, verbose_name="Третий слот",
                               on_delete=models.CASCADE, null=True, blank=True)
-    slot3_condition = models.PositiveSmallIntegerField(default=100, verbose_name="Состояние третьего слота")
-    slot3_ups = models.ManyToManyField(WeaponUpgrade, related_name="weapons_ups3", verbose_name="Улучшения слота №3")
-
-    armor = models.ForeignKey(Outfit, related_name="armor", default=None, verbose_name="Броня",
+    armor = models.ForeignKey(EquipItem, related_name="armor", default=None, verbose_name="Броня",
                               on_delete=models.CASCADE, null=True, blank=True)
-    armor_condition = models.PositiveSmallIntegerField(default=100, verbose_name="Состояние брони")
-    armor_ups = models.ManyToManyField(OutfitUpgrade, related_name="armor_ups", verbose_name="Улучшения брони")
-
-    helmet = models.ForeignKey(Helmet, related_name="helmet", default=None, verbose_name="Шлем",
+    helmet = models.ForeignKey(EquipItem, related_name="helmet", default=None, verbose_name="Шлем",
                                on_delete=models.CASCADE, null=True, blank=True)
-    helmet_condition = models.PositiveSmallIntegerField(default=100, verbose_name="Состояние шлема")
-    helmet_ups = models.ManyToManyField(HelmetUpgrade, related_name="helmet_ups1", verbose_name="Улучшения шлема")
-
-    backpack = models.ForeignKey(Backpack, related_name="backpack", default=None, verbose_name="Устройство №1",
+    backpack = models.ForeignKey(EquipItem, related_name="backpack", default=None, verbose_name="Устройство №1",
                                  on_delete=models.CASCADE, null=True, blank=True)
 
-    device1 = models.ForeignKey(Device, related_name="device1", default=None, verbose_name="Устройство №1",
+    device1 = models.ForeignKey(EquipItem, related_name="device1", default=None, verbose_name="Устройство №1",
                                 on_delete=models.CASCADE, null=True, blank=True)
-    device2 = models.ForeignKey(Device, related_name="device2", default=None, verbose_name="Устройство №2",
+    device2 = models.ForeignKey(EquipItem, related_name="device2", default=None, verbose_name="Устройство №2",
                                 on_delete=models.CASCADE, null=True, blank=True)
-    device3 = models.ForeignKey(Device, related_name="device3", default=None, verbose_name="Устройство №3",
+    device3 = models.ForeignKey(EquipItem, related_name="device3", default=None, verbose_name="Устройство №3",
                                 on_delete=models.CASCADE, null=True, blank=True)
 
-    belt1 = models.ForeignKey(Ammo, related_name="ammo1", default=None, verbose_name="Боеприпасы №1",
+    belt1 = models.ForeignKey(EquipItem, related_name="ammo1", default=None, verbose_name="Боеприпасы №1",
                               on_delete=models.CASCADE, null=True, blank=True)
-    belt2 = models.ForeignKey(Ammo, related_name="ammo2", default=None, verbose_name="Боеприпасы №2",
+    belt2 = models.ForeignKey(EquipItem, related_name="ammo2", default=None, verbose_name="Боеприпасы №2",
                               on_delete=models.CASCADE, null=True, blank=True)
-    belt3 = models.ForeignKey(Ammo, related_name="ammo3", default=None, verbose_name="Боеприпасы №3",
+    belt3 = models.ForeignKey(EquipItem, related_name="ammo3", default=None, verbose_name="Боеприпасы №3",
                               on_delete=models.CASCADE, null=True, blank=True)
-    belt4 = models.ForeignKey(Ammo, related_name="ammo4", default=None, verbose_name="Боеприпасы №4",
+    belt4 = models.ForeignKey(EquipItem, related_name="ammo4", default=None, verbose_name="Боеприпасы №4",
                               on_delete=models.CASCADE, null=True, blank=True)
-    belt5 = models.ForeignKey(Device, related_name="device4", default=None, verbose_name="Пояс::Устройство №4",
+    belt5 = models.ForeignKey(EquipItem, related_name="device4", default=None, verbose_name="Пояс::Устройство №4",
                               on_delete=models.CASCADE, null=True, blank=True)
-    belt6 = models.ForeignKey(Device, related_name="device5", default=None, verbose_name="Пояс::Устройство №5",
+    belt6 = models.ForeignKey(EquipItem, related_name="device5", default=None, verbose_name="Пояс::Устройство №5",
                               on_delete=models.CASCADE, null=True, blank=True)
 
-    container1 = models.ForeignKey(Artifact, related_name="art1", default=None, verbose_name="Артефакт №1",
+    container1 = models.ForeignKey(EquipItem, related_name="art1", default=None, verbose_name="Артефакт №1",
                                    on_delete=models.CASCADE, null=True, blank=True)
-    container2 = models.ForeignKey(Artifact, related_name="art2", default=None, verbose_name="Артефакт №2",
+    container2 = models.ForeignKey(EquipItem, related_name="art2", default=None, verbose_name="Артефакт №2",
                                    on_delete=models.CASCADE, null=True, blank=True)
-    container3 = models.ForeignKey(Artifact, related_name="art3", default=None, verbose_name="Артефакт №3",
+    container3 = models.ForeignKey(EquipItem, related_name="art3", default=None, verbose_name="Артефакт №3",
                                    on_delete=models.CASCADE, null=True, blank=True)
-    container4 = models.ForeignKey(Artifact, related_name="art4", default=None, verbose_name="Артефакт №4",
+    container4 = models.ForeignKey(EquipItem, related_name="art4", default=None, verbose_name="Артефакт №4",
                                    on_delete=models.CASCADE, null=True, blank=True)
-    container5 = models.ForeignKey(Artifact, related_name="art5", default=None, verbose_name="Артефакт №5",
+    container5 = models.ForeignKey(EquipItem, related_name="art5", default=None, verbose_name="Артефакт №5",
                                    on_delete=models.CASCADE, null=True, blank=True)
-    container6 = models.ForeignKey(Artifact, related_name="art6", default=None, verbose_name="Артефакт №6",
+    container6 = models.ForeignKey(EquipItem, related_name="art6", default=None, verbose_name="Артефакт №6",
                                    on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):

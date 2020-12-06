@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     # EXTENSIONS OF DEFAULT DJANGO FUNCTIONALITY
     'betterforms',
     'extra_views',
+    'online_status',
 
     'ajax_select',
     'tinymce',
@@ -89,6 +90,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'online_status.middleware.OnlineStatusMiddleware',
 ]
 
 ROOT_URLCONF = 'postap.urls'
@@ -147,6 +149,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = (
     'userena.backends.UserenaAuthenticationBackend',
     'guardian.backends.ObjectPermissionBackend',
+    'users.backends.NewBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -182,6 +185,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # --------
 # USERENA
 # --------
+AUTH_USER_MODEL = 'users.SiteUser'
 ANONYMOUS_USER_NAME = 'AnonymousUser'
 AUTH_PROFILE_MODULE = 'users.UsersProfiles'
 
@@ -265,6 +269,11 @@ KP_META = {
 CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_ALLOW_NONIMAGE_FILES = False
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+    },
+}
 _ = lambda s: s
 
 NUCLEUS = {
