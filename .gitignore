@@ -1,3 +1,16 @@
-/static/
+!static/
+
 /media/
 .gitignore
+/static/bg/
+/static/ckeditor/
+/static/django_tinymce/
+/static/fonts/
+/static/img/
+/static/sprites/
+/static/svgs/
+/static/tinymce/
+/static/vendor/
+/static/webfonts/
+/static/Нова папка/
+/static/goose.jpg
