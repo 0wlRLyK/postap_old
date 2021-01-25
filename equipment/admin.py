@@ -11,6 +11,7 @@ class ItemAdmin(admin.ModelAdmin):
     search_fields = ('id', 'name', 'description', 'cost')
     ordering = ('id',)
 
+
 # AMMO
 
 
@@ -24,6 +25,14 @@ class AmmoAdmin(admin.ModelAdmin):
 
 @admin.register(equip.Addon)
 class AddonAdmin(admin.ModelAdmin):
+    list_display = ('name', 'cost', 'mass', 'icon_admin')
+    search_fields = ('name', 'description', 'cost')
+
+
+# ADD ON
+
+@admin.register(equip.AddonOutfit)
+class AddonOutfitAdmin(admin.ModelAdmin):
     list_display = ('name', 'cost', 'mass', 'icon_admin')
     search_fields = ('name', 'description', 'cost')
 
@@ -55,8 +64,22 @@ class WeaponAdmin(admin.ModelAdmin):
 
 @admin.register(equip.Outfit)
 class OutfitAdmin(admin.ModelAdmin):
-    list_display = (
-    'name', 'sort', 'arts_max', 'modules_max', 'running', 'cost', 'mass', 'icon_admin', 'equipped_icon_admin')
+    fieldsets = (
+        ("Дескрипт", {
+            'fields': ('name', 'icon', 'equipped_icon', 'description', 'cost', 'mass')
+        }),
+        ("Характеристики оружия", {
+            'fields': ('sort', 'helmet_built_in', 'arts_max', 'modules_max', 'weight', 'running',)
+        }),
+        ("Патроны и аддоны", {
+            'fields': ('ballistic', 'burst', 'kick', 'explosion', 'thermal', 'electrical', 'chemical', 'radioactive',
+                       'psi')
+        }),
+        ("Уникальность", {
+            'fields': ('unique',)
+        }),
+    )
+    list_display = ('name', 'sort', 'running', 'cost', 'mass', 'icon_admin', 'equipped_icon_admin')
     search_fields = ('name', 'description', 'cost')
     list_filter = ['sort', 'arts_max', 'modules_max', 'running']
 
@@ -116,3 +139,12 @@ class ArtifactAdmin(admin.ModelAdmin):
 class QuestItemAdmin(admin.ModelAdmin):
     list_display = ('name', 'cost', 'mass', 'icon_admin')
     search_fields = ('name', 'description', 'cost')
+
+
+# EQUIP_ITEM
+
+@admin.register(equip.EquipItem)
+class EquipItemAdmin(admin.ModelAdmin):
+    list_display = ('name', 'content_type', 'quantity', 'condition', 'cost')
+    search_fields = ('name',)
+    list_filter = ['name']

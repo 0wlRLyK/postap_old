@@ -1,5 +1,6 @@
 # Create your models here.
 from ckeditor.fields import RichTextField
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -7,9 +8,13 @@ from django.utils.html import format_html
 from users.models import Group
 
 
+def upload_to(instance, filename):
+    return '/'.join(['equip', str(instance.eq_type), filename])
+
+
 class Item(models.Model):
     name = models.CharField(max_length=200, verbose_name="Название")
-    icon = models.ImageField(verbose_name="Иконка")
+    icon = models.ImageField(verbose_name="Иконка", upload_to=upload_to)
     description = RichTextField(verbose_name="Описание")
 
     cost = models.PositiveIntegerField(default=0, verbose_name="Стоимость")
@@ -33,22 +38,18 @@ class Mass(models.Model):
 
 
 class Ammo(Item, Mass):
-    eq_type = "ammo"
-
     quantity = models.PositiveIntegerField(default=0, verbose_name="Колличество патронов в пачке")
 
     class Meta:
-        verbose_name = "Пачка патронов"
-        verbose_name_plural = "Патроны"
+        verbose_name = "Тип боеприпасов"
+        verbose_name_plural = "Боеприпасы"
 
 
 class Addon(Item, Mass):
-    eq_type = "addon"
-
-    accuracy = models.IntegerField(default=0, verbose_name="Точность")
-    damage = models.IntegerField(default=0, verbose_name="Повреждение")
-    convenience = models.IntegerField(default=0, verbose_name="Удобность")
-    pace_of_fire = models.IntegerField(default=0, verbose_name="Скорострельность")
+    accuracy = models.FloatField(default=0, verbose_name="Точность")
+    damage = models.FloatField(default=0, verbose_name="Повреждение")
+    convenience = models.FloatField(default=0, verbose_name="Удобность")
+    pace_of_fire = models.FloatField(default=0, verbose_name="Скорострельность")
     capacity = models.IntegerField(default=0, verbose_name="Ёмкость")
 
     class Meta:
@@ -71,10 +72,10 @@ class WeaponAbstract(Item):
 
     sort = models.CharField(choices=WEAPONS_TYPES, max_length=100, verbose_name="Тип оружия")
 
-    accuracy = models.IntegerField(default=0, verbose_name="Точность оружия")
-    damage = models.IntegerField(default=0, verbose_name="Повреждение оружия")
-    convenience = models.IntegerField(default=0, verbose_name="Удобность оружия")
-    pace_of_fire = models.IntegerField(default=0, verbose_name="Скорострельность оружия")
+    accuracy = models.FloatField(default=0, verbose_name="Точность оружия")
+    damage = models.FloatField(default=0, verbose_name="Повреждение оружия")
+    convenience = models.FloatField(default=0, verbose_name="Удобность оружия")
+    pace_of_fire = models.FloatField(default=0, verbose_name="Скорострельность оружия")
     capacity = models.IntegerField(default=0, verbose_name="Ёмкость магазина")
 
     class Meta:
@@ -82,8 +83,6 @@ class WeaponAbstract(Item):
 
 
 class Weapon(WeaponAbstract, Mass):
-    eq_type = "weapon"
-
     one_handed = models.BooleanField(default=False, verbose_name="Однорурчное",
                                      help_text="Является ли оружие одноручным. (Например, нож, пистолет)")
     ammo_type = models.ManyToManyField(Ammo, related_name="ammo_type", verbose_name="Тип боепприпасов",
@@ -132,16 +131,16 @@ class OutfitAbstract(Item):
 
     sort = models.CharField(choices=OUTFIT_TYPES, max_length=100, verbose_name="Тип брони")
 
-    ballistic = models.IntegerField(default=0, verbose_name="Балистическая защита уникального костюма")
-    burst = models.IntegerField(default=0, verbose_name="Защита от разрыва уникального костюма")
-    kick = models.IntegerField(default=0, verbose_name="Гашение удара уникального костюма")
-    explosion = models.IntegerField(default=0, verbose_name="Защита от взрыва уникального костюма")
-    thermal = models.IntegerField(default=0, verbose_name="Термозащита уникального костюма")
-    chemical = models.IntegerField(default=0, verbose_name="Химащита уникального костюма")
-    electrical = models.IntegerField(default=0, verbose_name="Электрозащита уникального костюма")
-    radioactive = models.IntegerField(default=0, verbose_name="Радиоактивная уникального костюма")
-    psi = models.IntegerField(default=0, verbose_name="Пси защита уникального костюма")
-    weight = models.IntegerField(default=0, verbose_name="Переносимый вес уникального костюма")
+    ballistic = models.FloatField(default=0, verbose_name="Балистическая защита уникального костюма")
+    burst = models.FloatField(default=0, verbose_name="Защита от разрыва уникального костюма")
+    kick = models.FloatField(default=0, verbose_name="Гашение удара уникального костюма")
+    explosion = models.FloatField(default=0, verbose_name="Защита от взрыва уникального костюма")
+    thermal = models.FloatField(default=0, verbose_name="Термозащита уникального костюма")
+    chemical = models.FloatField(default=0, verbose_name="Химащита уникального костюма")
+    electrical = models.FloatField(default=0, verbose_name="Электрозащита уникального костюма")
+    radioactive = models.FloatField(default=0, verbose_name="Радиоактивная уникального костюма")
+    psi = models.FloatField(default=0, verbose_name="Пси защита уникального костюма")
+    weight = models.FloatField(default=0, verbose_name="Переносимый вес уникального костюма")
 
     arts_max = models.IntegerField(default=0, verbose_name="Колличество контейнеров для артефактов")
     modules_max = models.IntegerField(default=0, verbose_name="Колличество контейнеров для модулей")
@@ -152,10 +151,19 @@ class OutfitAbstract(Item):
         abstract = True
 
 
+class AddonOutfit(OutfitAbstract, Mass):
+    pass
+
+    class Meta:
+        verbose_name = "Аддон"
+        verbose_name_plural = "Аддоны"
+
+
 class Outfit(OutfitAbstract, Mass):
     eq_type = "outfit"
 
-    equipped_icon = models.ImageField(default="postap.png", verbose_name="Иконка персонажа в костюме")
+    equipped_icon = models.ImageField(default="postap.png", upload_to="equip/outfit/full",
+                                      verbose_name="Иконка персонажа в костюме")
     helmet_built_in = models.BooleanField(default=False, verbose_name="Шлем",
                                           help_text="Присуствует ли всторенный шлем")
     unique = models.BooleanField(default=False, verbose_name="Уникальный костюм")
@@ -191,16 +199,16 @@ class HelmetAbstract(Item):
     ]
 
     sort = models.CharField(choices=HELMET_TYPES, max_length=100, verbose_name="Тип оружия")
-    ballistic = models.IntegerField(default=0, verbose_name="Балистическая защита уникального шлема")
-    burst = models.IntegerField(default=0, verbose_name="Защита от разрыва уникального шлема")
-    kick = models.IntegerField(default=0, verbose_name="Гашение удара уникального шлема")
-    explosion = models.IntegerField(default=0, verbose_name="Защита от взрыва уникального шлема")
-    thermal = models.IntegerField(default=0, verbose_name="Термозащита уникального шлема")
-    chemical = models.IntegerField(default=0, verbose_name="Химащита уникального шлема")
-    electrical = models.IntegerField(default=0, verbose_name="Электрозащита уникального шлема")
-    radioactive = models.IntegerField(default=0, verbose_name="Радиоактивная уникального шлема")
-    psi = models.IntegerField(default=0, verbose_name="Пси защита уникального шлема")
-    weight = models.IntegerField(default=0, verbose_name="Переносимый вес уникального шлема")
+    ballistic = models.FloatField(default=0, verbose_name="Балистическая защита уникального шлема")
+    burst = models.FloatField(default=0, verbose_name="Защита от разрыва уникального шлема")
+    kick = models.FloatField(default=0, verbose_name="Гашение удара уникального шлема")
+    explosion = models.FloatField(default=0, verbose_name="Защита от взрыва уникального шлема")
+    thermal = models.FloatField(default=0, verbose_name="Термозащита уникального шлема")
+    chemical = models.FloatField(default=0, verbose_name="Химащита уникального шлема")
+    electrical = models.FloatField(default=0, verbose_name="Электрозащита уникального шлема")
+    radioactive = models.FloatField(default=0, verbose_name="Радиоактивная уникального шлема")
+    psi = models.FloatField(default=0, verbose_name="Пси защита уникального шлема")
+    weight = models.FloatField(default=0, verbose_name="Переносимый вес уникального шлема")
 
     class Meta:
         abstract = True
@@ -225,9 +233,7 @@ class Helmet(HelmetAbstract, Mass):
 
 
 class Backpack(Item, Mass):
-    eq_type = "backpack"
-
-    carry_weight = models.IntegerField(default=0, verbose_name="Максимальный переносимый вес")
+    carry_weight = models.FloatField(default=0, verbose_name="Максимальный переносимый вес")
 
     class Meta:
         verbose_name = "Рюкзак"
@@ -239,8 +245,6 @@ class Device(Item, Mass):
         ('use', 'Использовать'),
         ('play', 'Играть'),
     ]
-    eq_type = "device"
-
     slot_setting = models.BooleanField(verbose_name="Возможность установить в слот устройств")
 
     actions = models.CharField(max_length=10, choices=ACTIONS_FOR_USE, verbose_name="Действия для использования")
@@ -258,19 +262,19 @@ class FoodAndMedicine(Item, Mass):
     ]
     eq_type = "food_medicine"
 
-    ballistic = models.IntegerField(default=0, verbose_name="Балистическая защита")
-    burst = models.IntegerField(default=0, verbose_name="Защита от разрыва")
-    kick = models.IntegerField(default=0, verbose_name="Гашение удара")
-    explosion = models.IntegerField(default=0, verbose_name="Защита от взрыва")
-    thermal = models.IntegerField(default=0, verbose_name="Термозащита")
-    chemical = models.IntegerField(default=0, verbose_name="Химащита")
-    electrical = models.IntegerField(default=0, verbose_name="Электрозащита")
-    radioactive = models.IntegerField(default=0, verbose_name="Радиозащита")
-    psi = models.IntegerField(default=0, verbose_name="Пси защита")
-    weight = models.IntegerField(default=0, verbose_name="Переносимый вес")
-    healing = models.IntegerField(default=0, verbose_name="Лечение")
-    satiety = models.IntegerField(default=0, verbose_name="Насыщение")
-    energy = models.IntegerField(default=0, verbose_name="Восстановление энергии")
+    ballistic = models.FloatField(default=0, verbose_name="Балистическая защита")
+    burst = models.FloatField(default=0, verbose_name="Защита от разрыва")
+    kick = models.FloatField(default=0, verbose_name="Гашение удара")
+    explosion = models.FloatField(default=0, verbose_name="Защита от взрыва")
+    thermal = models.FloatField(default=0, verbose_name="Термозащита")
+    chemical = models.FloatField(default=0, verbose_name="Химащита")
+    electrical = models.FloatField(default=0, verbose_name="Электрозащита")
+    radioactive = models.FloatField(default=0, verbose_name="Радиозащита")
+    psi = models.FloatField(default=0, verbose_name="Пси защита")
+    weight = models.FloatField(default=0, verbose_name="Переносимый вес")
+    healing = models.FloatField(default=0, verbose_name="Лечение")
+    satiety = models.FloatField(default=0, verbose_name="Насыщение")
+    energy = models.FloatField(default=0, verbose_name="Восстановление энергии")
 
     actions = models.CharField(max_length=10, choices=ACTIONS_FOR_USE, verbose_name="Действия для использования")
 
@@ -280,7 +284,7 @@ class FoodAndMedicine(Item, Mass):
 
 
 class Misc(Item, Mass):
-    eq_type = "misc"
+    pass
 
     class Meta:
         verbose_name = "Разное"
@@ -288,7 +292,6 @@ class Misc(Item, Mass):
 
 
 class Artifact(Item, Mass):
-    eq_type = "artifact"
     HELMET_TYPES = [
         ("rock", "Булыжник"),
         ("first", "I уровня"),
@@ -298,19 +301,19 @@ class Artifact(Item, Mass):
     ]
 
     sort = models.CharField(choices=HELMET_TYPES, default="rock", max_length=100, verbose_name="Тип артефакта")
-    ballistic = models.IntegerField(default=0, verbose_name="Балистическая защита")
-    burst = models.IntegerField(default=0, verbose_name="Защита от разрыва")
-    kick = models.IntegerField(default=0, verbose_name="Гашение удара")
-    explosion = models.IntegerField(default=0, verbose_name="Защита от взрыва")
-    thermal = models.IntegerField(default=0, verbose_name="Термозащита")
-    chemical = models.IntegerField(default=0, verbose_name="Химащита")
-    electrical = models.IntegerField(default=0, verbose_name="Электрозащита")
-    radioactive = models.IntegerField(default=0, verbose_name="Радиозащита")
-    psi = models.IntegerField(default=0, verbose_name="Пси защита")
-    weight = models.IntegerField(default=0, verbose_name="Переносимый вес")
-    healing = models.IntegerField(default=0, verbose_name="Лечение")
-    satiety = models.IntegerField(default=0, verbose_name="Насыщение")
-    energy = models.IntegerField(default=0, verbose_name="Восстановление энергии")
+    ballistic = models.FloatField(default=0, verbose_name="Балистическая защита")
+    burst = models.FloatField(default=0, verbose_name="Защита от разрыва")
+    kick = models.FloatField(default=0, verbose_name="Гашение удара")
+    explosion = models.FloatField(default=0, verbose_name="Защита от взрыва")
+    thermal = models.FloatField(default=0, verbose_name="Термозащита")
+    chemical = models.FloatField(default=0, verbose_name="Химащита")
+    electrical = models.FloatField(default=0, verbose_name="Электрозащита")
+    radioactive = models.FloatField(default=0, verbose_name="Радиозащита")
+    psi = models.FloatField(default=0, verbose_name="Пси защита")
+    weight = models.FloatField(default=0, verbose_name="Переносимый вес")
+    healing = models.FloatField(default=0, verbose_name="Лечение")
+    satiety = models.FloatField(default=0, verbose_name="Насыщение")
+    energy = models.FloatField(default=0, verbose_name="Восстановление энергии")
 
     class Meta:
         verbose_name = "Артефакт"
@@ -321,20 +324,18 @@ class QuestItem(Item, Mass):
     FEATURE_TYPES = [
         ("none", ""),
     ]
-    eq_type = "quest_item"
-
     tradable = models.BooleanField(default=False, verbose_name="Продаваемость", help_text="Возможность "
                                                                                           "продать/выкинуть предмет")
     feature1 = models.CharField(choices=FEATURE_TYPES, verbose_name="Характеристика №1", max_length=100)
-    feature_num1 = models.IntegerField(default=0, verbose_name="Значение характеристики №1")
+    feature_num1 = models.FloatField(default=0, verbose_name="Значение характеристики №1")
     feature2 = models.CharField(choices=FEATURE_TYPES, verbose_name="Характеристика №2", max_length=100)
-    feature_num2 = models.IntegerField(default=0, verbose_name="Значение характеристики №2")
+    feature_num2 = models.FloatField(default=0, verbose_name="Значение характеристики №2")
     feature3 = models.CharField(choices=FEATURE_TYPES, verbose_name="Характеристика №3", max_length=100)
-    feature_num3 = models.IntegerField(default=0, verbose_name="Значение характеристики №3")
+    feature_num3 = models.FloatField(default=0, verbose_name="Значение характеристики №3")
     feature4 = models.CharField(choices=FEATURE_TYPES, verbose_name="Характеристика №4", max_length=100)
-    feature_num4 = models.IntegerField(default=0, verbose_name="Значение характеристики №4")
+    feature_num4 = models.FloatField(default=0, verbose_name="Значение характеристики №4")
     feature5 = models.CharField(choices=FEATURE_TYPES, verbose_name="Характеристика №5", max_length=100)
-    feature_num5 = models.IntegerField(default=0, verbose_name="Значение характеристики №5")
+    feature_num5 = models.FloatField(default=0, verbose_name="Значение характеристики №5")
 
     class Meta:
         verbose_name = "Квестовый предмет"
@@ -342,7 +343,7 @@ class QuestItem(Item, Mass):
 
 
 class EquipItem(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Имя предмета")
+    name = models.CharField(max_length=100, blank=True, verbose_name="Имя предмета")
     limit = models.Q(app_label='equipment', model='ammo') | models.Q(app_label='equipment', model='addon') \
             | models.Q(app_label='equipment', model='weapon') | models.Q(app_label='equipment', model='outfit') \
             | models.Q(app_label='equipment', model='helmet') | models.Q(app_label='equipment', model='backpack') \
@@ -353,65 +354,19 @@ class EquipItem(models.Model):
     content_type = models.ForeignKey(ContentType, limit_choices_to=limit, on_delete=models.DO_NOTHING,
                                      verbose_name="Тип предмета")
     object_id = models.PositiveIntegerField(verbose_name="ID предмета")
-    content_object = GenericForeignKey('content_type', 'object_id')
+    c_obj = GenericForeignKey('content_type', 'object_id')
+    profile = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING,
+                                verbose_name="Профиль пользователя",
+                                related_name="item_profile", default=None, null=True, blank=True)
 
     quantity = models.PositiveSmallIntegerField(default=1, verbose_name="Колличество предметов")
     condition = models.PositiveSmallIntegerField(default=100, verbose_name="Состояние предмета")
     cost = models.PositiveIntegerField(default=0, verbose_name="Стоимость предмета")
 
-
-class Equip(models.Model):
-    name = models.CharField(max_length=500, verbose_name="Имя, id профиля")
-
-    slot1 = models.ForeignKey(EquipItem, related_name="weapons1", default=None, verbose_name="Первый слот",
-                              on_delete=models.CASCADE, null=True, blank=True)
-    slot2 = models.ForeignKey(EquipItem, related_name="weapons2", default=None, verbose_name="Второй слот",
-                              on_delete=models.CASCADE, null=True, blank=True)
-    slot3 = models.ForeignKey(EquipItem, related_name="weapons3", default=None, verbose_name="Третий слот",
-                              on_delete=models.CASCADE, null=True, blank=True)
-    armor = models.ForeignKey(EquipItem, related_name="armor", default=None, verbose_name="Броня",
-                              on_delete=models.CASCADE, null=True, blank=True)
-    helmet = models.ForeignKey(EquipItem, related_name="helmet", default=None, verbose_name="Шлем",
-                               on_delete=models.CASCADE, null=True, blank=True)
-    backpack = models.ForeignKey(EquipItem, related_name="backpack", default=None, verbose_name="Устройство №1",
-                                 on_delete=models.CASCADE, null=True, blank=True)
-
-    device1 = models.ForeignKey(EquipItem, related_name="device1", default=None, verbose_name="Устройство №1",
-                                on_delete=models.CASCADE, null=True, blank=True)
-    device2 = models.ForeignKey(EquipItem, related_name="device2", default=None, verbose_name="Устройство №2",
-                                on_delete=models.CASCADE, null=True, blank=True)
-    device3 = models.ForeignKey(EquipItem, related_name="device3", default=None, verbose_name="Устройство №3",
-                                on_delete=models.CASCADE, null=True, blank=True)
-
-    belt1 = models.ForeignKey(EquipItem, related_name="ammo1", default=None, verbose_name="Боеприпасы №1",
-                              on_delete=models.CASCADE, null=True, blank=True)
-    belt2 = models.ForeignKey(EquipItem, related_name="ammo2", default=None, verbose_name="Боеприпасы №2",
-                              on_delete=models.CASCADE, null=True, blank=True)
-    belt3 = models.ForeignKey(EquipItem, related_name="ammo3", default=None, verbose_name="Боеприпасы №3",
-                              on_delete=models.CASCADE, null=True, blank=True)
-    belt4 = models.ForeignKey(EquipItem, related_name="ammo4", default=None, verbose_name="Боеприпасы №4",
-                              on_delete=models.CASCADE, null=True, blank=True)
-    belt5 = models.ForeignKey(EquipItem, related_name="device4", default=None, verbose_name="Пояс::Устройство №4",
-                              on_delete=models.CASCADE, null=True, blank=True)
-    belt6 = models.ForeignKey(EquipItem, related_name="device5", default=None, verbose_name="Пояс::Устройство №5",
-                              on_delete=models.CASCADE, null=True, blank=True)
-
-    container1 = models.ForeignKey(EquipItem, related_name="art1", default=None, verbose_name="Артефакт №1",
-                                   on_delete=models.CASCADE, null=True, blank=True)
-    container2 = models.ForeignKey(EquipItem, related_name="art2", default=None, verbose_name="Артефакт №2",
-                                   on_delete=models.CASCADE, null=True, blank=True)
-    container3 = models.ForeignKey(EquipItem, related_name="art3", default=None, verbose_name="Артефакт №3",
-                                   on_delete=models.CASCADE, null=True, blank=True)
-    container4 = models.ForeignKey(EquipItem, related_name="art4", default=None, verbose_name="Артефакт №4",
-                                   on_delete=models.CASCADE, null=True, blank=True)
-    container5 = models.ForeignKey(EquipItem, related_name="art5", default=None, verbose_name="Артефакт №5",
-                                   on_delete=models.CASCADE, null=True, blank=True)
-    container6 = models.ForeignKey(EquipItem, related_name="art6", default=None, verbose_name="Артефакт №6",
-                                   on_delete=models.CASCADE, null=True, blank=True)
-
     def __str__(self):
-        return self.name
+        return "{0} - {1} - {2}".format(self.name, self.content_type.name, self.object_id)
 
-    class Meta:
-        verbose_name = "Снаряжение"
-        verbose_name_plural = "Снаряжения"
+    def save(self, *args, **kwargs):
+        if not self.name:
+            self.name = self.c_obj.name
+        super(EquipItem, self).save(*args, **kwargs)

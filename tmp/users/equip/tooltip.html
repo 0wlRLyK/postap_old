@@ -1,0 +1,94 @@
+{% load static funcs %}
+{% with  condition=item.condition object=item.c_obj type=item.content_type.model %}
+    {% assign qua as quantity %}
+    {% if item and quantity != 0 %}
+        {% with quantity=item|check:u_id %}
+            <div class="equip-item">
+                <tip title="
+    <span class='t-title'>{{ object.name }}</span><br>
+    {{ type }}<br>
+    <span class='t-ico eq_ico-mass'></span> <span class='t-bold'>Вес:</span> {{ object.mass }} кг. <br>
+    <span class='t-ico eq_ico-condition'></span> <span class='t-bold'>Состояние:</span>
+        <span class='t-{% if condition < 25 %}red{% elif condition < 50 %}yellow
+        {% elif condition < 75 %}orange{% else %}green{% endif %} '>
+        {{ condition }} % </span><br>
+    <span class='t-text'>{{ object.description |striptags }}</span><span class='t-hr'></span><br>
+    {% if type == "weapon" %}
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/accuracy.svg' %}'> <span class='t-e_b'>Точность:</span></span>
+    <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.accuracy }}%;'></span></span></span><br>
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/convenience.svg' %}'> <span class='t-e_b'>Удобность:</span></span>
+        <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.convenience }}%;'></span></span></span><br>
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/damage.svg' %}'> <span class='t-e_b'>Повреждение:</span></span>
+    <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.damage }}%;'></span></span></span><br>
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/pace_of_fire.svg' %}'> <span class='t-e_b'>Темп огня:</span></span>
+    <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.pace_of_fire }}%;'></span></span></span><br>
+    {% if object.capacity > 0 %}
+    <span class='eq_full'><span class='eq-char'><img class='eq-ico' src='{% static 'img/icons/equip/capacity.svg' %}'>
+    <span class='t-e_b'>Емкость магазина:</span></span>{{ object.capacity }}</span><br>{% endif %}
+    {% if object.ammo_type.all %}
+    <span class='eq_full'><span class='eq-char'><img class='eq-ico' src='{% static 'img/icons/equip/capacity.svg' %}'>
+    <span class='t-e_b'>Боеприпасы:</span></span></span><br>
+    <span class='eq-ammo'>
+    {% for ammo in  object.ammo_type.all %}
+        <img src='{{ ammo.icon.url }}'>
+    {% endfor %}
+    </span>{% endif %}
+    {% elif type == "outfit" %}
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/ballistic.svg' %}'> <span class='t-e_b'>Баллист.защита:</span></span>
+    <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.ballistic }}%;'></span></span></span><br>
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/burst.svg' %}'> <span class='t-e_b'>Защита от разрыва:</span></span>
+    <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.burst }}%;'></span></span></span><br>
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/ballistic.svg' %}'> <span class='t-e_b'>Баллист.защита:</span></span>
+    <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.ballistic }}%;'></span></span></span><br>
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/kick.svg' %}'> <span class='t-e_b'>Гашение удара:</span></span>
+    <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.kick }}%;'></span></span></span><br>
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/explosion.svg' %}'> <span class='t-e_b'>Защита от взрыва:</span></span>
+    <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.explosion }}%;'></span></span></span><br>
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/thermal.svg' %}'> <span class='t-e_b'>Термозащита:</span></span>
+    <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.thermal }}%;'></span></span></span><br>
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/electrical.svg' %}'> <span class='t-e_b'>Электрозащита:</span></span>
+    <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.electrical }}%;'></span></span></span><br>
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/chemical.svg' %}'> <span class='t-e_b'>Химзащита:</span></span>
+    <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.chemical }}%;'></span></span></span><br>
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/radioactive.svg' %}'> <span class='t-e_b'>Радиозащита:</span></span>
+    <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.radioactive }}%;'></span></span></span><br>
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/psi.svg' %}'> <span class='t-e_b'>Пси-защита:</span></span>
+    <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.psi }}%;'></span></span></span><br>
+    <span class='eq_full'><span class='eq-char'>
+        <img class='eq-ico' src='{% static 'img/icons/equip/weight.svg' %}'> <span class='t-e_b'>Переносимый вес:</span></span>
+    <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.weight }}%;'></span></span></span><br>
+    {% endif %}
+">
+                    <div class="equip-quantity" {% if slot or quantity == 1 %}style="display: none"{% endif %}>
+                        x{{ quantity }}</div>
+                    {% if item.condition %}
+                        <div class="equip-condition_wrap">
+                            <div class="equip-condition c-{% if condition < 25 %}red{% elif condition < 50 %}orange{% elif condition < 75 %}yellow{% else %}green{% endif %} "
+                                 style="width: {{ condition }}%"></div>
+                        </div>
+                    {% endif %}
+                    <img class="equip_{% if slot %}slot{% else %}inv_{{ type }}{% endif %}"
+                         data-id="{{ item.id }}" {% if slot %} data-slot="{{ slot }}" {% endif %}
+                         data-type="{{ type }}" {% if slot %}id="e-{{ slot }}"{% endif %}
+                         {% if type == "outfit" %}data-imgpath="{{ object.equipped_icon.url }}"{% endif %}
+                         data-count="{{ item.quantity }}"
+                         data-current-count="{% if slot %}{{ quantity }}{% else %}{{ quantity }}{% endif %}"
+                         src="{{ object.icon.url }}" alt=""></tip>
+            </div>
+        {% endwith %}
+    {% endif %}
+{% endwith %}

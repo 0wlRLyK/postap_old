@@ -17,7 +17,9 @@ class CustomUserCreationForm(UserCreationForm):
         model = SiteUser
         fields = ('username', 'email', 'avatar', 'birthday', 'gender', 'country', 'city', 'signature', 'sign_image',
                   'rpl_nickname', 'rpl_first_name', 'rpl_second_name', 'rpl_avatar', 'rpl_bio', 'speciality', 'rpl_xp',
-                  'rpl_lvl', 'rank', 'hp', 'rad', 'satiety', 'reputation', 'money', 'xp', 'level', 'equipment')
+                  'rpl_lvl', 'rank', 'hp', 'rad', 'satiety', 'reputation', 'money', 'xp', 'level', 'slot1',
+                  'slot2', 'slot3', 'armor', 'helmet', 'backpack', 'device1', 'device2', 'device3', 'belt1', 'belt2',
+                  'belt3', 'belt4', 'container1', 'container2', 'container3', 'container4', 'container5')
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -25,7 +27,9 @@ class CustomUserChangeForm(UserChangeForm):
         model = SiteUser
         fields = ('username', 'email', 'avatar', 'birthday', 'gender', 'country', 'city', 'signature', 'sign_image',
                   'rpl_nickname', 'rpl_first_name', 'rpl_second_name', 'rpl_avatar', 'rpl_bio', 'speciality', 'rpl_xp',
-                  'rpl_lvl', 'rank', 'hp', 'rad', 'satiety', 'reputation', 'money', 'xp', 'level', 'equipment')
+                  'rpl_lvl', 'rank', 'hp', 'rad', 'satiety', 'reputation', 'money', 'xp', 'level', 'slot1',
+                  'slot2', 'slot3', 'armor', 'helmet', 'backpack', 'device1', 'device2', 'device3', 'belt1', 'belt2',
+                  'belt3', 'belt4', 'container1', 'container2', 'container3', 'container4', 'container5')
 
 
 class EditFormExtra(forms.ModelForm):

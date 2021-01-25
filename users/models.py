@@ -2,16 +2,17 @@ from datetime import datetime
 
 from cities_light.models import Country, City
 from ckeditor.fields import RichTextField
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import User, Group
 from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from equipment.models import Equip
+from equipment.models import EquipItem
 from multiselectfield import MultiSelectField
-from postap import settings
 from stdimage import StdImageField
 from userena import settings as userena_settings
 from userena.models import UserenaBaseProfile
@@ -275,9 +276,86 @@ class SiteUser(AbstractUser):
     xp = models.IntegerField(_('Experience'), default=0)
     level = models.IntegerField(_('Level'), default=0)
 
-    equipment = models.ForeignKey(Equip, on_delete=models.DO_NOTHING, blank=True, null=True, )
+    # EQUIPMENT
+
+    slot1 = models.ForeignKey(EquipItem, related_name="weapons1", default=None, verbose_name="Первый слот",
+                              on_delete=models.CASCADE, null=True, blank=True)
+    slot2 = models.ForeignKey(EquipItem, related_name="weapons2", default=None, verbose_name="Второй слот",
+                              on_delete=models.CASCADE, null=True, blank=True)
+    slot3 = models.ForeignKey(EquipItem, related_name="weapons3", default=None, verbose_name="Третий слот",
+                              on_delete=models.CASCADE, null=True, blank=True)
+    armor = models.ForeignKey(EquipItem, related_name="armor", default=None, verbose_name="Броня",
+                              on_delete=models.CASCADE, null=True, blank=True)
+    helmet = models.ForeignKey(EquipItem, related_name="helmet", default=None, verbose_name="Шлем",
+                               on_delete=models.CASCADE, null=True, blank=True)
+    backpack = models.ForeignKey(EquipItem, related_name="backpack", default=None, verbose_name="Устройство №1",
+                                 on_delete=models.CASCADE, null=True, blank=True)
+
+    device1 = models.ForeignKey(EquipItem, related_name="device1", default=None, verbose_name="Устройство №1",
+                                on_delete=models.CASCADE, null=True, blank=True)
+    device2 = models.ForeignKey(EquipItem, related_name="device2", default=None, verbose_name="Устройство №2",
+                                on_delete=models.CASCADE, null=True, blank=True)
+    device3 = models.ForeignKey(EquipItem, related_name="device3", default=None, verbose_name="Устройство №3",
+                                on_delete=models.CASCADE, null=True, blank=True)
+
+    belt1 = models.ForeignKey(EquipItem, related_name="ammo1", default=None, verbose_name="Боеприпасы №1",
+                              on_delete=models.CASCADE, null=True, blank=True)
+    belt2 = models.ForeignKey(EquipItem, related_name="ammo2", default=None, verbose_name="Боеприпасы №2",
+                              on_delete=models.CASCADE, null=True, blank=True)
+    belt3 = models.ForeignKey(EquipItem, related_name="ammo3", default=None, verbose_name="Боеприпасы №3",
+                              on_delete=models.CASCADE, null=True, blank=True)
+    belt4 = models.ForeignKey(EquipItem, related_name="ammo4", default=None, verbose_name="Боеприпасы №4",
+                              on_delete=models.CASCADE, null=True, blank=True)
+
+    container1 = models.ForeignKey(EquipItem, related_name="art1", default=None, verbose_name="Артефакт №1",
+                                   on_delete=models.CASCADE, null=True, blank=True)
+    container2 = models.ForeignKey(EquipItem, related_name="art2", default=None, verbose_name="Артефакт №2",
+                                   on_delete=models.CASCADE, null=True, blank=True)
+    container3 = models.ForeignKey(EquipItem, related_name="art3", default=None, verbose_name="Артефакт №3",
+                                   on_delete=models.CASCADE, null=True, blank=True)
+    container4 = models.ForeignKey(EquipItem, related_name="art4", default=None, verbose_name="Артефакт №4",
+                                   on_delete=models.CASCADE, null=True, blank=True)
+    container5 = models.ForeignKey(EquipItem, related_name="art5", default=None, verbose_name="Артефакт №5",
+                                   on_delete=models.CASCADE, null=True, blank=True)
 
     last_online = models.DateTimeField(blank=True, null=True)
+
+    def clean(self, *args, **kwargs):
+        if self.slot1 and self.slot1.content_type.model != "weapon":
+            raise ValidationError('В слоте №1 должны быть обьекты типа WEAPON')
+        elif self.slot2 and self.slot2.content_type.model != "weapon":
+            raise ValidationError('В слоте №2 должны быть обьекты типа WEAPON')
+        elif self.slot3 and self.slot3.content_type.model != "weapon":
+            raise ValidationError('В слоте №3 должны быть обьекты типа WEAPON')
+        elif self.armor and self.armor.content_type.model != "outfit":
+            raise ValidationError('В слоте брони должны быть обьекты типа OUTFIT')
+        elif self.helmet and self.helmet.content_type.model != "helmet":
+            raise ValidationError('В слоте шлемов должны быть обьекты типа HELMET')
+        elif self.helmet and self.helmet.content_type.model == "helmet" and not self.armor.c_obj.helmet_built_in:
+            raise ValidationError('В используемом костюме уже имеется встроенный шлем')
+        elif self.backpack and self.backpack.content_type.model != "backpack":
+            raise ValidationError('В слоте рюкзаков должны быть обьекты типа BACKPACK')
+        elif self.device1 and self.device1.content_type.model != "device":
+            raise ValidationError('В слоте устройств должны быть обьекты типа DEVICE')
+        elif self.device2 and self.device2.content_type.model != "device":
+            raise ValidationError('В слоте устройств должны быть обьекты типа DEVICE')
+        elif self.device3 and self.device3.content_type.model != "device":
+            raise ValidationError('В слоте устройств должны быть обьекты типа DEVICE')
+        elif self.belt1 and self.belt1.content_type.model != "ammo":
+            raise ValidationError('На поясе [1] должны быть обьекты типа AMMO')
+        elif self.belt2 and self.belt2.content_type.model != "ammo":
+            raise ValidationError('На поясе [2] должны быть обьекты типа AMMO')
+        elif self.belt3 and self.belt3.content_type.model != "ammo":
+            raise ValidationError('На поясе  [3]должны быть обьекты типа AMMO')
+        elif self.belt4 and self.belt4.content_type.model != "ammo":
+            raise ValidationError('На поясе [4] должны быть обьекты типа AMMO')
+
+    def full_clean(self, *args, **kwargs):
+        return self.clean(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super(SiteUser, self).save(*args, **kwargs)
 
     # В данном методе проверяем, что дата последнего посещения не старше 15 минут
     def is_online(self):
@@ -296,6 +374,13 @@ class SiteUser(AbstractUser):
             # Если вы только недавно добавили информацию о посещении пользователем сайта
             # то для некоторых пользователей инфомации о посещении может и не быть, вернём информацию, что последнее посещение неизвестно
         return _('Unknown')
+
+    def __str__(self):
+        return self.username
+
+    class Meta:
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
 
 
 class UsersProfiles(UserenaBaseProfile):

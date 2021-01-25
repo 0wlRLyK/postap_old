@@ -6,7 +6,7 @@ from userena import settings as userena_settings
 from userena import views as userena_views
 
 from . import forms
-from .views import TransferMoney
+from . import views as u_views
 
 urlpatterns = [
     # Signup, signin and signout
@@ -127,7 +127,7 @@ urlpatterns = [
     # View profiles
     url(
         r"^(?P<username>(?!(signout|signup|signin)/)[\@\.\+\w-]+)/$",
-        userena_views.profile_detail,
+        u_views.profile_detail,
         name="userena_profile_detail",
     ),
     url(
@@ -137,5 +137,10 @@ urlpatterns = [
     ),
     url(r"^$", userena_views.ProfileListView.as_view(), name="userena_profile_list"),
 
-    path("transfer/money/", TransferMoney.as_view(), name="transfer_money")
+    path("transfer/money/", u_views.TransferMoney.as_view(), name="transfer_money"),
+    path("equip/remove/{}/".format("<slug:pk>"), u_views.RemoveFromSlot.as_view(), name="eq_remove"),
+    path("equip/set/slot1/{}/".format("<slug:pk>"), u_views.SetInSlot.as_view(slot_name="slot1"), name="eq_set__slot1"),
+    path("equip/set/slot2/{}/".format("<slug:pk>"), u_views.SetInSlot.as_view(slot_name="slot2"), name="eq_set__slot2"),
+    path("equip/set/slot3/{}/".format("<slug:pk>"), u_views.SetInSlot.as_view(slot_name="slot3"), name="eq_set__slot3"),
+    path("equip/set/armor/{}/".format("<slug:pk>"), u_views.SetInSlot.as_view(slot_name="armor"), name="eq_set__slot3"),
 ]

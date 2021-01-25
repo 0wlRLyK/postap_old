@@ -1,8 +1,8 @@
 {% extends 'userena/base_userena.html' %}
-{% load i18n %}
+{% load i18n static funcs %}
 
 
-{% block title %}{% blocktrans with profile.user.username as username %}{{ username }}'s profile.
+{% block title %}{% blocktrans with profile.user.username as username %}{{ username }}'s profile.user.
 {% endblocktrans %}{% endblock %}
 {% block content_title %}
     <h2>{{ profile.user.username }} {% if profile.user.get_full_name %}({{ profile.user.get_full_name }}
@@ -29,71 +29,230 @@
             {% endif %}
         {% endblock %}
 
+        <div id="profileTabs">
+            <ul>
+                <li><a href="#profile"> Профиль </a></li>
+                <li><a href="#equipment"> Снаряга </a></li>
+                <li><a href="#some"> Что-то </a></li>
+            </ul>
 
+            <div id="profile">
+                <div id="details">
+                    {% block profile_details %}
+                        {% if profile.user.bg %}
+                            <img class="mugshot" src="{{ profile.user.bg.url }}" title="{% trans "Your mugshot" %}"
+                                 style="width: 100%;"/>
+                        {% endif %}
+                        {% if profile.user.avatar %}
+                            <img class="mugshot" src="{{ profile.user.avatar.url }}" alt="{% trans "Your mugshot" %}"
+                                 height="150"/><br>
+                        {% endif %}
 
+                        {% if profile.user.money %}
 
-        {% if profile.bg %}
+                            Деньги: {{ profile.user.money }} <br>
+                        {% endif %}
 
-            <img class="mugshot" src="{{ profile.bg.url }}" alt="{% trans "Your mugshot" %}"/>
-        {% endif %}
-        <div id="details">
-            {% block profile_details %}
-
-                {% if profile.user.avatar %}
-                    <img class="mugshot" src="{{ profile.user.avatar.url }}" alt="{% trans "Your mugshot" %}"/><br>
-                {% endif %}
-
-                {% if profile.money %}
-
-                    Деньги: {{ profile.money }} <br>
-                {% endif %}
-
-                <dl>
-                    {% block profile_definition_list %}
-                        {% if profile.user.get_full_name %}
-                            <dt>{% trans "Name" %}</dt>
-                            <dd>{{ profile.user.get_full_name }}</dd>
-                        {% endif %}
-                        {% if profile.user.get_full_name %}
-                            <dt>Статус</dt>
-                            <dd>{{ profile.quote }}</dd>
-                        {% endif %}
-                        {% if profile.user.email and not hide_email %}
-                            <dt>{% trans "Email" %}</dt>
-                            <dd>{{ profile.user.email }}</dd>
-                        {% endif %}
-                        {% if profile.age %}
-                            <dt>{% trans "Age" %}</dt>
-                            <dd>{{ profile.age }}</dd>
-                        {% endif %}
-                        {% if profile.website %}
-                            <dt>{% trans "Website" %}</dt>
-                            <dd>{{ profile.website|urlize }}</dd>
-                        {% endif %}
-                        {% if profile.location %}
-                            <dt>{% trans "Location" %}</dt>
-                            <dd>{{ profile.location }}</dd>
-                        {% endif %}
-                        {% if profile.about_me %}
-                            <dt>{% trans "About me" %}</dt>
-                            <dd>{{ profile.about_me }}</dd>
-                        {% endif %}
-                        {% if profile.country %}
-                            <dt>{% trans "Country" %}</dt>
-                            <dd>{{ profile.country }}</dd>
-                        {% endif %}
-                        {% if profile.signature %}
-                            <dt>Подпись:</dt>
-                            <dd>{{ profile.signature }}</dd>
-                        {% endif %}
-                        {% if profile.sign_image %}
-                            <img class="mugshot" src="{{ profile.sign_image.url }}" alt="{% trans "Your mugshot" %}"/>
-                        {% endif %}
+                        <dl>
+                            {% block profile_definition_list %}
+                                {% if profile.user.get_full_name %}
+                                    <dt>{% trans "Name" %}</dt>
+                                    <dd>{{ profile.user.get_full_name }}</dd>
+                                {% endif %}
+                                <dt>{% trans "Online" %}</dt>
+                                <dd>{{ profile.user.last_online }}</dd>
+                                {% if profile.user.get_full_name %}
+                                    <dt>Статус</dt>
+                                    <dd>{{ profile.user.quote }}</dd>
+                                {% endif %}
+                                {% if profile.user.email and not hide_email %}
+                                    <dt>{% trans "Email" %}</dt>
+                                    <dd>{{ profile.user.email }}</dd>
+                                {% endif %}
+                                {% if profile.user.age %}
+                                    <dt>{% trans "Age" %}</dt>
+                                    <dd>{{ profile.user.age }}</dd>
+                                {% endif %}
+                                {% if profile.user.website %}
+                                    <dt>{% trans "Website" %}</dt>
+                                    <dd>{{ profile.user.website|urlize }}</dd>
+                                {% endif %}
+                                {% if profile.user.location %}
+                                    <dt>{% trans "Location" %}</dt>
+                                    <dd>{{ profile.user.location }}</dd>
+                                {% endif %}
+                                {% if profile.user.about_me %}
+                                    <dt>{% trans "About me" %}</dt>
+                                    <dd>{{ profile.user.about_me }}</dd>
+                                {% endif %}
+                                {% if profile.user.country %}
+                                    <dt>{% trans "Country" %}</dt>
+                                    <dd>{{ profile.user.country }}</dd>
+                                {% endif %}
+                                {% if profile.user.signature %}
+                                    <dt>Подпись:</dt>
+                                    <dd>{{ profile.user.signature }}</dd>
+                                {% endif %}
+                                {% if profile.user.sign_image %}
+                                    <img class="mugshot" src="{{ profile.user.sign_image.url }}"
+                                         alt="{% trans "Your mugshot" %}"/>
+                                {% endif %}
+                            {% endblock %}
+                        </dl>
                     {% endblock %}
-                </dl>
-            {% endblock %}
+                </div>
+            </div>
+            <div id="equipment">
+                <div id="equipment_base">
+
+                    {{ menu_user }}
+                    <div class="eq" id="equipped_slot1">
+                        {% include "users/equip/tooltip.html" with item=profile.user.slot1  slot="slot1" u_id=profile.user.id %}</div>
+                    <div class="eq" id="equipped_slot2">
+                        {% include "users/equip/tooltip.html" with item=profile.user.slot2  slot="slot2" u_id=profile.user.id %}</div>
+                    <div class="eq" id="equipped_slot3">
+                        {% include "users/equip/tooltip.html" with item=profile.user.slot3  slot="slot3" u_id=profile.user.id %}</div>
+                    <div class="eq" id="equipped_armor">
+                        {% if profile.user.armor %}
+                            {% include "users/equip/tooltip.html" with item=profile.user.armor  slot="armor" u_id=profile.user.id %}
+                        {% else %}
+                            <img src="{% static 'img/equip/icons/sviter.png' %}" alt="">
+                        {% endif %}
+                    </div>
+                    <div class="eq" id="equipped_armor__view">
+                        {% if profile.user.armor %}
+                            <img id="equipped_outfit_icon" src="{{ profile.user.armor.c_obj.equipped_icon.url }}"
+                                 alt="">
+                        {% else %}
+                            <img id="equipped_outfit_icon" src="{% static 'img/equip/icons/sviter_visual.png' %}"
+                                 alt="">
+                        {% endif %}
+                    </div>
+
+                    <div class="eq" id="equipped_armor__d">
+                        {% with profile.user.armor.c_obj as object %}
+                            <div class='eq_full'>
+                                <div class='eq-char'>
+                                    <img class='eq-ico' src='{% static 'img/icons/equip/ballistic.svg' %}'>
+                                    <div class='t-e_b'>Баллист.защита:</div>
+                                </div>
+                                <div class='eq-state_bg'>
+                                    <div class='eq-state' id="slot_outfit_ballistic"
+                                         style='width: {{ object.ballistic }}%;'></div>
+                                </div>
+                            </div>
+                            <div class='eq_full'>
+                                <div class='eq-char'>
+                                    <img class='eq-ico' src='{% static 'img/icons/equip/burst.svg' %}'>
+                                    <div class='t-e_b'>Защита от разрыва:</div>
+                                </div>
+                                <div class='eq-state_bg'>
+                                    <div class='eq-state' id="slot_outfit_burst"
+                                         style='width: {{ object.burst }}%;'></div>
+                                </div>
+                            </div>
+                            <div class='eq_full'>
+                                <div class='eq-char'>
+                                    <img class='eq-ico' src='{% static 'img/icons/equip/kick.svg' %}'>
+                                    <div class='t-e_b'>Гашение удара:</div>
+                                </div>
+                                <div class='eq-state_bg'>
+                                    <div class='eq-state' id="slot_outfit_kick"
+                                         style='width: {{ object.kick }}%;'></div>
+                                </div>
+                            </div>
+                            <div class='eq_full'>
+                                <div class='eq-char'>
+                                    <img class='eq-ico' src='{% static 'img/icons/equip/explosion.svg' %}'>
+                                    <div class='t-e_b'>Защита от взрыва:</div>
+                                </div>
+                                <div class='eq-state_bg'>
+                                    <div class='eq-state' id="slot_outfit_explosion"
+                                         style='width: {{ object.explosion }}%;'></div>
+                                </div>
+                            </div>
+                            <div class='eq_full'>
+                                <div class='eq-char'>
+                                    <img class='eq-ico' src='{% static 'img/icons/equip/thermal.svg' %}'>
+                                    <div class='t-e_b'>Термозащита:</div>
+                                </div>
+                                <div class='eq-state_bg'>
+                                    <div class='eq-state' id="slot_outfit_thermal"
+                                         style='width: {{ object.thermal }}%;'></div>
+                                </div>
+                            </div>
+                            <div class='eq_full'>
+                                <div class='eq-char'>
+                                    <img class='eq-ico' src='{% static 'img/icons/equip/electrical.svg' %}'>
+                                    <div class='t-e_b'>Электрозащита:</div>
+                                </div>
+                                <div class='eq-state_bg'>
+                                    <div class='eq-state' id="slot_outfit_electrical"
+                                         style='width: {{ object.electrical }}%;'></div>
+                                </div>
+                            </div>
+                            <div class='eq_full'>
+                                <div class='eq-char'>
+                                    <img class='eq-ico' src='{% static 'img/icons/equip/chemical.svg' %}'>
+                                    <div class='t-e_b'>Химзащита:</div>
+                                </div>
+                                <div class='eq-state_bg'>
+                                    <div class='eq-state' id="slot_outfit_chemical"
+                                         style='width: {{ object.chemical }}%;'></div>
+                                </div>
+                            </div>
+                            <div class='eq_full'>
+                                <div class='eq-char'>
+                                    <img class='eq-ico' src='{% static 'img/icons/equip/radioactive.svg' %}'>
+                                    <div class='t-e_b'>Радиозащита:</div>
+                                </div>
+                                <div class='eq-state_bg'>
+                                    <div class='eq-state' id="slot_outfit_radioactive"
+                                         style='width: {{ object.radioactive }}%;'></div>
+                                </div>
+                            </div>
+                            <div class='eq_full'>
+                                <div class='eq-char'>
+                                    <img class='eq-ico' src='{% static 'img/icons/equip/psi.svg' %}'>
+                                    <div class='t-e_b'>Пси-защита:</div>
+                                </div>
+                                <div class='eq-state_bg'>
+                                    <div class='eq-state' id="slot_outfit_psi" style='width: {{ object.psi }}%;'></div>
+                                </div>
+                            </div>
+                            <div class='eq_full'>
+                                <div class='eq-char'>
+                                    <img class='eq-ico' src='{% static 'img/icons/equip/weight.svg' %}'>
+                                    <div class='t-e_b'>Переносимый вес:</div>
+                                </div>
+                                <div class='eq-state_bg'>
+                                    <div class='eq-state' id="slot_outfit_weight"
+                                         style='width: {{ object.weight }}%;'></div>
+                                </div>
+                            </div>
+                            </div>
+                        {% endwith %}
+                    <div id="inventory">
+                        {% with u=profile.user %}
+                            {% for eq in equip %}
+                                {% with quantity=eq.quantity type=eq.content_type.model %}
+                                    {% if eq %}
+                                        {% if type == "weapon" and eq == u.slot1 %}
+                                        {% endif %}
+                                        <div class="eq-inv">{% include "users/equip/tooltip.html" with item=eq u_id=profile.user.id qua=eq|check:u.id %}</div>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endfor %}
+                        {% endwith %}</div>
+                </div>
+
+
+            </div>
+            <div id="some"><i class="fas fa-user"></i></div>
         </div>
     </div>
+
 {% endblock %}
+
 
 

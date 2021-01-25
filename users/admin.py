@@ -16,8 +16,13 @@ class SiteUserAdmin(UserAdmin):
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'avatar', 'birthday', 'gender', 'country',
                                          'city', 'signature', 'sign_image')}),
         ('Игровые характеристики', {
-            'fields': ('faction', 'speciality', 'rank', 'xp', 'level', 'money', 'reputation', 'equipment', 'hp', 'rad',
+            'fields': ('faction', 'speciality', 'rank', 'xp', 'level', 'money', 'reputation', 'hp', 'rad',
                        'satiety'),
+        }),
+        (_('Equipment'), {
+            'fields': ('slot1', 'slot2', 'slot3', 'armor', 'helmet', 'backpack', 'device1', 'device2', 'device3',
+                       'belt1', 'belt2', 'belt3', 'belt4', 'container1', 'container2', 'container3', 'container4',
+                       'container5'),
         }),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
