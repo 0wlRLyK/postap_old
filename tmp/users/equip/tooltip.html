@@ -3,7 +3,7 @@
     {% assign qua as quantity %}
     {% if item and quantity != 0 %}
         {% with quantity=item|check:u_id %}
-            <div class="equip-item">
+            <div class="equip-item" {% if show == False %}style="display: none"{% endif %}>
                 <tip title="
     <span class='t-title'>{{ object.name }}</span><br>
     {{ type }}<br>
@@ -75,7 +75,7 @@
 ">
                     <div class="equip-quantity" {% if slot or quantity == 1 %}style="display: none"{% endif %}>
                         x{{ quantity }}</div>
-                    {% if item.condition %}
+                    {% if item.condition and type in "weapon,outfit,helmet" %}
                         <div class="equip-condition_wrap">
                             <div class="equip-condition c-{% if condition < 25 %}red{% elif condition < 50 %}orange{% elif condition < 75 %}yellow{% else %}green{% endif %} "
                                  style="width: {{ condition }}%"></div>
@@ -85,8 +85,13 @@
                          data-id="{{ item.id }}" {% if slot %} data-slot="{{ slot }}" {% endif %}
                          data-type="{{ type }}" {% if slot %}id="e-{{ slot }}"{% endif %}
                          {% if type == "outfit" %}data-imgpath="{{ object.equipped_icon.url }}"{% endif %}
+                         {% if type == "ammo" %}data-ammo-count="{{ object.quantity }}"
+                         data-ammo-id="{{ object.id }}"{% endif %}
+                         {% if type == "weapon" %}data-capacity="{{ object.capacity }}"
+                         data-ammo-types="{{ object.id|get_ids:"all" }}"{% endif %}
                          data-count="{{ item.quantity }}"
                          data-current-count="{% if slot %}{{ quantity }}{% else %}{{ quantity }}{% endif %}"
+                         {% if type in "outfit,backpack,container1,container2,container3,container4,container5" %}data-weight="{{ object.weight }}"{% endif %}
                          src="{{ object.icon.url }}" alt=""></tip>
             </div>
         {% endwith %}

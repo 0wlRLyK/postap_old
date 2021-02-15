@@ -9,7 +9,7 @@ from users.models import Group
 
 
 def upload_to(instance, filename):
-    return '/'.join(['equip', str(instance.eq_type), filename])
+    return '/'.join(['equip', str(instance._meta.model_name), filename])
 
 
 class Item(models.Model):
@@ -131,19 +131,18 @@ class OutfitAbstract(Item):
 
     sort = models.CharField(choices=OUTFIT_TYPES, max_length=100, verbose_name="Тип брони")
 
-    ballistic = models.FloatField(default=0, verbose_name="Балистическая защита уникального костюма")
-    burst = models.FloatField(default=0, verbose_name="Защита от разрыва уникального костюма")
-    kick = models.FloatField(default=0, verbose_name="Гашение удара уникального костюма")
-    explosion = models.FloatField(default=0, verbose_name="Защита от взрыва уникального костюма")
-    thermal = models.FloatField(default=0, verbose_name="Термозащита уникального костюма")
-    chemical = models.FloatField(default=0, verbose_name="Химащита уникального костюма")
-    electrical = models.FloatField(default=0, verbose_name="Электрозащита уникального костюма")
-    radioactive = models.FloatField(default=0, verbose_name="Радиоактивная уникального костюма")
-    psi = models.FloatField(default=0, verbose_name="Пси защита уникального костюма")
-    weight = models.FloatField(default=0, verbose_name="Переносимый вес уникального костюма")
+    ballistic = models.FloatField(default=0, verbose_name="Балистическая защита")
+    burst = models.FloatField(default=0, verbose_name="Защита от разрыва")
+    kick = models.FloatField(default=0, verbose_name="Гашение удара")
+    explosion = models.FloatField(default=0, verbose_name="Защита от взрыва")
+    thermal = models.FloatField(default=0, verbose_name="Термозащита")
+    chemical = models.FloatField(default=0, verbose_name="Химащита")
+    electrical = models.FloatField(default=0, verbose_name="Электрозащита")
+    radioactive = models.FloatField(default=0, verbose_name="Радиоактивная")
+    psi = models.FloatField(default=0, verbose_name="Пси защита")
+    weight = models.FloatField(default=0, verbose_name="Переносимый вес")
 
-    arts_max = models.IntegerField(default=0, verbose_name="Колличество контейнеров для артефактов")
-    modules_max = models.IntegerField(default=0, verbose_name="Колличество контейнеров для модулей")
+    containers = models.IntegerField(default=0, verbose_name="Колличество контейнеров для артефактов")
 
     running = models.BooleanField(default=True, verbose_name="Возможность бега")
 
@@ -233,7 +232,8 @@ class Helmet(HelmetAbstract, Mass):
 
 
 class Backpack(Item, Mass):
-    carry_weight = models.FloatField(default=0, verbose_name="Максимальный переносимый вес")
+    eq_type = "backpack"
+    weight = models.FloatField(default=0, verbose_name="Максимальный переносимый вес")
 
     class Meta:
         verbose_name = "Рюкзак"
@@ -241,6 +241,15 @@ class Backpack(Item, Mass):
 
 
 class Device(Item, Mass):
+    eq_type = "devices"
+    DEVICE_TYPES = [
+        ('pda', 'PDA'),
+        ('light', 'Фонарик/ПНВ'),
+        ('detector', 'Детектор'),
+        ('binocular', 'Бинокль'),
+        ('device', 'Прочее'),
+    ]
+    sort = models.CharField(choices=DEVICE_TYPES, max_length=100, default="device", verbose_name="Тип устройства")
     ACTIONS_FOR_USE = [
         ('use', 'Использовать'),
         ('play', 'Играть'),
@@ -285,6 +294,7 @@ class FoodAndMedicine(Item, Mass):
 
 class Misc(Item, Mass):
     pass
+    eq_type = "misc"
 
     class Meta:
         verbose_name = "Разное"
@@ -362,6 +372,12 @@ class EquipItem(models.Model):
     quantity = models.PositiveSmallIntegerField(default=1, verbose_name="Колличество предметов")
     condition = models.PositiveSmallIntegerField(default=100, verbose_name="Состояние предмета")
     cost = models.PositiveIntegerField(default=0, verbose_name="Стоимость предмета")
+    mass = models.FloatField(default=0.0)
+
+    # @property
+    # def mass(self):
+    #     "Returns the person's full name."
+    #     return float(self.c_obj.mass) * int(self.quantity)
 
     def __str__(self):
         return "{0} - {1} - {2}".format(self.name, self.content_type.name, self.object_id)
@@ -369,4 +385,5 @@ class EquipItem(models.Model):
     def save(self, *args, **kwargs):
         if not self.name:
             self.name = self.c_obj.name
+        self.mass = float(self.c_obj.mass) * int(self.quantity)
         super(EquipItem, self).save(*args, **kwargs)

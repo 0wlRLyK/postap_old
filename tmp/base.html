@@ -116,6 +116,11 @@
             mask-image: url("{% static 'img/icons/equip/mass.svg' %}");
         }
 
+        .eq_ico-weight {
+            mask-image: url("{% static 'img/icons/equip/weight_general.svg' %}");
+            mask-repeat: no-repeat;
+        }
+
         .eq_ico-condition {
             mask-image: url("{% static 'img/icons/equip/condition.svg' %}");
         }
@@ -133,10 +138,15 @@
 
         .eq-state_bg {
             height: 1.05em;
-            width: 55%;
+            width: 45%;
             background: #7d7d7d;
             display: inline-block;
             margin-top: .5em;
+            float: left;
+        }
+
+        .eq-perc {
+            display: inline-block;
             float: left;
         }
 
@@ -199,34 +209,66 @@
 
         #inventory {
             background: #141414;
-            width: 24.5vw;
-            height: 500px;
+            width: 350px;
+            height: 400px;
             border-radius: 5px;
-            display: inline-flex;
-
-            align-items: flex-start;
-            align-content: flex-start;
             position: absolute;
             border: 2px #9b9b9b dashed;
             top: 230px;
-            left: 2vw;
-            flex-wrap: wrap;
+            left: 20px;
+            display: flex;
+            flex-flow: column wrap;
+
+        }
+
+        #inventory > :nth-child(3n + 1) {
+            order: 1;
+        }
+
+        /* колонка 1 */
+        #inventory > :nth-child(3n + 2) {
+            order: 2;
+            margin: 0 -10%;
+        }
+
+        /* колонка 2 */
+        #inventory > :nth-child(3n + 3) {
+            order: 3;
+        }
+
+        /* колонка 3 */
+
+
+        #inventory > :nth-child(-n + 3) {
+            break-before: flex; /* так должно быть по текущей спеке */
+            break-before: always; /* так работает в Firefox, хотя не должно:) */
         }
 
         #inventory.hovering {
-            background-color: #F6BF66;
+            box-shadow: inset 0px 0px 10px 5px rgba(246, 191, 102, 0.5), inset 0px 0px 60px 20px rgba(246, 191, 102, 0.5);
         }
 
         #equipped_slot1.hovering, #equipped_slot2.hovering, #equipped_slot3.hovering {
-            background: rgb(21, 55, 54);
+            box-shadow: inset 0px 0px 10px 5px rgba(21, 55, 54, 0.7), inset 0px 0px 60px 20px rgba(21, 55, 54, 0.7);
         }
 
         #equipped_armor.hovering {
-            background: #182a37;
+            box-shadow: inset 0px 0px 10px 5px rgba(24, 42, 55, 0.7), inset 0px 0px 60px 20px rgba(24, 42, 55, 0.7);
+        }
+
+        #equipped_helmet.hovering, #equipped_device1.hovering, #equipped_device2.hovering, #equipped_device3.hovering,
+        #equipped_backpack.hovering, #equipped_belt1.hovering, #equipped_belt2.hovering, #equipped_belt3.hovering,
+        #equipped_belt4.hovering {
+            box-shadow: inset 0px 0px 10px 5px rgba(40, 40, 40, 0.7), inset 0px 0px 20px 20px rgba(40, 40, 40, 0.7);
+        }
+
+        #equipped_container1.hovering, #equipped_container2.hovering, #equipped_container3.hovering,
+        #equipped_container4.hovering, #equipped_container5.hovering {
+            box-shadow: inset 0px 0px 10px 5px rgba(26, 100, 76, 0.7), inset 0px 0px 20px 20px rgba(26, 100, 76, 0.7);
         }
 
         .eq-inv {
-            align-self: flex-start;
+            align-self: start;
             background: #141414;
             border-radius: 5px;
             display: flex;
@@ -273,13 +315,23 @@
             max-width: 100%;
         }
 
+        .slot-dscr {
+            background-repeat: no-repeat;
+        {#background-position: center;#} position: absolute;
+            top: 0;
+            left: 0;
+            height: 1.2em;
+            width: 100%;
+        }
+
         #equipped_slot1 {
-            top: 325px;
-            left: 29vw;
+            top: 320px;
+            left: 500px;
             width: 115px;
-            height: 50px;
+            height: 60px;
             max-width: 115px;
-            max-height: 50px;
+            max-height: 60px;
+            z-index: 2;
         }
 
         #equipped_slot2 img, #equipped_slot3 img {
@@ -288,55 +340,237 @@
 
         #equipped_slot2 {
             top: 80px;
-            left: 29vw;
+            left: 387px;
             width: 115px;
-            height: 250px;
+            height: 300px;
             max-width: 115px;
-            max-height: 250px;
+            max-height: 300px;
+            z-index: 2;
         }
 
         #equipped_slot3 {
             top: 80px;
-            right: 28vw;
+            right: 380px;
             width: 115px;
-            height: 250px;
+            height: 300px;
             max-width: 115px;
-            max-height: 250px;
+            max-height: 300px;
+            z-index: 2;
         }
 
         #equipped_armor {
             top: 80px;
-            left: 37.25vw;
-            width: 110px;
-            height: 250px;
+            left: 500px;
+            width: 115px;
+            height: 241px;
             max-width: 115px;
-            max-height: 250px;
+            max-height: 300px;
+        }
+
+        #equipped_helmet {
+            top: 80px;
+            right: 20px;
+            width: 154px;
+            height: 115px;
+            max-width: 154px;
+            max-height: 115px;
+            z-index: 2;
+        }
+
+        #equipped_backpack {
+            top: 193px;
+            right: 20px;
+            width: 154px;
+            height: 186px;
+            max-width: 154px;
+            max-height: 185px;
+        }
+
+        #equipped_device1 {
+            top: 378px;
+            left: 387px;
+            width: 115px;
+            height: 70px;
+            max-width: 115px;
+            max-height: 70px;
+        }
+
+        #equipped_device2 {
+            top: 378px;
+            left: 500px;
+            width: 115px;
+            height: 70px;
+            max-width: 115px;
+            max-height: 70px;
+        }
+
+        #equipped_device3 {
+            top: 378px;
+            right: 380px;
+            width: 115px;
+            height: 70px;
+            max-width: 115px;
+            max-height: 70px;
+        }
+
+        #equipped_container1 {
+            top: 446px;
+            left: 387px;
+            width: 70px;
+            height: 70px;
+            max-width: 70px;
+            max-height: 70px;
+        }
+
+        #equipped_container2 {
+            top: 446px;
+            left: 455px;
+            width: 70px;
+            height: 70px;
+            max-width: 70px;
+            max-height: 70px;
+        }
+
+        #equipped_container3 {
+            top: 446px;
+            left: 523px;
+            width: 70px;
+            height: 70px;
+            max-width: 70px;
+            max-height: 70px;
+        }
+
+        #equipped_container4 {
+            top: 446px;
+            left: 591px;
+            width: 70px;
+            height: 70px;
+            max-width: 70px;
+            max-height: 70px;
+        }
+
+        #equipped_container5 {
+            top: 446px;
+            left: 659px;
+            width: 70px;
+            height: 70px;
+            max-width: 70px;
+            max-height: 70px;
+        }
+
+        #container_belt1 {
+            left: 387px;
+            top: 513px;
+            width: 172px;
+            height: 80px;
+            max-width: 172px;
+            max-height: 80px;
+        }
+
+        #container_belt2 {
+            left: 556px;
+            top: 513px;
+            width: 172px;
+            height: 80px;
+            max-width: 172px;
+            max-height: 80px;
+        }
+
+        #container_belt3 {
+            left: 387px;
+            top: 590px;
+            width: 172px;
+            height: 80px;
+            max-width: 172px;
+            max-height: 80px;
+        }
+
+        #container_belt4 {
+            left: 556px;
+            top: 590px;
+            width: 172px;
+            height: 80px;
+            max-width: 172px;
+            max-height: 80px;
+        }
+
+        #equipped_belt1, #equipped_belt2, #equipped_belt3, #equipped_belt4 {
+            display: flex;
+            width: 40%;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .belt {
+            background: #141414;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            position: absolute;
+            border: 2px #9b9b9b dashed;
+            color: #e1b21b;
+            font-size: 1.5em;
+            font-family: "Jura B", sans-serif;
+        }
+
+        .belt_text {
+            display: flex;
+            width: 50%;
+            justify-content: center;
+        }
+
+        .empty_container {
+            background: url("/static/img/equip/icons/empty.png");
+            background-size: 100%;
         }
 
         #equipped_armor__view {
-            top: 215px;
-            right: 13vw;
-            width: 165px;
+            top: 80px;
+            right: 172px;
+            width: 210px;
             height: 300px;
-            max-width: 165px;
+            max-width: 210px;
             max-height: 300px;
             transition: all 1s;
         }
 
         #equipped_armor__d {
             display: block;
-            top: 540px;
-            right: 2.5vw;
-            width: 320px;
+            top: 378px;
+            right: 12px;
+            width: 370px;
             height: 300px;
-            max-width: 320px;
+            max-width: 370px;
             max-height: 300px;
+        }
+
+        #equipped_armor__d .eq_full {
+            display: flex;
+        }
+
+        #equipped_armor__d .eq_full .eq-char {
+            display: flex;
+            width: 10%;
+            float: left;
+            align-content: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #equipped_armor__d .eq_full .eq-ico {
+            height: 1.75em;
+            width: 1.75em;
         }
 
         #equipped_armor__d .eq_full .eq-state_bg {
             background: linear-gradient(to left, transparent 50%, #303030 50%);
-            background-size: 12%;
-            width: 50%;
+            background-size: 10%;
+            width: 42%;
+            display: flex;
+            align-self: center;
+            height: 1.5em;
+            margin-top: 0;
 
         }
 
@@ -346,9 +580,97 @@
         }
 
         #equipped_armor__d .t-e_b {
-            display: inline;
+            display: inline-flex;
             color: whitesmoke;
+            font-size: 1.25em;
         }
+
+        #equipped_armor__d .eq_full .eq-perc {
+            width: 12.5%;
+            display: flex;
+            color: #88e157;
+            font-size: 1.1em;
+            font-family: "Jura Light", sans-serif;
+            justify-content: center;
+            align-self: center;
+        }
+
+        #equipped_armor__d .eq_full .eq-perc_helmet {
+            width: 12.5%;
+            display: flex;
+            color: #4ba7e1;
+            font-size: 1.1em;
+            font-family: "Jura Light", sans-serif;
+            justify-content: center;
+            align-self: center;
+        }
+
+        #equipped_armor__d .eq_full .eq-perc_art {
+            width: 12.5%;
+            display: flex;
+            color: #e1b21b;
+            font-size: 1.1em;
+            font-family: "Jura Light", sans-serif;
+            justify-content: center;
+            align-self: center;
+        }
+
+        #equipped_armor__d .eq_full .eq-perc_sum {
+            width: 12.5%;
+            display: flex;
+            color: #ffffff;
+            font-size: 1.1em;
+            font-family: "Jura Light", sans-serif;
+            justify-content: center;
+            align-self: center;
+        }
+
+        #equipped_armor__d span {
+            font-family: "Jura SB", sans-serif;
+            font-size: 1em;
+        }
+
+        #equipment-mass {
+            top: 628px;
+            left: 20px;
+            width: 350px;
+            height: 40px;
+            max-width: 350px;
+            max-height: 40px;
+            transition: all 1s;
+        }
+
+        #equipment-mass .t-ico {
+            height: 2em;
+            width: 2em;
+            display: inline-block;
+            background-color: #FFDA00;
+            -webkit-animation: blink 1.0s linear infinite;
+            -moz-animation: blink 1.0s linear infinite;
+            -ms-animation: blink 1.0s linear infinite;
+            -o-animation: blink 1.0s linear infinite;
+            animation: blink 1.0s linear infinite;
+            animation: blink 1.0s linear infinite;
+
+        }
+
+        .inv_ico-weight {
+            background: url("{% static 'img/icons/equip/weight_general.svg' %}") no-repeat;
+            mask-repeat: no-repeat;
+            height: 1.75em;
+            width: 1.75em;
+        }
+
+        #equipment-mass {
+            font-size: 1.5em;
+            font-family: "Jura B", sans-serif;
+            color: white;
+        }
+
+        #equipment-mass #equip_mass {
+            color: #FFDA00;
+        }
+
 
         .e_slot {
             background-color: #0c85d0;
@@ -395,6 +717,70 @@
         .eq-slot1.hovering {
             background-color: #F6BF66;
         }
+
+        @keyframes text-blink-yellow {
+            0% {
+                text-shadow: 0 0 10px #FFDA00;
+            }
+            50% {
+                text-shadow: none;
+            }
+            100% {
+                text-shadow: 0 0 10px #FFDA00;
+            }
+        }
+
+        @-webkit-keyframes text-blink-yellow {
+            0% {
+                text-shadow: 0 0 10px #FFDA00;
+            }
+            50% {
+                text-shadow: none;
+            }
+            100% {
+                text-shadow: 0 0 10px #FFDA00;
+            }
+        }
+
+        @keyframes text-blink-red {
+            0% {
+                text-shadow: 0 1px 10px #ff0000;
+            }
+            50% {
+                text-shadow: none;
+            }
+            100% {
+                text-shadow: 0 1px 10px #ff0000;
+            }
+        }
+
+        @-webkit-keyframes text-blink-red {
+            0% {
+                text-shadow: 0 1px 10px #ff0000;
+            }
+            50% {
+                text-shadow: none;
+            }
+            100% {
+                text-shadow: 0 1px 10px #ff0000;
+            }
+        }
+
+        .txt_blink {
+            -webkit-animation: text-blink-yellow 2.75s linear infinite;
+            -moz-animation: text-blink-yellow 2.75s linear infinite;
+            -ms-animation: text-blink-yellow 2.75s linear infinite;
+            -o-animation: text-blink-yellow 2.75s linear infinite;
+            animation: text-blink-yellow 2.75s linear infinite;
+        }
+
+        .txt_blink-red {
+            -webkit-animation: text-blink-red 2.75s linear infinite;
+            -moz-animation: text-blink-red 2.75s linear infinite;
+            -ms-animation: text-blink-red 2.75s linear infinite;
+            -o-animation: text-blink-red 2.75s linear infinite;
+            animation: text-blink-red 2.75s linear infinite;
+        }
     </style>
 </head>
 <body>
@@ -440,20 +826,13 @@
             var $target = ui.target;
             switch (ui.cmd) {
                 case "remove":
-                    let data_id = $target.attr("data-id"),
-                        data_slot = $target.attr("data-slot");
+                    let dataId = $target.attr("data-id"),
+                        dataSlot = $target.attr("data-slot"),
+                        equipType = $target.attr("data-type"),
+                        slot_to = defineSlot(equipType);
 
-                    removeFromSlot($target, data_slot + "_" + data_id);
-                    let slot = $target.parent().parent();
-                    $('<div/>', {class: 'eq-inv'}).appendTo('#inventory').append(slot);
-                    let slot_n = slot.children().children();
-                    let new_slot = slot_n.last(),
-                        new_slot__q = slot_n.first();
-                    new_slot__q.css("display", "block");
-                    new_slot.attr("data-id", data_id);
-                    new_slot.attr("data-slot", "");
-                    new_slot.attr("class", "equip_inv_" + $target.attr("data-type"));
-                    slot.attr("id", "");
+                    removeFromSlot($target, dataSlot + "_" + dataId);
+                    fromSlot($target, "#inventory", dataId, equipType, slot_to, false);
 
 
                     break;
@@ -493,7 +872,7 @@
         },
     });
     /*
-      CONTEXT MENU :: WEAPONS
+      CONTEXT MENU :: ARMOR
     */
     // SET IN
     $.widget("moogle.contextmenu_outfit", $.moogle.contextmenu, {});
@@ -514,15 +893,176 @@
             }
         },
     });
+
+    /*
+      CONTEXT MENU :: HELMET
+    */
+    // SET IN
+    $.widget("moogle.contextmenu_helmet", $.moogle.contextmenu, {});
+    $(document).contextmenu_helmet({
+        delegate: ".equip_inv_helmet",
+        menu: [
+            {title: "<i>Переместить в слот шлемов</i>", cmd: "helmet", uiIcon: "ui-icon in"},
+
+            {title: "----"}
+        ],
+        select: function (event, ui) {
+            var $target = ui.target;
+            switch (ui.cmd) {
+                case "helmet":
+                    setInSlot($target, "helmet");
+                    setUpSlot($target, "helmet");
+                    break;
+            }
+        },
+    });
+    /*
+      CONTEXT MENU :: DEVICES
+    */
+    // SET IN
+    $.widget("moogle.contextmenu_device", $.moogle.contextmenu, {});
+    $(document).contextmenu_device({
+        delegate: ".equip_inv_device",
+        menu: [
+            // {title: "<i>Переместить в слот № 1</i>", cmd: "device1", uiIcon: "ui-icon in"},
+            {title: "<i>Переместить в слот детектора</i>", cmd: "device2", uiIcon: "ui-icon in"},
+            // {title: "<i>Переместить в слот № 3</i>", cmd: "device3", uiIcon: "ui-icon in"},
+
+            {title: "----"}
+        ],
+        select: function (event, ui) {
+            var $target = ui.target;
+            switch (ui.cmd) {
+                case "device1":
+                    setInSlot($target, "device1");
+                    setUpSlot($target, "device1");
+                    break;
+                case "device2":
+                    setInSlot($target, "device2");
+                    setUpSlot($target, "device2");
+                    break;
+                case "device3":
+                    setInSlot($target, "device3");
+                    setUpSlot($target, "device3");
+                    break;
+            }
+        },
+    });
+    /*
+     CONTEXT MENU :: HELMET
+   */
+    // SET IN
+    $.widget("moogle.contextmenu_backpack", $.moogle.contextmenu, {});
+    $(document).contextmenu_backpack({
+        delegate: ".equip_inv_backpack",
+        menu: [
+            {title: "<i>Переместить в слот рюкзаков</i>", cmd: "backpack", uiIcon: "ui-icon in"},
+
+            {title: "----"}
+        ],
+        select: function (event, ui) {
+            var $target = ui.target;
+            switch (ui.cmd) {
+                case "backpack":
+                    setInSlot($target, "backpack");
+                    setUpSlot($target, "backpack");
+                    break;
+            }
+        },
+    });
     /*
       DRAG AND DROP :: WEAPONS
     */
+    removeFromSlotClick("slot1");
+    removeFromSlotClick("slot2");
+    removeFromSlotClick("slot3");
+    removeFromSlotClick("armor");
+    removeFromSlotClick("helmet");
+    removeFromSlotClick("device2");
+    removeFromSlotClick("backpack");
+    removeFromSlotClick("container1");
+    removeFromSlotClick("container2");
+    removeFromSlotClick("container3");
+    removeFromSlotClick("container4");
+    removeFromSlotClick("container5");
+    removeFromSlotClick("belt1");
+    removeFromSlotClick("belt2");
+    removeFromSlotClick("belt3");
+    removeFromSlotClick("belt4");
     replaceInInventoryDnD("#e-slot1");
     replaceInInventoryDnD("#e-slot2");
     replaceInInventoryDnD("#e-slot3");
     replaceInInventoryDnD("#e-armor");
+    replaceInInventoryDnD("#e-helmet");
+    // replaceInInventoryDnD("#e-device1");
+    replaceInInventoryDnD("#e-device2");
+    // replaceInInventoryDnD("#e-device3");
+    replaceInInventoryDnD("#e-backpack");
+    replaceInInventoryDnD("#e-container1");
+    replaceInInventoryDnD("#e-container2");
+    replaceInInventoryDnD("#e-container3");
+    replaceInInventoryDnD("#e-container4");
+    replaceInInventoryDnD("#e-container5");
+    replaceInInventoryDnD("#e-belt1");
+    replaceInInventoryDnD("#e-belt2");
+    replaceInInventoryDnD("#e-belt3");
+    replaceInInventoryDnD("#e-belt4");
+    $('body').on('dblclick', ".equip_inv_weapon", function () {
+        setInSlotClick(this, "weapon", ["slot1", "slot2", "slot3"]);
+    });
+    $('body').on('dblclick', ".equip_inv_outfit", function () {
+        setInSlotClick(this, "outfit", ["armor"]);
+    });
+    $('body').on('dblclick', ".equip_inv_helmet", function () {
+        setInSlotClick(this, "helmet", ["helmet"]);
+    });
+    $('body').on('dblclick', ".equip_inv_device", function () {
+        setInSlotClick(this, "device", ["device2"]);
+    });
+    $('body').on('dblclick', ".equip_inv_backpack", function () {
+        setInSlotClick(this, "backpack", ["backpack"]);
+    });
+    $('body').on('dblclick', ".equip_inv_ammo", function () {
+        setInSlotClick(this, "ammo", ["belt1", "belt2", "belt3", "belt4"], true);
+    });
     setInSlotDnD('.equip_inv_weapon', "#equipped_slot1, #equipped_slot2, #equipped_slot3", "weapon");
     setInSlotDnD('.equip_inv_outfit', "#equipped_armor", "outfit");
+    setInSlotDnD('.equip_inv_helmet', "#equipped_helmet", "helmet");
+    setInSlotDnD('.equip_inv_device', "#equipped_device2", "device");
+    setInSlotDnD('.equip_inv_backpack', "#equipped_backpack", "backpack");
+    setInAmmoDnD('.equip_inv_ammo', "#equipped_belt1, #equipped_belt2, #equipped_belt3, #equipped_belt4", "ammo");
+    let containersQuantity = Number($("#containers").attr("data-containers"));
+    if (containersQuantity >= 5) {
+        replaceInInventoryDnD("#e-container5");
+        $('body').on('dblclick', ".equip_inv_artifact", function () {
+            setInSlotClick(this, "artifact", ["container1", "container2", "container3", "container4", "container5"]);
+        });
+        setInSlotDnD('.equip_inv_artifact', "#equipped_container1, #equipped_container2, #equipped_container3, #equipped_container4, #equipped_container5", "artifact");
+    } else if (containersQuantity >= 4) {
+        replaceInInventoryDnD("#e-container4");
+        $('body').on('dblclick', ".equip_inv_artifact", function () {
+            setInSlotClick(this, "artifact", ["container1", "container2", "container3", "container4"]);
+        });
+        setInSlotDnD('.equip_inv_artifact', "#equipped_container1, #equipped_container2, #equipped_container3, #equipped_container4", "artifact");
+    } else if (containersQuantity >= 3) {
+        replaceInInventoryDnD("#e-container3");
+        setInSlotDnD('.equip_inv_artifact', "#equipped_container1, #equipped_container2", "artifact");
+        $('body').on('dblclick', ".equip_inv_artifact", function () {
+            setInSlotClick(this, "artifact", ["container1", "container2", "container3", "container4"]);
+        });
+    } else if (containersQuantity >= 2) {
+        replaceInInventoryDnD("#e-container2");
+        $('body').on('dblclick', ".equip_inv_artifact", function () {
+            setInSlotClick(this, "artifact", ["container1", "container2"]);
+        });
+        setInSlotDnD('.equip_inv_artifact', "#equipped_container1, #equipped_container2", "artifact");
+    } else if (containersQuantity >= 1) {
+        replaceInInventoryDnD("#e-container1");
+        $('body').on('dblclick', ".equip_inv_artifact", function () {
+            setInSlotClick(this, "artifact", ["container1"]);
+        });
+        setInSlotDnD('.equip_inv_artifact', "#equipped_container1", "artifact");
+    }
 
 </script>
 {% block javascript %}

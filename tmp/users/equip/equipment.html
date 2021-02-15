@@ -1,0 +1,152 @@
+{% load i18n static funcs %}
+<div id="equipment">
+    <div id="equipment_base">
+        <div class="eq" id="equipped_slot1">
+            <div class="slot-dscr" style="background-image: url({% static 'img/icons/equip/slots/slot1.svg' %});"></div>
+            {% include "users/equip/tooltip.html" with item=profile.user.slot1  slot="slot1" u_id=profile.user.id %}
+        </div>
+        <div class="eq" id="equipped_slot2">
+            <div class="slot-dscr" style="background-image: url({% static 'img/icons/equip/slots/slot2.svg' %});"></div>
+            {% include "users/equip/tooltip.html" with item=profile.user.slot2  slot="slot2" u_id=profile.user.id %}
+        </div>
+        <div class="eq" id="equipped_slot3">
+            <div class="slot-dscr" style="background-image: url({% static 'img/icons/equip/slots/slot3.svg' %});"></div>
+            {% include "users/equip/tooltip.html" with item=profile.user.slot3  slot="slot3" u_id=profile.user.id %}
+        </div>
+        <div class="eq" id="equipped_armor">
+            <div class="slot-dscr" style="background-image: url({% static 'img/icons/equip/slots/armor.svg' %});"></div>
+            {% if profile.user.armor %}
+                {% include "users/equip/tooltip.html" with item=profile.user.armor  slot="armor" u_id=profile.user.id %}
+            {% else %}
+                <img src="{% static 'img/equip/icons/sviter.png' %}" alt="">
+            {% endif %}
+        </div>
+        <div class="eq" id="equipped_helmet">
+            {% include "users/equip/tooltip.html" with item=profile.user.helmet  slot="helmet" u_id=profile.user.id %}</div>
+        <div class="eq" id="equipped_backpack">
+            {% include "users/equip/tooltip.html" with item=profile.user.backpack  slot="backpack" u_id=profile.user.id %}</div>
+
+        <div class="eq" id="equipped_device1">
+            {% if profile.user.device1 %}
+                {% include "users/equip/tooltip.html" with item=profile.user.device1  slot="device1" u_id=profile.user.id %}
+            {% else %}
+                <img src="{% static 'img/equip/icons/pda.png' %}" alt="">
+            {% endif %}</div>
+        <div class="eq" id="equipped_device2">
+            {% include "users/equip/tooltip.html" with item=profile.user.device2  slot="device2" u_id=profile.user.id %}</div>
+        <div class="eq" id="equipped_device3">
+            {% if profile.user.device3 %}
+                {% include "users/equip/tooltip.html" with item=profile.user.device3  slot="device3" u_id=profile.user.id %}
+            {% else %}
+                <img src="{% static 'img/equip/icons/binoc.png' %}" alt="">
+            {% endif %}</div>
+        {% with containers=profile.user.armor.c_obj.containers %}
+
+
+            <div id="containers" data-containers="{{ containers }}"></div>
+            <div id="equipped_container1"
+                 class="{% if containers >= 1 %}{% assign show1 as True %}eq
+                     {% else %}{% assign show1 as False %}eq empty_container{% endif %}">
+                {% include "users/equip/tooltip.html" with item=profile.user.container1  slot="container1" u_id=profile.user.id show=show1 %}</div>
+            <div id="equipped_container2"
+                 class="{% if containers >= 2 %}{% assign show2 as True %}eq
+                     {% else %}{% assign show2 as False %}eq empty_container{% endif %}">
+                {% include "users/equip/tooltip.html" with item=profile.user.container2  slot="container2" u_id=profile.user.id show=show2 %}</div>
+            <div id="equipped_container3"
+                 class="{% if containers >= 3 %}{% assign show3 as True %}eq
+                     {% else %}{% assign show3 as False %}eq empty_container{% endif %}">
+                {% include "users/equip/tooltip.html" with item=profile.user.container3  slot="container3" u_id=profile.user.id show=show3 %}</div>
+            <div id="equipped_container4"
+                 class="{% if containers >= 4 %}{% assign show4 as True %}eq
+                     {% else %}{% assign show4 as False %}eq empty_container{% endif %}">
+                {% include "users/equip/tooltip.html" with item=profile.user.container4  slot="container4" u_id=profile.user.id show=show4 %}</div>
+            <div id="equipped_container5"
+                 class="{% if containers >= 5 %}{% assign show5 as True %}eq
+                     {% else %}{% assign show5 as False %}eq empty_container{% endif %}">
+                {% include "users/equip/tooltip.html" with item=profile.user.container5  slot="container5" u_id=profile.user.id show=show5 %}</div>
+        {% endwith %}
+
+        <div class="belt" id="container_belt1">
+            <div id="equipped_belt1">{% include "users/equip/tooltip.html" with item=profile.user.belt1  slot="belt1" u_id=profile.user.id %}</div>
+            <div class="belt_text">
+                <img class="belt_type" src="
+                        {% if profile.user.belt1.c_obj in profile.user.slot1.c_obj.ammo_type.all %}{% static 'img/icons/ok.png' %}
+        {% elif not profile.user.belt1 %}{% else %}{% static 'img/icons/er.png' %}{% endif %}" alt="">
+                <span class="belt_one">{% if profile.user.belt1 %}
+                    {{ profile.user.slot1.c_obj.capacity|default:0 }}{% endif %}</span>
+                <span class="slash" {% if not profile.user.belt1 %}style="display:none;"{% endif %}>/</span>
+                <span class="belt_all">{% widthratio profile.user.belt1.c_obj.quantity 1 profile.user.belt1.quantity|default:1 %}</span>
+            </div>
+        </div>
+        <div class="belt" id="container_belt2">
+            <div id="equipped_belt2">{% include "users/equip/tooltip.html" with item=profile.user.belt2  slot="belt2" u_id=profile.user.id %}</div>
+            <div class="belt_text">
+                <img class="belt_type" src="
+                        {% if profile.user.belt2.c_obj in profile.user.slot2.c_obj.ammo_type.all %}{% static 'img/icons/ok.png' %}
+        {% elif not profile.user.belt2 %}{% else %}{% static 'img/icons/er.png' %}{% endif %}" alt="">
+                <span class="belt_one">{% if profile.user.belt2 %}
+                    {{ profile.user.slot2.c_obj.capacity|default:0 }}{% endif %}</span>
+                <span class="slash" {% if not profile.user.belt2 %}style="display:none;"{% endif %}>/</span>
+                <span class="belt_all">{% widthratio profile.user.belt2.c_obj.quantity 1 profile.user.belt2.quantity|default:1 %}</span>
+            </div>
+        </div>
+        <div class="belt" id="container_belt3">
+            <div id="equipped_belt3">{% include "users/equip/tooltip.html" with item=profile.user.belt3  slot="belt3" u_id=profile.user.id %}</div>
+            <div class="belt_text">
+                <img class="belt_type" src="
+                        {% if profile.user.belt3.c_obj in profile.user.slot3.c_obj.ammo_type.all %}{% static 'img/icons/ok.png' %}
+        {% elif not profile.user.belt3 %}{% else %}{% static 'img/icons/er.png' %}{% endif %}" alt="">
+                <span class="belt_one">{% if profile.user.belt3 %}
+                    {{ profile.user.slot3.c_obj.capacity|default:0 }}{% endif %}</span>
+                <span class="slash" {% if not profile.user.belt3 %}style="display:none;"{% endif %}>/</span>
+                <span class="belt_all">{% widthratio profile.user.belt3.c_obj.quantity 1 profile.user.belt3.quantity|default:1 %}</span>
+            </div>
+        </div>
+        <div class="belt" id="container_belt4">
+            <div id="equipped_belt4">{% include "users/equip/tooltip.html" with item=profile.user.belt4  slot="belt4" u_id=profile.user.id %}</div>
+            <div class="belt_text">
+                <span class="belt_one">{% if profile.user.belt4 %}
+                    {{ profile.user.belt4.c_obj.quantity |default:0 }}{% endif %}</span>
+                <span class="slash" {% if not profile.user.belt4 %}style="display:none;"{% endif %}>/</span>
+                <span class="belt_all">{% widthratio profile.user.belt4.c_obj.quantity 1 profile.user.belt4.quantity|default:1 %}</span>
+            </div>
+        </div>
+        <div class="eq" id="equipped_armor__view">
+            {% if profile.user.armor %}
+                <img id="equipped_outfit_icon" src="{{ profile.user.armor.c_obj.equipped_icon.url }}"
+                     alt="">
+            {% else %}
+                <img id="equipped_outfit_icon" src="{% static 'img/equip/icons/sviter_visual.png' %}"
+                     alt="">
+            {% endif %}
+        </div>
+
+        <div class="eq" id="equipped_armor__d">
+            {% include "users/equip/specifications.html" %}
+        </div>
+        <div class="eq" id="equipment-mass">
+            <div class='inv_ico-weight'></div>
+            <span id="equip_mass"
+                  class="txt_blink{% if mass.mass__sum > weight %}-red" style="color:red;{% endif %}">{{ mass.mass__sum }} </span>
+            <span style="margin-left: 10px; margin-right: 10px;">/</span> <span id="equip_weight"> {{ weight }}</span>
+        </div>
+        <div id="inventory">
+            {% with u=profile.user %}
+                {% for eq in equip %}
+                    {% with quantity=eq.quantity type=eq.content_type.model %}
+                        {% if eq %}
+
+                            {% if type == "weapon" and eq == u.slot1 %}
+                            {% endif %}
+                            <div class="eq-inv">{% include "users/equip/tooltip.html" with item=eq u_id=profile.user.id qua=eq|check:u.id %}</div>
+                        {% endif %}
+                    {% endwith %}
+                {% endfor %}
+            {% endwith %}</div>
+    </div>
+
+
+</div>
+<div id="some"><i class="fas fa-user"></i></div>
+</div>
+</div>

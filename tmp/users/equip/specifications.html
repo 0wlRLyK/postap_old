@@ -1,0 +1,230 @@
+{% load static %}
+{% with  object=profile.user.armor.c_obj helmet=profile.user.helmet.c_obj art1=profile.user.container1.c_obj art2=profile.user.container2.c_obj art3=profile.user.container3.c_obj art4=profile.user.container4.c_obj art5=profile.user.container5.c_obj %}
+    <div class='eq_full'>
+        <div class='eq-char' style="width: 52%;font-size: 0.925em; justify-content: end;"><span class="t-e_b">Характеристики защиты</span>
+        </div>
+        <div class='eq-perc'><img class='eq-ico' src='{% static 'img/icons/equip/descr/armor.svg' %}'
+                                  alt="Защита костюма:" title="Защита костюма:"></div>
+        <div class='eq-perc_helmet'><img class='eq-ico' src='{% static 'img/icons/equip/descr/helmet.svg' %}'
+                                         alt="Защита шлема:" title="Защита шлема:"></div>
+        <div class='eq-perc_art'><img class='eq-ico' src='{% static 'img/icons/equip/descr/art.svg' %}'
+                                      alt="Защита артефактов:" title="Защита артефактов:"></div>
+        <div class='eq-perc_sum'><img class='eq-ico' src='{% static 'img/icons/equip/descr/sum.svg' %}'
+                                      alt="Защита артефактов:" title="Защита артефактов:"></div>
+    </div>
+    <div class='eq_full'>
+        <div class='eq-char'><img class='eq-ico' src='{% static 'img/icons/equip/descr/ballistic.svg' %}'
+                                  alt="Баллист.защита:" title="Баллист.защита:"></div>
+        <div class='eq-state_bg'>
+            <div class='eq-state' id="slot_outfit_ballistic"
+                 style='width: {{ object.ballistic }}%;'></div>
+        </div>
+        <div class='eq-perc'><span id="os_ballistic">{{ object.ballistic|default:0 }}</span> %</div>
+        <div class='eq-perc_helmet'><span id="hs_ballistic">{{ helmet.ballistic|default:0 }}</span> %</div>
+        <div class='eq-perc_art'>
+                <span id="ballistic_art" {% if art1 %}data-container1="{{ art1.ballistic|default:0 }}"{% endif %}
+                      {% if art2 %}data-container2="{{ art2.ballistic|default:0 }}"{% endif %}
+                      {% if art3 %}data-container3="{{ art3.ballistic|default:0 }}"{% endif %}
+                      {% if art4 %}data-container4="{{ art4.ballistic|default:0 }}"{% endif %}
+                      {% if art5 %}data-container5="{{ art5.ballistic|default:0 }}"{% endif %}>
+                {{ ballistic_art|default:0 }}</span> %
+        </div>
+        <div class='eq-perc_sum'><span id="sum_ballistic">{{ ballistic|default:0 }}</span> %</div>
+    </div>
+
+    <div class='eq_full'>
+        <div class='eq-char'>
+            <img class='eq-ico' src='{% static 'img/icons/equip/descr/burst.svg' %}' alt="Защита от разрыва:"
+                 title="Защита от разрыва:">
+        </div>
+        <div class='eq-state_bg'>
+            <div class='eq-state' id="slot_outfit_burst"
+                 style='width: {{ object.burst }}%;'></div>
+        </div>
+        <div class='eq-perc'><span id="os_burst">{{ object.burst|default:0 }}</span> %</div>
+        <div class='eq-perc_helmet'><span id="hs_burst">{{ helmet.burst|default:0 }}</span> %</div>
+        <div class='eq-perc_art'>
+                <span id="burst_art" {% if art1 %}data-container1="{{ art1.burst|default:0 }}"{% endif %}
+                      {% if art2 %}data-container2="{{ art2.burst|default:0 }}"{% endif %}
+                      {% if art3 %}data-container3="{{ art3.burst|default:0 }}"{% endif %}
+                      {% if art4 %}data-container4="{{ art4.burst|default:0 }}"{% endif %}
+                      {% if art5 %}data-container5="{{ art5.burst|default:0 }}"{% endif %}>
+                {{ burst_art|default:0 }}</span> %
+        </div>
+        <div class='eq-perc_sum'><span id="sum_burst">{{ burst|default:0 }}</span> %</div>
+    </div>
+
+    <div class='eq_full'>
+        <div class='eq-char'>
+            <img class='eq-ico' src='{% static 'img/icons/equip/descr/kick.svg' %}' alt="Гашение удара:"
+                 title="Гашение удара:">
+        </div>
+        <div class='eq-state_bg'>
+            <div class='eq-state' id="slot_outfit_kick"
+                 style='width: {{ object.kick }}%;'></div>
+        </div>
+        <div class='eq-perc'><span id="os_kick">{{ object.kick|default:0 }}</span> %</div>
+        <div class='eq-perc_helmet'><span id="hs_kick">{{ helmet.kick|default:0 }}</span> %</div>
+        <div class='eq-perc_art'>
+                <span id="kick_art" {% if art1 %}data-container1="{{ art1.kick|default:0 }}"{% endif %}
+                      {% if art2 %}data-container2="{{ art2.kick|default:0 }}"{% endif %}
+                      {% if art3 %}data-container3="{{ art3.kick|default:0 }}"{% endif %}
+                      {% if art4 %}data-container4="{{ art4.kick|default:0 }}"{% endif %}
+                      {% if art5 %}data-container5="{{ art5.kick|default:0 }}"{% endif %}>
+                {{ kick_art|default:0 }}</span> %
+        </div>
+        <div class='eq-perc_sum'><span id="sum_kick">{{ kick|default:0 }}</span> %</div>
+    </div>
+
+    <div class='eq_full'>
+        <div class='eq-char'>
+            <img class='eq-ico' src='{% static 'img/icons/equip/descr/explosion.svg' %}' alt="Защита от взрыва:"
+                 title="Защита от взрыва:">
+        </div>
+        <div class='eq-state_bg'>
+            <div class='eq-state' id="slot_outfit_explosion"
+                 style='width: {{ object.explosion }}%;'></div>
+        </div>
+        <div class='eq-perc'><span id="os_explosion">{{ object.explosion|default:0 }}</span> %</div>
+        <div class='eq-perc_helmet'><span id="hs_explosion">{{ helmet.explosion|default:0 }}</span> %</div>
+        <div class='eq-perc_art'>
+                <span id="explosion_art" {% if art1 %}data-container1="{{ art1.ballistic|default:0 }}"{% endif %}
+                      {% if art2 %}data-container2="{{ art2.explosion|default:0 }}"{% endif %}
+                      {% if art3 %}data-container3="{{ art3.explosion|default:0 }}"{% endif %}
+                      {% if art4 %}data-container4="{{ art4.explosion|default:0 }}"{% endif %}
+                      {% if art5 %}data-container5="{{ art5.explosion|default:0 }}"{% endif %}>
+                {{ explosion_art|default:0 }}</span> %
+        </div>
+        <div class='eq-perc_sum'><span id="sum_explosion">{{ explosion|default:0 }}</span> %</div>
+    </div>
+
+    <div class='eq_full'>
+        <div class='eq-char'>
+            <img class='eq-ico' src='{% static 'img/icons/equip/descr/thermal.svg' %}' alt="Термозащита:"
+                 title="Термозащита:">
+        </div>
+        <div class='eq-state_bg'>
+            <div class='eq-state' id="slot_outfit_thermal"
+                 style='width: {{ object.thermal }}%;'></div>
+        </div>
+        <div class='eq-perc'><span id="os_thermal">{{ object.thermal|default:0 }}</span> %</div>
+        <div class='eq-perc_helmet'><span id="hs_thermal">{{ helmet.thermal|default:0 }}</span> %</div>
+        <div class='eq-perc_art'>
+                <span id="thermal_art" {% if art1 %}data-container1="{{ art1.thermal|default:0 }}"{% endif %}
+                      {% if art2 %}data-container2="{{ art2.thermal|default:0 }}"{% endif %}
+                      {% if art3 %}data-container3="{{ art3.thermal|default:0 }}"{% endif %}
+                      {% if art4 %}data-container4="{{ art4.thermal|default:0 }}"{% endif %}
+                      {% if art5 %}data-container5="{{ art5.thermal|default:0 }}"{% endif %}>
+                {{ thermal_art|default:0 }}</span> %
+        </div>
+        <div class='eq-perc_sum'><span id="sum_thermal">{{ thermal|default:0 }}</span> %</div>
+    </div>
+
+    <div class='eq_full'>
+        <div class='eq-char'>
+            <img class='eq-ico' src='{% static 'img/icons/equip/descr/electrical.svg' %}' alt="Электрозащита:"
+                 title="Электрозащита:">
+        </div>
+        <div class='eq-state_bg'>
+            <div class='eq-state' id="slot_outfit_electrical"
+                 style='width: {{ object.electrical }}%;'></div>
+        </div>
+        <div class='eq-perc'><span id="os_electrical">{{ object.electrical|default:0 }}</span> %</div>
+        <div class='eq-perc_helmet'><span id="hs_electrical">{{ helmet.electrical|default:0 }}</span> %</div>
+        <div class='eq-perc_art'>
+                <span id="electrical_art" {% if art1 %}data-container1="{{ art1.electrical|default:0 }}"{% endif %}
+                      {% if art2 %}data-container2="{{ art2.electrical|default:0 }}"{% endif %}
+                      {% if art3 %}data-container3="{{ art3.electrical|default:0 }}"{% endif %}
+                      {% if art4 %}data-container4="{{ art4.electrical|default:0 }}"{% endif %}
+                      {% if art5 %}data-container5="{{ art5.electrical|default:0 }}"{% endif %}>
+                {{ electrical_art|default:0 }}</span> %
+        </div>
+        <div class='eq-perc_sum'><span id="sum_electrical">{{ electrical|default:0 }}</span> %</div>
+    </div>
+
+    <div class='eq_full'>
+        <div class='eq-char'>
+            <img class='eq-ico' src='{% static 'img/icons/equip/descr/chemical.svg' %}' alt="Химзащита:"
+                 title="Химзащита:">
+            <div class='t-e_b'></div>
+        </div>
+        <div class='eq-state_bg'>
+            <div class='eq-state' id="slot_outfit_chemical"
+                 style='width: {{ object.chemical }}%;'></div>
+        </div>
+        <div class='eq-perc'><span id="os_chemical">{{ object.chemical|default:0 }}</span> %</div>
+        <div class='eq-perc_helmet'><span id="hs_chemical">{{ helmet.chemical|default:0 }}</span> %</div>
+        <div class='eq-perc_art'>
+                <span id="chemical_art" {% if art1 %}data-container1="{{ art1.chemical|default:0 }}"{% endif %}
+                      {% if art2 %}data-container2="{{ art2.chemical|default:0 }}"{% endif %}
+                      {% if art3 %}data-container3="{{ art3.chemical|default:0 }}"{% endif %}
+                      {% if art4 %}data-container4="{{ art4.chemical|default:0 }}"{% endif %}
+                      {% if art5 %}data-container5="{{ art5.chemical|default:0 }}"{% endif %}>
+                {{ chemical_art|default:0 }}</span> %
+        </div>
+        <div class='eq-perc_sum'><span id="sum_chemical">{{ chemical|default:0 }}</span> %</div>
+    </div>
+    <div class='eq_full'>
+        <div class='eq-char'>
+            <img class='eq-ico' src='{% static 'img/icons/equip/descr/radioactive.svg' %}' alt="Радиозащита:"
+                 title="Радиозащита:">
+        </div>
+        <div class='eq-state_bg'>
+            <div class='eq-state' id="slot_outfit_radioactive"
+                 style='width: {{ object.radioactive }}%;'></div>
+        </div>
+        <div class='eq-perc'><span id="os_radioactive">{{ object.radioactive|default:0 }}</span> %</div>
+        <div class='eq-perc_helmet'><span id="hs_radioactive">{{ helmet.radioactive|default:0 }}</span> %</div>
+        <div class='eq-perc_art'>
+                <span id="radioactive_art" {% if art1 %}data-container1="{{ art1.radioactive|default:0 }}"{% endif %}
+                      {% if art2 %}data-container2="{{ art2.radioactive|default:0 }}"{% endif %}
+                      {% if art3 %}data-container3="{{ art3.radioactive|default:0 }}"{% endif %}
+                      {% if art4 %}data-container4="{{ art4.radioactive|default:0 }}"{% endif %}
+                      {% if art5 %}data-container5="{{ art5.radioactive|default:0 }}"{% endif %}>
+                {{ radioactive_art|default:0 }}</span> %
+        </div>
+        <div class='eq-perc_sum'><span id="sum_radioactive">{{ radioactive|default:0 }}</span> %</div>
+    </div>
+
+    <div class='eq_full'>
+        <div class='eq-char'>
+            <img class='eq-ico' src='{% static 'img/icons/equip/descr/psi.svg' %}' alt="Пси-защита:"
+                 title="Пси-защита:">
+        </div>
+        <div class='eq-state_bg'>
+            <div class='eq-state' id="slot_outfit_psi" style='width: {{ object.psi }}%;'></div>
+        </div>
+        <div class='eq-perc'><span id="os_psi">{{ object.psi|default:0 }}</span> %</div>
+        <div class='eq-perc_helmet'><span id="hs_psi">{{ helmet.psi|default:0 }}</span> %</div>
+        <div class='eq-perc_art'>
+                <span id="psi_art" {% if art1 %}data-container1="{{ art1.psi|default:0 }}"{% endif %}
+                      {% if art2 %}data-container2="{{ art2.psi|default:0 }}"{% endif %}
+                      {% if art3 %}data-container3="{{ art3.psi|default:0 }}"{% endif %}
+                      {% if art4 %}data-container4="{{ art4.psi|default:0 }}"{% endif %}
+                      {% if art5 %}data-container5="{{ art5.psi|default:0 }}"{% endif %}>
+                {{ psi_art|default:0 }}</span> %
+        </div>
+        <div class='eq-perc_sum'><span id="sum_psi">{{ psi|default:0 }}</span> %</div>
+    </div>
+
+    <div class='eq_full'>
+        <div class='eq-char'>
+            <img class='eq-ico' src='{% static 'img/icons/equip/descr/weight.svg' %}' alt="Переносимый вес:"
+                 title="Переносимый вес:">
+        </div>
+        <div class='eq-state_bg' style="visibility: hidden"></div>
+        <div class='eq-perc t-e_b'><span id="os_weight">{{ object.weight|default:0 }}</span> кг</div>
+        <div class='eq-perc_helmet'></div>
+        <div class='eq-perc_art'>
+                    <span id="weight_art" {% if art1 %}data-container1="{{ art1.weight|default:0 }}"{% endif %}
+                          {% if art2 %}data-container2="{{ art2.weight|default:0 }}"{% endif %}
+                          {% if art3 %}data-container3="{{ art3.weight|default:0 }}"{% endif %}
+                          {% if art4 %}data-container4="{{ art4.weight|default:0 }}"{% endif %}
+                          {% if art5 %}data-container5="{{ art5.weight|default:0 }}"{% endif %}>
+                    {{ weight_art|default:0 }}</span> кг
+        </div>
+        <div class='eq-perc_sum'><span id="sum_weight">{{ weight|default:0 }}</span> кг</div>
+    </div>
+
+
+{% endwith %}

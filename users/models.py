@@ -330,9 +330,9 @@ class SiteUser(AbstractUser):
         elif self.armor and self.armor.content_type.model != "outfit":
             raise ValidationError('В слоте брони должны быть обьекты типа OUTFIT')
         elif self.helmet and self.helmet.content_type.model != "helmet":
+            if self.armor.c_obj and self.armor.c_obj.helmet_built_in:
+                raise ValidationError('В используемом костюме уже имеется встроенный шлем')
             raise ValidationError('В слоте шлемов должны быть обьекты типа HELMET')
-        elif self.helmet and self.helmet.content_type.model == "helmet" and not self.armor.c_obj.helmet_built_in:
-            raise ValidationError('В используемом костюме уже имеется встроенный шлем')
         elif self.backpack and self.backpack.content_type.model != "backpack":
             raise ValidationError('В слоте рюкзаков должны быть обьекты типа BACKPACK')
         elif self.device1 and self.device1.content_type.model != "device":
