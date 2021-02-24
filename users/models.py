@@ -8,6 +8,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -261,11 +262,13 @@ class SiteUser(AbstractUser):
     rpl_second_name = models.CharField(_('Second name of hero'), max_length=50, default="", blank=True)
 
     rpl_bio = RichTextField(_('Biography of hero'), default="", blank=True)
-    rpl_avatar = models.ForeignKey(Avatar, verbose_name=_('avatar'), on_delete=models.CASCADE, blank=True, null=True)
+    rpl_avatar = models.ForeignKey(Avatar, verbose_name=_('avatar'), default='img/profile/no_data.gif',
+                                   on_delete=models.CASCADE, blank=True, null=True)
     speciality = models.CharField(_('Speciality of hero'), max_length=200, choices=SPECIALITIES, default="no")
     rpl_xp = models.IntegerField(_('Experience of hero'), default=0)
     rpl_lvl = models.IntegerField(_('Level of hero'), default=0)
-    rank = models.IntegerField(_('Rank of hero'), default=0)
+    rpl_rank = models.PositiveSmallIntegerField(_('Rank of user'), default=1,
+                                                validators=[MinValueValidator(1), MaxValueValidator(10)])
 
     hp = models.PositiveSmallIntegerField(_('Health points'), default=100)
     rad = models.SmallIntegerField(_('Radiation points'), default=0)
@@ -275,6 +278,8 @@ class SiteUser(AbstractUser):
     money = models.IntegerField(_('Money'), default=0)
     xp = models.IntegerField(_('Experience'), default=0)
     level = models.IntegerField(_('Level'), default=0)
+    rank = models.PositiveSmallIntegerField(_('Rank of hero'), default=1,
+                                            validators=[MinValueValidator(1), MaxValueValidator(5)])
 
     # EQUIPMENT
 
@@ -319,6 +324,18 @@ class SiteUser(AbstractUser):
                                    on_delete=models.CASCADE, null=True, blank=True)
 
     last_online = models.DateTimeField(blank=True, null=True)
+
+    @property
+    def get_equip_items(self):
+        return self.equip_items.all()
+
+    @property
+    def full_rank(self):
+        return settings.LEVELS[self.rank]
+
+    @property
+    def full_rpl_rank(self):
+        return settings.RANKS_ROLEPLAY[self.rpl_rank]
 
     def clean(self, *args, **kwargs):
         if self.slot1 and self.slot1.content_type.model != "weapon":

@@ -1,6 +1,15 @@
 {% load i18n static funcs %}
 <div id="equipment">
     <div id="equipment_base">
+        <div class="eq" id="pers_bio">
+            <img src="{{ profile.user.rpl_avatar.image.url|default:"/static/img/profile/no_data.gif" }}" alt=""
+                 style="float: left">
+            <div class="personal_info">
+                <p>Имя: <strong>{{ user.rpl_nickname }}</strong></p>
+                <p>Группировка: <strong>{{ user.faction }}</strong></p>
+                <p>Ранг: <strong>{{ user.full_rpl_rank }}</strong></p>
+            </div>
+        </div>
         <div class="eq" id="equipped_slot1">
             <div class="slot-dscr" style="background-image: url({% static 'img/icons/equip/slots/slot1.svg' %});"></div>
             {% include "users/equip/tooltip.html" with item=profile.user.slot1  slot="slot1" u_id=profile.user.id %}
@@ -127,7 +136,7 @@
         <div class="eq" id="equipment-mass">
             <div class='inv_ico-weight'></div>
             <span id="equip_mass"
-                  class="txt_blink{% if mass.mass__sum > weight %}-red" style="color:red;{% endif %}">{{ mass.mass__sum }} </span>
+                  class="txt_blink{% if mass.mass__sum > weight %}-red" style="color:red;{% endif %}">{{ mass.mass__sum|default_if_none:0 }} </span>
             <span style="margin-left: 10px; margin-right: 10px;">/</span> <span id="equip_weight"> {{ weight }}</span>
         </div>
         <div id="inventory">

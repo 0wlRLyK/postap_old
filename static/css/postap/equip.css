@@ -1,0 +1,793 @@
+.tooltip {
+    position: absolute;
+    left: -2000px;
+    padding: 5px;
+    width: 37vw;
+}
+
+.tooltip p {
+    margin: 0;
+    color: #fff;
+    padding: 5px 7px;
+    border-radius: 3.5px;
+    background: #202020 url(/static/bg/1r.png);
+    background-size: 10%;
+    font-family: "Jura", sans-serif;
+    font-size: 1em;
+    border: 2px #404040 solid;
+}
+
+.tooltip p .t-title {
+    font-family: "Bender B", sans-serif;
+    font-size: 1.1em;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+}
+
+.tooltip p .t-text {
+    font-size: .85em;
+    text-indent: 10%;
+}
+
+.tooltip p .t-bold {
+    font-family: "Jura B", sans-serif;
+}
+
+.t-red {
+    color: #ea2719
+}
+
+.t-yellow {
+    color: #e6ea25;
+}
+
+.t-orange {
+    color: #ea901a;
+}
+
+.t-green {
+    color: #34e12e;
+}
+
+.c-red {
+    background-color: #ea2719
+}
+
+.c-yellow {
+    background-color: #e6ea25;
+}
+
+.c-orange {
+    background-color: #ea901a;
+}
+
+.c-green {
+    background-color: #34e12e;
+}
+
+.t-ico {
+    height: 1.1em;
+    width: 1.1em;
+    display: inline-block;
+    background-color: white;
+}
+
+.t-e_b { /* Equip Bold */
+    font-family: "Jura", sans-serif;
+}
+
+.eq-ico {
+    height: 1.2em;
+    width: 1.2em;
+    display: inline-block;
+}
+
+
+.t-hr {
+    display: inline-block;
+    width: 100%;
+    height: 1px;
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%' height='100%' fill='none' stroke='%23939393FF' stroke-width='5' stroke-dasharray='12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+}
+
+.eq_ico-mass {
+    mask-image: url("/static/img/icons/equip/mass.svg");
+}
+
+.eq_ico-weight {
+    mask-image: url("/static/img/icons/equip/weight_general.svg");
+    mask-repeat: no-repeat;
+}
+
+.eq_ico-condition {
+    mask-image: url("/static/img/icons/equip/condition.svg");
+}
+
+.eq_full {
+    width: 100%;
+    display: inline-block;
+}
+
+.eq-char {
+    display: inline-block;
+    width: 45%;
+    float: left;
+}
+
+.eq-state_bg {
+    height: 1.05em;
+    width: 45%;
+    background: #7d7d7d;
+    display: inline-block;
+    margin-top: .5em;
+    float: left;
+}
+
+.eq-perc {
+    display: inline-block;
+    float: left;
+}
+
+.eq-state {
+    height: 100%;
+    background: #5FB756;
+    display: inline-block;
+    float: left;
+}
+
+.eq-ammo {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    word-spacing: 2em;
+}
+
+.equip-item {
+    display: flex;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.equip-quantity, .equip-quantity-tr, .equip-cost-tr {
+    font-family: "Jura B", sans-serif;
+    background: rgba(36, 35, 18, 0.7);
+    padding: 1px 3px;
+    color: #c9d7bc;
+    font-size: 8pt;
+    border-radius: 3px;
+    position: absolute;
+}
+
+.equip-cost-tr {
+    background: rgba(2, 53, 34, 0.6);
+    font-family: "Jura SB", sans-serif;
+    font-size: 8pt;
+    color: #e8fffc;
+    padding: 5px;
+}
+
+.equip-quantity, .equip-quantity-tr {
+    float: right;
+    top: 0;
+    left: 0;
+}
+
+.equip-cost-tr {
+    float: right;
+    bottom: 0;
+    left: 0;
+}
+
+.equip-condition_wrap {
+    position: absolute;
+    bottom: -3px;
+    width: 70px;
+}
+
+.equip-condition {
+    height: 0.25em;
+    min-width: 7.5%;
+}
+
+/* EQUIPMENT макет */
+#equipment_base {
+    background: url("/static/img/equip/equip_base_texture.png") no-repeat;
+    width: 100%;
+    height: 720px;
+    background-size: 100%;
+    top: 0;
+    left: 0;
+}
+
+#pers_bio {
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    width: 350px;
+    height: 120px;
+    max-width: 350px;
+    max-height: 120px;
+    z-index: 2;
+}
+
+#inventory {
+    background: #141414;
+    width: 350px;
+    height: 400px !important;
+    border-radius: 5px;
+    position: absolute;
+    border: 2px #9b9b9b solid;
+    top: 150px;
+    left: 20px;
+    display: flex;
+
+}
+
+
+#inventory.hovering {
+    box-shadow: inset 0px 0px 10px 5px rgba(246, 191, 102, 0.5), inset 0px 0px 60px 20px rgba(246, 191, 102, 0.5);
+}
+
+#equipped_slot1.hovering, #equipped_slot2.hovering, #equipped_slot3.hovering {
+    box-shadow: inset 0px 0px 10px 5px rgba(21, 55, 54, 0.7), inset 0px 0px 60px 20px rgba(21, 55, 54, 0.7);
+}
+
+#equipped_armor.hovering {
+    box-shadow: inset 0px 0px 10px 5px rgba(24, 42, 55, 0.7), inset 0px 0px 60px 20px rgba(24, 42, 55, 0.7);
+}
+
+#equipped_helmet.hovering, #equipped_device1.hovering, #equipped_device2.hovering, #equipped_device3.hovering,
+#equipped_backpack.hovering, #equipped_belt1.hovering, #equipped_belt2.hovering, #equipped_belt3.hovering,
+#equipped_belt4.hovering {
+    box-shadow: inset 0px 0px 10px 5px rgba(40, 40, 40, 0.7), inset 0px 0px 20px 20px rgba(40, 40, 40, 0.7);
+}
+
+#equipped_container1.hovering, #equipped_container2.hovering, #equipped_container3.hovering,
+#equipped_container4.hovering, #equipped_container5.hovering {
+    box-shadow: inset 0px 0px 10px 5px rgba(26, 100, 76, 0.7), inset 0px 0px 20px 20px rgba(26, 100, 76, 0.7);
+}
+
+.eq-inv {
+    align-self: start;
+    background: #ffffff14;
+    border-radius: 5px;
+    display: flex;
+    position: relative;
+    margin-bottom: 5px;
+    /* border: 2px #9b9b9b solid; */
+}
+
+.grid-item, .user-item, .trader-item, .user-item-trade, .trader-item-trade {
+    align-self: start;
+    background: #ffffff14;
+    border-radius: 5px;
+    display: flex;
+    position: relative;
+    margin-bottom: 5px;
+}
+
+
+#inventory img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.eq {
+    background: #141414;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    border: 2px #9b9b9b solid;
+}
+
+tip {
+    display: block;
+}
+
+.eq tip {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    align-self: center;
+    justify-content: center;
+}
+
+.eq tip .equip-condition_wrap {
+    display: flex;
+    align-items: self-end;
+    justify-content: center;
+}
+
+.eq img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.slot-dscr {
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 1.2em;
+    width: 100%;
+}
+
+#equipped_slot1 {
+    top: 320px;
+    left: 500px;
+    width: 115px;
+    height: 60px;
+    max-width: 115px;
+    max-height: 60px;
+    z-index: 2;
+}
+
+#equipped_slot2 img, #equipped_slot3 img {
+    transform: rotate(-90deg);
+}
+
+#equipped_slot2 {
+    top: 80px;
+    left: 387px;
+    width: 115px;
+    height: 300px;
+    max-width: 115px;
+    max-height: 300px;
+    z-index: 2;
+}
+
+#equipped_slot3 {
+    top: 80px;
+    right: 380px;
+    width: 115px;
+    height: 300px;
+    max-width: 115px;
+    max-height: 300px;
+    z-index: 2;
+}
+
+#equipped_armor {
+    top: 80px;
+    left: 500px;
+    width: 115px;
+    height: 241px;
+    max-width: 115px;
+    max-height: 300px;
+}
+
+#equipped_helmet {
+    top: 80px;
+    right: 20px;
+    width: 154px;
+    height: 115px;
+    max-width: 154px;
+    max-height: 115px;
+    z-index: 2;
+}
+
+#equipped_backpack {
+    top: 193px;
+    right: 20px;
+    width: 154px;
+    height: 186px;
+    max-width: 154px;
+    max-height: 185px;
+}
+
+#equipped_device1 {
+    top: 378px;
+    left: 387px;
+    width: 115px;
+    height: 70px;
+    max-width: 115px;
+    max-height: 70px;
+}
+
+#equipped_device2 {
+    top: 378px;
+    left: 500px;
+    width: 115px;
+    height: 70px;
+    max-width: 115px;
+    max-height: 70px;
+}
+
+#equipped_device3 {
+    top: 378px;
+    right: 380px;
+    width: 115px;
+    height: 70px;
+    max-width: 115px;
+    max-height: 70px;
+}
+
+#equipped_container1 {
+    top: 446px;
+    left: 387px;
+    width: 70px;
+    height: 70px;
+    max-width: 70px;
+    max-height: 70px;
+}
+
+#equipped_container2 {
+    top: 446px;
+    left: 455px;
+    width: 70px;
+    height: 70px;
+    max-width: 70px;
+    max-height: 70px;
+}
+
+#equipped_container3 {
+    top: 446px;
+    left: 523px;
+    width: 70px;
+    height: 70px;
+    max-width: 70px;
+    max-height: 70px;
+}
+
+#equipped_container4 {
+    top: 446px;
+    left: 591px;
+    width: 70px;
+    height: 70px;
+    max-width: 70px;
+    max-height: 70px;
+}
+
+#equipped_container5 {
+    top: 446px;
+    left: 659px;
+    width: 70px;
+    height: 70px;
+    max-width: 70px;
+    max-height: 70px;
+}
+
+#container_belt1 {
+    left: 387px;
+    top: 513px;
+    width: 172px;
+    height: 80px;
+    max-width: 172px;
+    max-height: 80px;
+}
+
+#container_belt2 {
+    left: 556px;
+    top: 513px;
+    width: 172px;
+    height: 80px;
+    max-width: 172px;
+    max-height: 80px;
+}
+
+#container_belt3 {
+    left: 387px;
+    top: 590px;
+    width: 172px;
+    height: 80px;
+    max-width: 172px;
+    max-height: 80px;
+}
+
+#container_belt4 {
+    left: 556px;
+    top: 590px;
+    width: 172px;
+    height: 80px;
+    max-width: 172px;
+    max-height: 80px;
+}
+
+#equipped_belt1, #equipped_belt2, #equipped_belt3, #equipped_belt4 {
+    display: flex;
+    width: 40%;
+    justify-content: center;
+    height: 100%;
+}
+
+.belt {
+    background: #141414;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    position: absolute;
+    border: 2px #9b9b9b solid;
+    color: #e1b21b;
+    font-size: 1.5em;
+    font-family: "Jura B", sans-serif;
+}
+
+.belt_text {
+    display: flex;
+    width: 50%;
+    justify-content: center;
+}
+
+.empty_container {
+    background: url("/static/img/equip/icons/empty.png");
+    background-size: 100%;
+}
+
+#equipped_armor__view {
+    top: 80px;
+    right: 172px;
+    width: 210px;
+    height: 300px;
+    max-width: 210px;
+    max-height: 300px;
+    transition: all 1s;
+}
+
+#equipped_armor__d {
+    display: block;
+    top: 378px;
+    right: 12px;
+    width: 370px;
+    height: 300px;
+    max-width: 370px;
+    max-height: 300px;
+}
+
+#equipped_armor__d .eq_full {
+    display: flex;
+}
+
+#equipped_armor__d .eq_full .eq-char {
+    display: flex;
+    width: 10%;
+    float: left;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+#equipped_armor__d .eq_full .eq-ico {
+    height: 1.75em;
+    width: 1.75em;
+}
+
+#equipped_armor__d .eq_full .eq-state_bg {
+    background: linear-gradient(to left, transparent 50%, #303030 50%);
+    background-size: 10%;
+    width: 42%;
+    display: flex;
+    align-self: center;
+    height: 1.5em;
+    margin-top: 0;
+
+}
+
+#equipped_armor__d .eq_full .eq-state {
+    background: linear-gradient(to left, #7ed757 20%, #5FB756 80%);
+    background-size: 100%;
+}
+
+#equipped_armor__d .t-e_b {
+    display: inline-flex;
+    color: whitesmoke;
+    font-size: 1.25em;
+}
+
+#equipped_armor__d .eq_full .eq-perc {
+    width: 12.5%;
+    display: flex;
+    color: #88e157;
+    font-size: 1.1em;
+    font-family: "Jura Light", sans-serif;
+    justify-content: center;
+    align-self: center;
+}
+
+#equipped_armor__d .eq_full .eq-perc_helmet {
+    width: 12.5%;
+    display: flex;
+    color: #4ba7e1;
+    font-size: 1.1em;
+    font-family: "Jura Light", sans-serif;
+    justify-content: center;
+    align-self: center;
+}
+
+#equipped_armor__d .eq_full .eq-perc_art {
+    width: 12.5%;
+    display: flex;
+    color: #e1b21b;
+    font-size: 1.1em;
+    font-family: "Jura Light", sans-serif;
+    justify-content: center;
+    align-self: center;
+}
+
+#equipped_armor__d .eq_full .eq-perc_sum {
+    width: 12.5%;
+    display: flex;
+    color: #ffffff;
+    font-size: 1.1em;
+    font-family: "Jura Light", sans-serif;
+    justify-content: center;
+    align-self: center;
+}
+
+#equipped_armor__d span {
+    font-family: "Jura SB", sans-serif;
+    font-size: 1em;
+}
+
+#equipment-mass {
+    top: 628px;
+    left: 20px;
+    width: 350px;
+    height: 40px;
+    max-width: 350px;
+    max-height: 40px;
+    transition: all 1s;
+}
+
+#equipment-mass .t-ico {
+    height: 2em;
+    width: 2em;
+    display: inline-block;
+    background-color: #FFDA00;
+    -webkit-animation: blink 1.0s linear infinite;
+    -moz-animation: blink 1.0s linear infinite;
+    -ms-animation: blink 1.0s linear infinite;
+    -o-animation: blink 1.0s linear infinite;
+    animation: blink 1.0s linear infinite;
+    animation: blink 1.0s linear infinite;
+
+}
+
+.inv_ico-weight {
+    background: url("static/img/icons/equip/weight_general.svg") no-repeat;
+    mask-repeat: no-repeat;
+    height: 1.75em;
+    width: 1.75em;
+}
+
+#equipment-mass {
+    font-size: 1.5em;
+    font-family: "Jura B", sans-serif;
+    color: white;
+}
+
+#equipment-mass #equip_mass {
+    color: #FFDA00;
+}
+
+
+.e_slot {
+    background-color: #0c85d0;
+}
+
+.page-header {
+    margin-top: 0;
+}
+
+/* Only for the demo */
+.hasmenu {
+    border: 1px solid #008;
+    margin: 3px;
+    padding: 5px;
+    width: 30px;
+}
+
+/* Optionally define a fixed width for menus */
+.ui-menu {
+    width: 220px;
+}
+
+/* Allow to use <kbd> elements inside the title to define shortcut hints. */
+.ui-menu kbd {
+    padding-left: 1em;
+    float: right;
+}
+
+.ui-contextmenu {
+    z-index: 10000;
+}
+
+/* Define a custom icon */
+.ui-icon.in {
+    background-image: url("/static/img/icons/in-arrow.svg");
+    background-position: 0 0;
+}
+
+.ui-icon.out {
+    background-image: url("/static/img/icons/out-arrow.svg");
+    background-position: 0 0;
+}
+
+.eq-slot1.hovering {
+    background-color: #F6BF66;
+}
+
+@keyframes text-blink-yellow {
+    0% {
+        text-shadow: 0 0 10px #FFDA00;
+    }
+    50% {
+        text-shadow: none;
+    }
+    100% {
+        text-shadow: 0 0 10px #FFDA00;
+    }
+}
+
+@-webkit-keyframes text-blink-yellow {
+    0% {
+        text-shadow: 0 0 10px #FFDA00;
+    }
+    50% {
+        text-shadow: none;
+    }
+    100% {
+        text-shadow: 0 0 10px #FFDA00;
+    }
+}
+
+@keyframes text-blink-red {
+    0% {
+        text-shadow: 0 1px 10px #ff0000;
+    }
+    50% {
+        text-shadow: none;
+    }
+    100% {
+        text-shadow: 0 1px 10px #ff0000;
+    }
+}
+
+@-webkit-keyframes text-blink-red {
+    0% {
+        text-shadow: 0 1px 10px #ff0000;
+    }
+    50% {
+        text-shadow: none;
+    }
+    100% {
+        text-shadow: 0 1px 10px #ff0000;
+    }
+}
+
+.txt_blink {
+    -webkit-animation: text-blink-yellow 2.75s linear infinite;
+    -moz-animation: text-blink-yellow 2.75s linear infinite;
+    -ms-animation: text-blink-yellow 2.75s linear infinite;
+    -o-animation: text-blink-yellow 2.75s linear infinite;
+    animation: text-blink-yellow 2.75s linear infinite;
+}
+
+.txt_blink-red {
+    -webkit-animation: text-blink-red 2.75s linear infinite;
+    -moz-animation: text-blink-red 2.75s linear infinite;
+    -ms-animation: text-blink-red 2.75s linear infinite;
+    -o-animation: text-blink-red 2.75s linear infinite;
+    animation: text-blink-red 2.75s linear infinite;
+}
+
+.personal_info {
+    /* width: 100%; */
+    font-family: "Jura";
+    font-size: 1.25em;
+    height: 105px;
+    display: flex;
+    flex-flow: column;
+    color: #FFFFFF;
+}
+
+strong {
+    font-family: "Jura SB";
+}

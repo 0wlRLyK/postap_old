@@ -1,0 +1,295 @@
+{% load static mathfilters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ trader.name }}</title>
+    <link href="{% static 'css/postap/equip.css' %}" rel="stylesheet">
+    <link href="{% static 'css/jquery/draganddrop.css' %}" rel="stylesheet">
+    <link href="{% static 'css/fonts.css' %}" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Jura";
+            padding: 0;
+            margin: 0;
+        }
+
+        p {
+            line-height: 0.15em;
+        }
+
+        strong {
+            font-family: "Jura SB";
+        }
+
+        h2 {
+            font-family: "Jura SB";
+            font-size: 1.15em;
+            line-height: 0.25em;
+        }
+
+        hr {
+            border: 1px solid #c6c6c6;
+        }
+
+        #user_container, #trader_container {
+            width: 48%;
+            height: 100vh;
+            background: #141414;
+            padding: 0% 1%;
+            margin: 0;
+
+            display: block;
+            position: relative;
+            float: left;
+            color: #FFFFFF;
+        }
+
+        #user_items_sell, #trader_items_sell {
+            min-height: 150px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        #user_items, #trader_items {
+            min-height: 240px;
+            max-height: 240px;
+            overflow-y: auto;
+        }
+
+        #user_items, #trader_items, #user_items_sell, #trader_items_sell {
+            width: 100%;
+            background: #202020;
+            border-radius: 10px;
+        }
+
+        .personal_info {
+            height: 105px;
+            display: flex;
+            flex-flow: column;
+            font-size: 1em;
+            padding: 0 15px;
+        }
+
+        .pers_name {
+            font-family: "Jura B";
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+<div id="user_container">
+    <h2><span class="pers_name">{{ user.rpl_nickname }}</span></h2>
+    <hr>
+    <img src="{{ user.rpl_avatar.image.url|default:"/static/img/profile/no_data.gif" }}" alt="{{ user.username }}"
+         style="float: left">
+    <div class="personal_info">
+        <p>Группа: <strong>{{ user.faction }}</strong></p>
+        <p>Ранг: <strong>{{ user.full_rpl_rank }}</strong></p>
+        <p>Баланс: <strong><span id="user-money">{{ user.money }}</span> ₴</strong></p>
+    </div>
+    <hr>
+    <div id="user_items_sell">
+    </div>
+    <p>
+        <button onclick="tradeSell('#user_items_sell')">Продать</button>
+        <span id="user_sum_money">0</span> <strong>₴</strong>
+        ( <span id="user_sum_mass">0.0</span> ) <strong>кг.</strong>
+    </p>
+
+    <div id="user_items">
+        {% for item in user_equip %}
+            <div class="user-item">
+                {% include "users/roleplay/tooltip.html" with item=item object=item.c_obj quantity=item.quantity  cost=item.c_obj.cost|mul:trader.coef_buy type=item.content_type.model trade_type="user" %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="trader_container">
+    <h2><span class="pers_name">{{ trader.name }}</span></h2>
+    <hr>
+    <img src="{{ trader.avatar.url|default:"/static/img/profile/no_data.gif" }}" alt="{{ trader.name }}"
+         style="float: left">
+    <div class="personal_info">
+
+        <p>Группа: <strong>{{ trader.faction }}</strong></p>
+        <p>Ранг: <strong>{{ trader.full_rank }}</strong></p>
+        <p>Баланс: <strong>{% if trader.inf %} --- {% else %}<span id="user-money">{{ trader.money }}</span>
+            ₴{% endif %} </strong></p>
+    </div>
+    <hr>
+    <div id="trader_items_sell">
+    </div>
+    <p>
+        <button onclick="tradeBuy('#trader_items_sell')">Купить</button>
+        <span id="trader_sum_money">0</span> <strong>₴</strong>
+        ( <span id="trader_sum_mass">0.0</span> ) <strong>кг.</strong>
+    </p>
+    <div id="trader_items">
+        {% for item in weapons %}
+            <div class="trader-item">
+                {% include "users/roleplay/tooltip.html" with item=item object=item type="weapon"  cost=item.cost|mul:trader.coef_trade trade_type="trader" %}
+            </div>
+        {% endfor %}
+        {% for item in outfits %}
+            <div class="trader-item">
+                {% include "users/roleplay/tooltip.html" with item=item object=item type="outfit"  cost=item.cost|mul:trader.coef_trade trade_type="trader" %}
+            </div>
+        {% endfor %}
+        {% for item in helmets %}
+            <div class="trader-item">
+                {% include "users/roleplay/tooltip.html" with item=item object=item type="helmet"  cost=item.cost|mul:trader.coef_trade trade_type="trader" %}
+            </div>
+        {% endfor %}
+        {% for item in backpacks %}
+            <div class="trader-item">
+                {% include "users/roleplay/tooltip.html" with item=item object=item type="backpack"  cost=item.cost|mul:trader.coef_trade trade_type="trader" %}
+            </div>
+        {% endfor %}
+
+        {% for item in food_and_medicine %}
+            <div class="trader-item">
+                {% include "users/roleplay/tooltip.html" with item=item object=item type="foodandmedicine"  cost=item.cost|mul:trader.coef_trade trade_type="trader" %}
+            </div>
+        {% endfor %}
+        {% for item in ammo %}
+            <div class="trader-item">
+                {% include "users/roleplay/tooltip.html" with item=item object=item type="ammo"  cost=item.cost|mul:trader.coef_trade trade_type="trader" %}
+            </div>
+        {% endfor %}
+        {% for item in addons %}
+            <div class="trader-item">
+                {% include "users/roleplay/tooltip.html" with item=item object=item type="weapon"  cost=item.cost|mul:trader.coef_trade trade_type="trader" %}
+            </div>
+        {% endfor %}
+        {% for item in devices %}
+            <div class="trader-item">
+                {% include "users/roleplay/tooltip.html" with item=item object=item type="device"  cost=item.cost|mul:trader.coef_trade trade_type="trader" %}
+            </div>
+        {% endfor %}
+        {% for item in artifacts %}
+            <div class="trader-item">
+                {% include "users/roleplay/tooltip.html" with item=item object=item type="artifact"  cost=item.cost|mul:trader.coef_trade trade_type="trader" %}
+            </div>
+        {% endfor %}
+        {% for item in misc %}
+            <div class="trader-item">
+                {% include "users/roleplay/tooltip.html" with item=item object=item type="misc"  cost=item.cost|mul:trader.coef_trade trade_type="trader" %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<script src="{% static 'js/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'js/users/trade.js' %}"></script>
+{#<script src="{% static 'js/tooltip.js' %}"></script>#}
+<script src="{% static 'js/imagesloaded.min.js' %}"></script>
+<script src="{% static 'js/masonry.min.js' %}"></script>
+<script src="{% static 'js/jquery/draganddrop.js' %}"></script>
+
+<script>
+
+    let userItems = $('#user_items'),
+        traderItems = $('#trader_items'),
+        userItemsSell = $('#user_items_sell'),
+        traderItemsSell = $('#trader_items_sell');
+
+
+    userItems.imagesLoaded()
+        .done(function () {
+            userItems.masonry({
+                itemSelector: '.user-item',
+                gutter: 3,
+                isResizable: true,
+                isAnimated: true,
+                horizontalOrder: true,
+                // анимируем перестроение блоков
+                animationOptions: {
+                    queue: false,
+                    duration: 500
+                }
+            },);
+        });
+    traderItems.imagesLoaded()
+        .done(function () {
+            traderItems.masonry({
+                itemSelector: '.trader-item',
+                gutter: 3,
+                isResizable: true,
+                isAnimated: true,
+                horizontalOrder: true,
+                // анимируем перестроение блоков
+                animationOptions: {
+                    queue: false,
+                    duration: 500
+                }
+            },);
+        });
+    userItemsSell.imagesLoaded()
+        .done(function () {
+            userItemsSell.masonry({
+                itemSelector: '.user-item-trade',
+                gutter: 3,
+                isResizable: true,
+                isAnimated: true,
+                horizontalOrder: true,
+                // анимируем перестроение блоков
+                animationOptions: {
+                    queue: false,
+                    duration: 500
+                }
+            },);
+        });
+    traderItemsSell.imagesLoaded()
+        .done(function () {
+            traderItemsSell.masonry({
+                itemSelector: '.trader-item-trade',
+                gutter: 3,
+                isResizable: true,
+                isAnimated: true,
+                horizontalOrder: true,
+                // анимируем перестроение блоков
+                animationOptions: {
+                    queue: false,
+                    duration: 500
+                }
+            },);
+        });
+    $('#user_items').on('dblclick', ".user-item", function () {
+        toFieldByClick(this, "user", "to");
+    });
+    $('#user_items_sell').on('dblclick', ".user-item-trade", function () {
+        toFieldByClick(this, "user", "from");
+    });
+    $('#trader_items').on('dblclick', ".trader-item", function () {
+        toFieldByClick(this, "trader", "to");
+    });
+    $('#trader_items_sell').on('dblclick', ".trader-item-trade", function () {
+        toFieldByClick(this, "trader", "from");
+    });
+    {#toFieldDnD(".user-item", "user", "to");#}
+
+
+    $(".item_user").draggable({
+        droptarget: "#user_items_sell",
+        revert: true,
+        drop: function (evt, droptarget) {
+            let parent = $(this).parent().parent().parent();
+            $(parent).css("background_color", "darkgoldenrod");
+            toField(parent, "user", "to");
+            toFieldDnD(".item_user_sell", "user", "from");
+        }
+    });
+    $(".item_trader").draggable({
+        droptarget: "#trader_items_sell",
+        revert: true,
+        drop: function (evt, droptarget) {
+            let parent = $(this).parent().parent().parent();
+            $(parent).css("background_color", "darkgoldenrod");
+            toField(parent, "trader", "to");
+            toFieldDnD(".item_trader_sell", "trader", "from");
+        }
+    });
+</script>
+</body>
+</html>

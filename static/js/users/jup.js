@@ -1,3 +1,19 @@
+let inv = $('#inventory');
+
+inv.imagesLoaded()
+    .done(function () {
+        inv.masonry({
+            itemSelector: '.eq-inv',
+            isResizable: true,
+            isAnimated: true,
+// анимируем перестроение блоков
+            animationOptions: {
+                queue: false,
+                duration: 500
+            }
+        });
+    });
+
 function defineSlot(equipType, mode = "str") {
     let slot_to = "";
     if (equipType === "weapon") {
@@ -624,6 +640,7 @@ function toSlot(parentItem, slot, slot_to, dataId, currentQuantity, invItemCount
 
     $(newSlotItem).draggable('destroy');
     replaceInInventoryDnD(newSlotItem);
+    $("#inventory").masonry('remove', invItemParentCopy).masonry('layout');
 }
 
 function fromSlot(item, target, dataId, dataType, slot_to) {
@@ -637,7 +654,12 @@ function fromSlot(item, target, dataId, dataType, slot_to) {
         $("#container_belt" + item.attr("id").slice(-1)).children().children(".belt_one").text(0);
     }
     if (Number($("#inventory").find(`[data-id='${dataId}']`).length) === 0) {
-        $('<div/>', {class: 'eq-inv'}).appendTo($(target)).append($(slotItem));
+        // $('<div/>', {class: 'eq-inv'}).appendTo($(target)).append($(slotItem));
+        var $div = $("<div/>")
+            .attr("class", "eq-inv")
+            .html(slotItem);
+
+        $(target).append($div).masonry('appended', $div);
         invItem__q.css("display", "block").text("");
         invItem.attr({
                 "data-id": dataId,
@@ -664,7 +686,8 @@ function fromSlot(item, target, dataId, dataType, slot_to) {
 
     $(item).draggable('destroy');
     setInSlotDnD(item, slot_to, dataType);
-
+    inv.masonry('appended', slotItem).masonry('layout');
+    ;
     // setInSlotClick(dataType, defineSlot(dataType, mode="array"));
 
 }

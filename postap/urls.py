@@ -23,6 +23,7 @@ urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('', include('entries.urls')),
                   path('users/', include('users.urls')),
+                  path('rp/', include('roleplay.urls')),
                   path('polls/', include('voting.urls')),
                   path(r'comments/', include('django_comments_xtd.urls')),
                   path('tinymce/', include('tinymce.urls')),

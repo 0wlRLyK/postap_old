@@ -367,7 +367,7 @@ class EquipItem(models.Model):
     c_obj = GenericForeignKey('content_type', 'object_id')
     profile = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING,
                                 verbose_name="Профиль пользователя",
-                                related_name="item_profile", default=None, null=True, blank=True)
+                                related_name="equip_items", default=None, null=True, blank=True)
 
     quantity = models.PositiveSmallIntegerField(default=1, verbose_name="Колличество предметов")
     condition = models.PositiveSmallIntegerField(default=100, verbose_name="Состояние предмета")
@@ -386,4 +386,5 @@ class EquipItem(models.Model):
         if not self.name:
             self.name = self.c_obj.name
         self.mass = float(self.c_obj.mass) * int(self.quantity)
+        self.cost = float(self.c_obj.cost)
         super(EquipItem, self).save(*args, **kwargs)

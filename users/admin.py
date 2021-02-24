@@ -16,7 +16,7 @@ class SiteUserAdmin(UserAdmin):
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'avatar', 'birthday', 'gender', 'country',
                                          'city', 'signature', 'sign_image')}),
         ('Игровые характеристики', {
-            'fields': ('faction', 'speciality', 'rank', 'xp', 'level', 'money', 'reputation', 'hp', 'rad',
+            'fields': ('faction', 'rank', 'speciality', 'rpl_rank', 'xp', 'level', 'money', 'reputation', 'hp', 'rad',
                        'satiety'),
         }),
         (_('Equipment'), {

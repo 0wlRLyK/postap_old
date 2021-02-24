@@ -1,0 +1,8 @@
+{% load static mathfilters %}
+<div id="user_items">
+    {% for item in user_equip %}
+        <div class="user-item">
+            {% include "users/roleplay/tooltip.html" with item=item object=item.c_obj quantity=item.quantity  cost=item.c_obj.cost|mul:trader.coef_buy type=item.content_type.model trade_type="user" %}
+        </div>
+    {% endfor %}
+</div>

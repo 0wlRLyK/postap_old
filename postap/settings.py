@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'voting',
     'equipment',
     'favorites',
+    'roleplay',
 
     # TEMPORARY APPS
 
@@ -79,6 +80,7 @@ INSTALLED_APPS = [
     'ckeditor_uploader',
     'ckeditor',
     'rest_framework',
+    'mathfilters',
     'django_cleanup.apps.CleanupConfig',
 ]
 
@@ -222,6 +224,27 @@ GENDERS = (
     ("male", _("Male")),
     ("female", _("Female")),
 )
+
+LEVELS = {
+    0: "Гость",
+    1: "Новоприбывший",
+    2: "Новичок",
+    3: "Просвещённый",
+    4: "Бывалый",
+    5: "Опытный",
+    6: "Матерый",
+    7: "Ветеран",
+    8: "Ветеран",
+    9: "Мастер",
+    10: "Легенда",
+}
+RANKS_ROLEPLAY = {
+    1: "Новичок",
+    2: "Опытный",
+    3: "Ветеран",
+    4: "Мастер",
+    5: "Легенда",
+}
 # -------....___________
 # IMAGES AND THUMBNAILS
 # -------....___________

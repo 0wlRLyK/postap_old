@@ -131,47 +131,47 @@ def profile_detail(
     ])
     ballistic_sum = round(sum([
         user.armor.c_obj.ballistic if user.armor else 0,
-        user.helmet.c_obj.ballistic if user.armor else 0,
+        user.helmet.c_obj.ballistic if user.helmet else 0,
         ballistic_art if user.container1 else 0,
     ]), 2)
     burst_sum = round(sum([
         user.armor.c_obj.burst if user.armor else 0,
-        user.helmet.c_obj.burst if user.armor else 0,
+        user.helmet.c_obj.burst if user.helmet else 0,
         burst_art if user.container1 else 0,
     ]), 2)
     kick_sum = round(sum([
         user.armor.c_obj.kick if user.armor else 0,
-        user.helmet.c_obj.kick if user.armor else 0,
+        user.helmet.c_obj.kick if user.helmet else 0,
         kick_art if user.container1 else 0,
     ]), 2)
     explosion_sum = round(sum([
         user.armor.c_obj.explosion if user.armor else 0,
-        user.helmet.c_obj.explosion if user.armor else 0,
+        user.helmet.c_obj.explosion if user.helmet else 0,
         explosion_art if user.container1 else 0,
     ]), 2)
     thermal_sum = round(sum([
         user.armor.c_obj.thermal if user.armor else 0,
-        user.helmet.c_obj.thermal if user.armor else 0,
+        user.helmet.c_obj.thermal if user.helmet else 0,
         thermal_art if user.container1 else 0,
     ]), 2)
     chemical_sum = round(sum([
         user.armor.c_obj.chemical if user.armor else 0,
-        user.helmet.c_obj.chemical if user.armor else 0,
+        user.helmet.c_obj.chemical if user.helmet else 0,
         chemical_art if user.container1 else 0,
     ]), 2)
     electrical_sum = round(sum([
         user.armor.c_obj.electrical if user.armor else 0,
-        user.helmet.c_obj.electrical if user.armor else 0,
+        user.helmet.c_obj.electrical if user.helmet else 0,
         electrical_art if user.container1 else 0,
     ]), 2)
     radioactive_sum = round(sum([
         user.armor.c_obj.radioactive if user.armor else 0,
-        user.helmet.c_obj.radioactive if user.armor else 0,
+        user.helmet.c_obj.radioactive if user.helmet else 0,
         radioactive_art if user.container1 else 0,
     ]), 2)
     psi_sum = round(sum([
         user.armor.c_obj.psi if user.armor else 0,
-        user.helmet.c_obj.psi if user.armor else 0,
+        user.helmet.c_obj.psi if user.helmet else 0,
         psi_art if user.container1 else 0,
     ]), 2)
     extra_context["profile"] = profile
