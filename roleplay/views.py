@@ -1,7 +1,9 @@
 import json
+import random
 
 from django.contrib.contenttypes.models import ContentType
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
 from django.views import generic
 from equipment import models as equip
 from users import models as users_m
@@ -171,3 +173,129 @@ class UserItemView(generic.DetailView):
         trader = models.Trader.objects.get()
         context['user_equip'] = user.get_equip_items
         return context
+
+
+class MiniGameView(generic.DetailView):
+    model = models.NPCMinigame
+    template_name = "rp/minigame.html"
+    context_object_name = "npc_player"
+
+
+class RollTheDice(generic.View):
+
+    def post(self, request, *args, **kwargs):
+        npc = models.NPCMinigame.objects.get(id=int(json.loads([el for el in request.POST.values()][0])))
+        user = users_m.SiteUser.objects.get(id=self.request.user.id)
+        if user.money < 1000:
+            return HttpResponse(
+                json.dumps({
+                    "result": False,
+                    "cause": "У пользователя недостаточно денег"
+                }),
+                content_type="application/json",
+            )
+        if npc.money < 1000:
+            setattr(npc, "money", npc.money + 5000)
+        user_nums = [random.randint(1, 6), random.randint(1, 6)]
+        npc_nums = [random.randint(1, 6), random.randint(1, 6)]
+        winner = None
+        if sum(user_nums) > sum(npc_nums):
+            setattr(user, "money", user.money + 1000)
+            setattr(npc, "money", npc.money - 1000)
+            winner = "user"
+        elif sum(user_nums) == sum(npc_nums):
+            pass
+            winner = "none"
+        else:
+            setattr(user, "money", user.money + 1000)
+            setattr(npc, "money", npc.money + 1000)
+            winner = "npc"
+        user.save()
+        npc.save()
+
+        return HttpResponse(
+            json.dumps({
+                "result": True,
+                "user_dice1": user_nums[0],
+                "user_dice2": user_nums[1],
+                "npc_dice1": npc_nums[0],
+                "npc_dice2": npc_nums[1],
+                "winner": winner,
+                "user_money": user.money,
+                "npc_money": npc.money
+                # "result": str(create_objects_set),
+            }),
+            content_type="application/json",
+        )
+
+
+class MechanicView(generic.DetailView):
+    model = models.Mechanic
+    template_name = "rp/repair.html"
+    context_object_name = "mechanic"
+
+
+class RepairView(generic.View):
+    def post(self, request, *args, **kwargs):
+        json_data = [el for el in request.POST.values()]
+        item = equip.EquipItem.objects.get(id=int(json_data[0]))
+        mode = json_data[1]
+        mechanic = models.Mechanic.objects.get(id=int(json_data[2]))
+        user = users_m.SiteUser.objects.get(id=self.request.user.id)
+        repair_cost = (item.c_obj.cost * (100 - item.condition) / 100) * mechanic.coef_repair
+        print(user.money, repair_cost)
+        if item.condition >= 100:
+            return HttpResponse(
+                json.dumps({
+                    "result": False,
+                    "cause": "Предмет уже находится в исправном состоянии. Ремонт не требуется!"
+                })
+            )
+        if repair_cost > user.money:
+            return HttpResponse(
+                json.dumps({
+                    "result": False,
+                    "cause": "Недостаточно денег"
+                })
+            )
+        if mode == "one":
+            if equip.EquipItem.objects.filter(object_id=item.object_id, condition=100).exists():
+                repeared_item = equip.EquipItem.objects.get(object_id=item.object_id, condition=100)
+                setattr(repeared_item, "quantity", repeared_item.quantity + 1)
+                repeared_item.save()
+            else:
+                new_item = equip.EquipItem(content_type=item.content_type,
+                                           object_id=item.object_id, profile=user, quantity=1,
+                                           condition=100, cost=0)
+                new_item.save()
+            if item.quantity <= 1:
+                item.delete()
+            else:
+                setattr(item, "quantity", item.quantity - 1)
+                item.save()
+        elif mode == "all":
+            setattr(item, "condition", 100)
+            item.save()
+        else:
+            return HttpResponse(
+                json.dumps({
+                    "result": False,
+                    "cause": "Error"
+                })
+            )
+        setattr(user, "money", user.money - repair_cost)
+        setattr(mechanic, "money", mechanic.money + repair_cost)
+        user.save()
+        mechanic.save()
+        return JsonResponse({
+            "result": True,
+            "user_money": user.money,
+            "mechanic_money": mechanic.money,
+        })
+
+
+class UserItemsRepairView(generic.View):
+
+    def get(self, request, *args, **kwargs):
+        return render(request, "rp/user_items_repair.html", {'user_equip': self.request.user.get_equip_items})
+        # return HttpResponse(users_m.SiteUser.objects.get(id=self.request.user.id))

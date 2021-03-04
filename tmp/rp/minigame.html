@@ -1,0 +1,452 @@
+{% load static mathfilters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Игра в кости</title>
+    <link href="{% static 'css/postap/equip.css' %}" rel="stylesheet">
+    <link href="{% static 'css/jquery/draganddrop.css' %}" rel="stylesheet">
+    <link href="{% static 'css/fonts.css' %}" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Jura";
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #141414;
+        }
+
+        p {
+            line-height: 0.15em;
+        }
+
+        strong {
+            font-family: "Jura SB";
+        }
+
+        h2 {
+            font-family: "Jura SB", sans-serif;
+            font-size: 1.15em;
+            line-height: 0.25em;
+        }
+
+        h3 {
+            font-family: "Jura SB", sans-serif;
+            font-size: 1.15em;
+            line-height: 0.25em;
+        }
+
+
+        hr {
+            border: 1px solid #c6c6c6;
+        }
+
+        #container {
+            width: 90%;
+            margin: 0 auto;
+            color: #FFFFFF;
+            position: relative;
+        }
+
+        #container h2 {
+            font-family: "Jura B", sans-serif;
+            font-size: 2em;
+            text-align: center;
+            top: 20px;
+            position: relative;
+        }
+
+        #user_container, #trader_container {
+            width: 48%;
+            background: #141414;
+            padding: 0% 1%;
+            margin: 0;
+
+            display: block;
+            position: relative;
+            float: left;
+            color: #FFFFFF;
+        }
+
+
+        .personal_info {
+            height: 105px;
+            display: flex;
+            flex-flow: column;
+            font-size: 1em;
+            padding: 0 15px;
+        }
+
+        .pers_name {
+            font-family: "Jura B";
+            font-size: 1.1em;
+        }
+
+        .results {
+            width: 48%;
+            background: #141414;
+            padding: 0% 1%;
+            margin: 0;
+
+            display: block;
+            position: relative;
+            float: left;
+            color: #FFFFFF;
+        }
+
+        #dices {
+            margin: auto;
+            width: 20%;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #dice1, #dice2 {
+        {#animation: changeBg 1.35s infinite;#} min-width: 125px;
+            height: 125px;
+            background-image: url("/static/img/roleplay/minigame/dice/dice1.svg");
+            float: left;
+            margin-left: 10px;
+            display: flex;
+        }
+
+        #dice2 {
+            margin-top: 50px;
+        }
+
+        #error-cause, #round {
+            position: relative;
+            top: 10px;
+            text-align: center;
+        }
+
+        #error-cause {
+            color: #b81a20;
+        }
+
+        #round {
+            font-family: "Jura SB";
+            font-size: 1.2em;
+            color: #1ab854;
+        }
+
+        .animate0, .animate1, .animate2, .animate3, .animate4, .animate5, .animate6, .animate7 {
+            animation-duration: 1.35s;
+            animation-iteration-count: infinite;
+        }
+
+        .animate0 {
+            animation-name: rollTheDice0;
+        }
+
+        .animate1 {
+            animation-name: rollTheDice1;
+        }
+
+        .animate2 {
+            animation-name: rollTheDice2;
+        }
+
+        .animate3 {
+            animation-name: rollTheDice3;
+        }
+
+        .animate4 {
+            animation-name: rollTheDice4;
+        }
+
+        .animate5 {
+            animation-name: rollTheDice5;
+        }
+
+        .animate6 {
+            animation-name: rollTheDice6;
+        }
+
+        .animate7 {
+            animation-name: rollTheDice7;
+        }
+
+        @keyframes rollTheDice0 {
+            0%, 100% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice2.svg");
+                filter: contrast(1);
+                transition: 0.5s;
+            }
+            25% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice6.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+            50% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice5.svg");
+                filter: blur(0.025em);
+                filter: contrast(80%);
+                transition: 0.5s;
+            }
+            75% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice1.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+        }
+
+        @keyframes rollTheDice1 {
+            0%, 100% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice1.svg");
+                filter: contrast(1);
+                transition: 0.5s;
+            }
+            25% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice5.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+            50% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice6.svg");
+                filter: blur(0.025em);
+                filter: contrast(80%);
+                transition: 0.5s;
+            }
+            75% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice2.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+        }
+
+        @keyframes rollTheDice2 {
+            0%, 100% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice2.svg");
+                filter: contrast(1);
+                transition: 0.5s;
+            }
+            25% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice3.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+            50% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice5.svg");
+                filter: blur(0.025em);
+                filter: contrast(80%);
+                transition: 0.5s;
+            }
+            75% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice4.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+        }
+
+        @keyframes rollTheDice3 {
+            0%, 100% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice3.svg");
+                filter: contrast(1);
+                transition: 0.5s;
+            }
+            25% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice1.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+            50% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice4.svg");
+                filter: blur(0.025em);
+                filter: contrast(80%);
+                transition: 0.5s;
+            }
+            75% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice6.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+        }
+
+        @keyframes rollTheDice4 {
+            0%, 100% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice4.svg");
+                filter: contrast(1);
+                transition: 0.5s;
+            }
+            25% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice5.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+            50% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice3.svg");
+                filter: blur(0.025em);
+                filter: contrast(80%);
+                transition: 0.5s;
+            }
+            75% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice2.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+        }
+
+        @keyframes rollTheDice5 {
+            0%, 100% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice5.svg");
+                filter: contrast(1);
+                transition: 0.5s;
+            }
+            25% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice3.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+            50% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice2.svg");
+                filter: blur(0.025em);
+                filter: contrast(80%);
+                transition: 0.5s;
+            }
+            75% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice4.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+        }
+
+        @keyframes rollTheDice6 {
+            0%, 100% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice6.svg");
+                filter: contrast(1);
+                transition: 0.5s;
+            }
+            25% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice5.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+            50% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice1.svg");
+                filter: blur(0.025em);
+                filter: contrast(80%);
+                transition: 0.5s;
+            }
+            75% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice2.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+        }
+
+        @keyframes rollTheDice7 {
+            0%, 100% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice1.svg");
+                filter: contrast(1);
+                transition: 0.5s;
+            }
+            25% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice3.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+            50% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice6.svg");
+                filter: blur(0.025em);
+                filter: contrast(80%);
+                transition: 0.5s;
+            }
+            75% {
+                background-image: url("/static/img/roleplay/minigame/dice/dice4.svg");
+                filter: blur(0.01em);
+                filter: contrast(90%);
+                transition: 0.5s;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="user_container">
+    <h2><span id="user-name" class="pers_name">{{ user.rpl_nickname }}</span></h2>
+    <hr>
+    <img src="{{ user.rpl_avatar.image.url|default:"/static/img/profile/no_data.gif" }}" alt="{{ user.username }}"
+         style="float: left">
+    <div class="personal_info">
+        <p>Группа: <strong>{{ user.faction }}</strong></p>
+        <p>Ранг: <strong>{{ user.full_rpl_rank }}</strong></p>
+        <p>Баланс: <strong><span id="user-money">{{ user.money }}</span> ₴</strong></p>
+    </div>
+    <hr>
+</div>
+
+<div id="trader_container">
+    <h2><span id="npc-name" data-id="{{ npc_player.id }}" class="pers_name">{{ npc_player.name }}</span></h2>
+    <hr>
+    <img src="{{ npc_player.avatar.url|default:"/static/img/profile/no_data.gif" }}" alt="{{ trader.name }}"
+         style="float: left">
+    <div class="personal_info">
+
+        <p>Группа: <strong>{{ npc_player.faction }}</strong></p>
+        <p>Ранг: <strong>{{ npc_player.full_rank }}</strong></p>
+        <p>Баланс: <strong>{% if npc_player.inf %} --- {% else %}<span id="npc-money">{{ npc_player.money }}</span>
+            ₴{% endif %} </strong></p>
+    </div>
+    <hr>
+
+</div>
+<div id="container">
+    <br>
+    <h2>ИГРА В КОСТИ</h2>
+
+    <div class="results">
+        <h3>{{ user.username }}:</h3>
+        <p>
+            <span id="user_dice1">0</span> +
+            <span id="user_dice2">0</span> =
+            <span id="user_sum">0</span> очков
+        </p>
+    </div>
+    <div class="results">
+        <h3>{{ npc_player.name }}:</h3>
+        <p>
+            <span id="npc_dice1">0</span> +
+            <span id="npc_dice2">0</span> =
+            <span id="npc_sum">0</span> очков
+        </p>
+    </div>
+    <br>
+    <p id="error-cause"></p>
+    <p id="round"></p>
+    <h2>Победитель: <span id="winner"></span></h2>
+    <div id="dices">
+        <div id='dice1'></div>
+        <div id='dice2'></div>
+    </div>
+    <button id="playButton" onclick="rollDice()">Подбросить кости</button>
+
+</div>
+<script src="{% static 'js/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'js/users/minigame.js' %}"></script>
+<script></script>
+</body>
+</html>

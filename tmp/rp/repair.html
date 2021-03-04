@@ -1,0 +1,312 @@
+{% load static mathfilters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ mechanic.name }}</title>
+    <link href="{% static 'css/postap/equip.css' %}" rel="stylesheet">
+    <link href="{% static 'css/jquery/draganddrop.css' %}" rel="stylesheet">
+    <link href="{% static 'css/fonts.css' %}" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Jura";
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #141414;
+        }
+
+        p {
+            line-height: 0.15em;
+        }
+
+        strong {
+            font-family: "Jura SB";
+        }
+
+        h2 {
+            font-family: "Jura SB";
+            font-size: 1.15em;
+            line-height: 0.25em;
+        }
+
+        hr {
+            border: 1px solid #c6c6c6;
+        }
+
+        #user_container, #mechanic_container {
+            width: 48%;
+            height: 100vh;
+            background: #141414;
+            padding: 0% 1%;
+            margin: 0;
+
+            display: block;
+            position: relative;
+            float: left;
+            color: #FFFFFF;
+        }
+
+        #repair_item {
+            min-height: 150px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        #user_items, #repair_item {
+            width: 100%;
+            background: #202020;
+            border-radius: 10px;
+        }
+
+        #repair_item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        #repitem_condition_wrapped {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 10px;
+            width: 100%;
+        }
+
+        #repitem_condition {
+            height: 100%;
+            transition: ease-in-out 0.75s;
+        }
+
+        .repitem_green {
+            background: #33B935;
+            background: -webkit-linear-gradient(to left, #33B935, #6ece58);
+            background: linear-gradient(to left, #33B935, #6ece58);
+        }
+
+        .repitem_yellow {
+            background: #D9B422;
+            background: -webkit-linear-gradient(to left, #D9B422, #cecc51);
+            background: linear-gradient(to left, #D9B422, #cecc51);
+        }
+
+        .repitem_orange {
+            background: #E17210;
+            background: -webkit-linear-gradient(to left, #E17210, #e6ad40);
+            background: linear-gradient(to left, #E17210, #e6ad40);
+        }
+
+        .repitem_red {
+            background: #CE1919;
+            background: -webkit-linear-gradient(to left, #CE1919, #c13c3c);
+            background: linear-gradient(to left, #CE1919, #c13c3c);
+        }
+
+        .personal_info {
+            height: 105px;
+            display: flex;
+            flex-flow: column;
+            font-size: 1em;
+            padding: 0 15px;
+        }
+
+        .data-el {
+            background: #ffffff14;
+            border-radius: 5px;
+            font-family: "Jura B";
+            padding: 2px 5px;
+            font-size: 0.9em;
+            margin-left: 5px;
+        }
+
+        .pers_name {
+            font-family: "Jura B";
+            font-size: 1.1em;
+        }
+
+        #repitem_data {
+            position: absolute;
+            width: auto;
+            height: 50px;
+            right: 0;
+            bottom: 0;
+        }
+
+    </style>
+</head>
+<body>
+<div id="user_container">
+    <h2><span class="pers_name">{{ user.rpl_nickname }}</span></h2>
+    <hr>
+    <img src="{{ user.rpl_avatar.image.url|default:"/static/img/profile/no_data.gif" }}" alt="{{ user.username }}"
+         style="float: left">
+    <div class="personal_info">
+        <p>Группа: <strong>{{ user.faction }}</strong></p>
+        <p>Ранг: <strong>{{ user.full_rpl_rank }}</strong></p>
+        <p>Баланс: <strong><span id="user-money">{{ user.money }}</span> ₴</strong></p>
+    </div>
+    <hr>
+
+
+    <div id="user_items">
+        {% for item in user.get_equip_items %}
+            {% if item.content_type.model  in "weapon,outfit,helmet" %}
+                <div class="user-item">
+                    {% include "users/roleplay/tooltip.html" with item=item object=item.c_obj quantity=item.quantity type=item.content_type.model repair=True %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<div id="mechanic_container">
+    <h2><span class="pers_name">{{ mechanic.name }}</span></h2>
+    <hr>
+    <img src="{{ mechanic.avatar.url|default:"/static/img/profile/no_data.gif" }}" alt="{{ mechanic.name }}"
+         style="float: left">
+    <div class="personal_info">
+
+        <p>Группа: <strong>{{ mechanic.faction }}</strong></p>
+        <p>Ранг: <strong>{{ mechanic.full_rank }}</strong></p>
+        <p>Баланс: <strong>{% if mechanic.inf %} --- {% else %}<span id="mechanic-money">{{ mechanic.money }}</span>
+            ₴{% endif %} </strong></p>
+    </div>
+    <hr>
+    <div id="repair_item">
+        <div id="repitem_data">
+            <span id="repitem_price" class="data-el">0 ⯃</span>
+            <span id="repitem_percent" class="data-el">0 %</span>
+        </div>
+        <div id="repitem_condition_wrapped">
+            <div id="repitem_condition"></div>
+        </div>
+    </div>
+    <p>
+        <button onclick="repair('one')">Чинить</button>
+        <button onclick="repair('all')">Чинить все</button>
+    </p>
+
+    <script src="{% static 'js/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'js/users/ajax.js' %}"></script>
+    {#<script src="{% static 'js/tooltip.js' %}"></script>#}
+    <script src="{% static 'js/imagesloaded.min.js' %}"></script>
+    <script src="{% static 'js/masonry.min.js' %}"></script>
+    <script src="{% static 'js/jquery/draganddrop.js' %}"></script>
+
+    <script>
+        function repair(mode = "one") {
+            let obj = $("#repair_item").children(".item"),
+                id = obj.attr("data-id"),
+                condition = Number(obj.attr("data-condition")),
+                repairCost = Number($("#repitem_price").text()),
+                userMoney = Number($("#user-money").text()),
+                data = {
+                    obj: id,
+                    mode: mode,
+                    mechanic: {{ mechanic.id }},
+                };
+            if (userMoney < repairCost) {
+                alert("Недостаточно денег");
+            } else if (condition >= 100) {
+                alert("Предмет уже находится в исправном состоянии. Ремонт не требуется!");
+            } else {
+                $.ajax({
+                    url: "/rp/repair/",
+                    type: 'POST',
+                    data: data,
+                    dataType: 'json',
+
+                    success: function (json) {
+                        $("#user-money").text(Number(json.user_money));
+                        $("#mechanic-money").text(Number(json.mechanic_money));
+                        $("#repitem_condition").attr("class", "repitem_green").css("width", "100%");
+                        $("#repitem_price").text("0 ⯃");
+                        $("#repitem_percent").text("0 %");
+                        obj.attr("data-condition", 100);
+                        $.ajax({
+                            url: '/rp/user/items_repair/',
+                            success: function (data) {
+
+                                let html = $(data).filter('#user_items').html();
+                                let userItems = $('#user_items');
+                                userItems.html(html);
+                                userItems.imagesLoaded()
+                                    .done(function () {
+                                        userItems.masonry({
+                                            itemSelector: '.user-item',
+                                            gutter: 3,
+                                            isResizable: true,
+                                            isAnimated: true,
+                                            horizontalOrder: true,
+                                            // анимируем перестроение блоков
+                                            animationOptions: {
+                                                queue: false,
+                                                duration: 500
+                                            }
+                                        },);
+                                    });
+                                $('#user_items').masonry('reloadItems');
+                            }
+                        });
+                    }
+                });
+            }
+            return false;
+        }
+
+        let userItems = $('#user_items'),
+            repairCoef = {{ mechanic.coef_repair }};
+
+
+        userItems.imagesLoaded()
+            .done(function () {
+                userItems.masonry({
+                    itemSelector: '.user-item',
+                    gutter: 3,
+                    isResizable: true,
+                    isAnimated: true,
+                    horizontalOrder: true,
+                    // анимируем перестроение блоков
+                    animationOptions: {
+                        queue: false,
+                        duration: 500
+                    }
+                },);
+            });
+
+        $('#user_items').on('click', ".user-item", function () {
+            let item = $(this).children().children().children(".item"),
+                itemClone = $(item).clone(),
+                condition = $(item).attr("data-condition"),
+                cost = $(item).attr("data-cost"),
+                conditionBlock = $("#repitem_condition"),
+                percentsToRepair = (100 - condition) / 100,
+                target = $("#repair_item"),
+                color = "";
+            if (condition < 25) {
+                color = "red";
+            } else if (condition < 50) {
+                color = "orange";
+            } else if (condition < 75) {
+                color = "yellow";
+            } else if (condition <= 100) {
+                color = "green";
+            }
+
+            target.children(".item").remove(".item");
+            itemClone.appendTo(target);
+            conditionBlock.css("width", condition + "%").attr("class", "repitem_" + color);
+            $("#repitem_price").text(cost * percentsToRepair * repairCoef + " ⯃");
+
+
+        });
+    </script>
+</body>
+</html>

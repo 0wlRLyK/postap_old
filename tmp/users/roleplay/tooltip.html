@@ -70,7 +70,7 @@
         <img class='eq-ico' src='{% static 'img/icons/equip/weight.svg' %}'> <span class='t-e_b'>Переносимый вес:</span></span>
     <span class='eq-state_bg'><span class='eq-state' style='width: {{ object.weight }}%;'></span></span></span><br>
     {% endif %}
-">
+">          {% if trade_type %}
             {% if trade_type == "user" %}
                 <div class="equip-quantity-tr">
                     x{{ item.quantity }}
@@ -82,20 +82,33 @@
             <div class="equip-cost-tr">
                 {{ cost|floatformat:0 }} &#11203;
             </div>
+        {% else %}
+            <div class="equip-quantity-tr">
+                x{{ item.quantity }}
+            </div>
+        {% endif %}
+
             {% if item.condition and type in "weapon,outfit,helmet" %}
                 <div class="equip-condition_wrap">
                     <div class="equip-condition c-{% if condition < 25 %}red{% elif condition < 50 %}orange{% elif condition < 75 %}yellow{% else %}green{% endif %} "
                          style="width: {{ condition }}%"></div>
                 </div>
             {% endif %}
-            <img class="item_{{ trade_type }}"
+            <img class="{% if trade_type %}item_{{ trade_type }}{% else %}item{% endif %}"
                  data-id="{{ item.id }}"
                  data-type="{{ type }}"
+                    {% if repair %}
+                 data-quantity="{{ item.quantity }}"
+                 data-condition="{{ item.condition }}"
+                 data-cost="{{ object.cost }}"
+                    {% endif %}
+                    {% if trade_type %}
                  {% if trade_type == "user" %}data-quantity="{{ item.quantity }}"{% endif %}
                  data-cost="{% if trade_type == "user" %}{{ item.c_obj.cost|mul:trader.coef_buy }}
-                         {% else %}{{ item.cost|mul:trader.coef_trade }}{% endif %}"
+                         {% elif trade_type == "trader" %}{{ item.cost|mul:trader.coef_trade }}{% endif %}"
                  data-mass="{% if trade_type == "user" %}{{ item.c_obj.mass }}
                          {% else %}{{ item.mass }}{% endif %}"
+                    {% endif %}
                  src="{{ object.icon.url }}" alt=""></tip>
     </div>
 {% endwith %}

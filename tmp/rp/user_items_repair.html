@@ -1,0 +1,10 @@
+{% load static %}
+<div id="user_items">
+    {% for item in user_equip %}
+        {% if item.content_type.model  in "weapon,outfit,helmet" %}
+            <div class="user-item">
+                {% include "users/roleplay/tooltip.html" with item=item object=item.c_obj quantity=item.quantity type=item.content_type.model repair=True %}
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>

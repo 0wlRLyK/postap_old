@@ -2,14 +2,20 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
+from equipment.models import EquipItem
 
 from . import models as users
 from .forms import CustomUserCreationForm
 
 
+class EquipItemInline(admin.StackedInline):
+    model = EquipItem
+
+
 class SiteUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     # form = CustomUserChangeForm
+    inlines = [EquipItemInline]
     model = users.SiteUser
     fieldsets = (
         (None, {'fields': ('username', 'password')}),

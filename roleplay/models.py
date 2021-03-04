@@ -71,7 +71,7 @@ class AbstractNPC(models.Model):
                               upload_to=npc_upload_to_img)
 
     money = models.IntegerField(verbose_name="Деньги", default=0)
-    inf = models.BooleanField(default=True, verbose_name="Бесконечны ли деньги")
+    inf = models.BooleanField(default=False, verbose_name="Бесконечны ли деньги")
 
     def avatar_adm(self):
         return format_html('<center><img href="{0}" src="{0}" /></center>'.format(self.avatar.url))
@@ -90,6 +90,7 @@ class AbstractNPC(models.Model):
         return self.name + self.spec
 
 
+
 class Trader(AbstractNPC):
     faction = models.ForeignKey(user.Faction, on_delete=models.DO_NOTHING, blank=True, null=True,
                                 verbose_name="Группировка", related_name="rp_npc_trader")
@@ -103,3 +104,42 @@ class Trader(AbstractNPC):
     class Meta:
         verbose_name = "Торговец"
         verbose_name_plural = "Торговцы"
+
+
+class Mechanic(AbstractNPC):
+    faction = models.ForeignKey(user.Faction, on_delete=models.DO_NOTHING, blank=True, null=True,
+                                verbose_name="Группировка", related_name="rp_npc_mechanic")
+    spec = "Механик"
+    items = models.ManyToManyField(equip.Item, verbose_name="Предметы на продажу", blank=True)
+    coef_trade = models.FloatField(verbose_name="Коєфициент продажи", default=1,
+                                   validators=[MinValueValidator(0.2), MaxValueValidator(5)])
+    coef_buy = models.FloatField(verbose_name="Коєфициент покупки", default=1,
+                                 validators=[MinValueValidator(0.2), MaxValueValidator(5)])
+    coef_repair = models.FloatField(verbose_name="Коєфициент починки", default=1,
+                                    validators=[MinValueValidator(0.2), MaxValueValidator(5)])
+
+    class Meta:
+        verbose_name = "Механик"
+        verbose_name_plural = "Механики"
+
+
+class NPCMinigame(AbstractNPC):
+    SPECIALTIES = (
+        ("trader", "Торговец"),
+        ("mechanic", "Механик"),
+        ("medic", "Медик"),
+        ("barmen", "Бармен"),
+        ("npc", "Сталкер"),
+    )
+    faction = models.ForeignKey(user.Faction, on_delete=models.DO_NOTHING, blank=True, null=True,
+                                verbose_name="Группировка", related_name="rp_npc_minigame")
+    spec = models.CharField(choices=SPECIALTIES, verbose_name="Специальность", max_length=25, default="npc")
+    items = models.ManyToManyField(equip.Item, verbose_name="Предметы на продажу", blank=True)
+    coef_trade = models.FloatField(verbose_name="Коєфициент продажи", default=1,
+                                   validators=[MinValueValidator(0.2), MaxValueValidator(5)])
+    coef_buy = models.FloatField(verbose_name="Коєфициент покупки", default=1,
+                                 validators=[MinValueValidator(0.2), MaxValueValidator(5)])
+
+    class Meta:
+        verbose_name = "NPC с миниигрой"
+        verbose_name_plural = "NPC`s с миниигрой"
