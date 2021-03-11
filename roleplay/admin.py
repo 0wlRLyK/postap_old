@@ -3,6 +3,31 @@ from django.contrib import admin
 from . import models as rp
 
 
+class AreaInline(admin.StackedInline):
+    model = rp.Area
+
+
+class SubLocationInline(admin.StackedInline):
+    model = rp.SubLocation
+
+
+@admin.register(rp.Location)
+class LocationAdmin(admin.ModelAdmin):
+    inlines = [AreaInline]
+    list_display = ['name', 'icon_admin']
+
+
+@admin.register(rp.Area)
+class AreaAdmin(admin.ModelAdmin):
+    inlines = [SubLocationInline]
+    list_display = ['name', 'icon_admin']
+
+
+@admin.register(rp.SubLocation)
+class SubLocationAdmin(admin.ModelAdmin):
+    list_display = ['name', 'type_of_subloc', 'icon_admin']
+
+
 @admin.register(rp.Trader)
 class NPCTraderAdmin(admin.ModelAdmin):
     fieldsets = (

@@ -7,6 +7,10 @@ urlpatterns = [
     path("user/items/{}/".format("<slug:pk>"), views.UserItemView.as_view(), name="user_items"),
     path("user/items_repair/", views.UserItemsRepairView.as_view(), name="user_items_repair"),
 
+    path("location/{}/".format("<slug:pk>"), views.LocationView.as_view(), name="location"),
+    path("area/{}/".format("<slug:pk>"), views.AreaView.as_view(), name="area"),
+    path("subloc/{}/".format("<slug:pk>"), views.SubLocationView.as_view(), name="sublocation"),
+
     path("trader/{}/".format("<slug:pk>"), views.TraderView.as_view(), name="trader"),
     path("trade/sell/", views.TradeSell.as_view(), name="sell"),
     path("trade/buy/", views.TradeBuy.as_view(), name="buy"),

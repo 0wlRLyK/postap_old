@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ location.name }}</title>
+    <link rel="stylesheet" href="{% static "css/jquery/leaflet.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/fonts.css" %}"/>
+    <script src="{% static "js/jquery/leaflet.js" %}"></script>
+
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            background: #141414;
+        }
+
+        #map {
+            width: 99.5%;
+            height: 100vh;
+            margin: auto;
+        }
+
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+            background: #171717;
+            color: #FFFFFF;
+            font-family: "Jura SB", sans-serif;
+            font-size: 1.2em;
+        }
+
+        .leaflet-popup-content {
+            text-align: center;
+        }
+
+        .leaflet-popup-content b, .leaflet-popup-content strong {
+            font-family: "Jura B", sans-serif;
+        }
+
+        .area_name {
+            font-size: 1.25em;
+            text-align: center;
+        }
+    </style>
+
+
+</head>
+<body class="">
+
+<div id="map"
+     class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom"
+     style="position: relative;" tabindex="0"></div>
+
+<script>
+    let mapHeight = {{ location.map.height }},
+        mapWidth = {{ location.map.width }};
+    let markerIcon = L.icon({
+        iconUrl: '/static/img/roleplay/map/marker.png',
+
+        iconSize: [120, 120], // size of the icon
+        iconAnchor: [60, 60], // point of the icon which will correspond to marker's location
+        popupAnchor: [0, -60] // point from which the popup should open relative to the iconAnchor
+    });
+    var southWest = L.latLng(-mapHeight, -mapWidth),
+        northEast = L.latLng(mapHeight, mapWidth),
+        bounds = L.latLngBounds(southWest, northEast);
+    var map = L.map('map', {
+        crs: L.CRS.Simple,
+        center: [0, 0],
+        maxBounds: bounds,
+        maxBoundsViscosity: 1.0,
+        {#zoom: -1,#}
+        minZoom: 0,
+        maxZoom: 1,
+
+    });
+
+    var yx = L.latLng;
+
+    var xy = function (x, y) {
+        if (L.Util.isArray(x)) {    // When doing xy([x, y]);
+            return yx(x[1], x[0]);
+        }
+        return yx(y, x);  // When doing xy(x, y);
+    };
+
+    var image = L.imageOverlay('{{ location.map.url }}', bounds).addTo(map);
+
+    {% for area in location.get_areas %}
+        L.marker(xy({{ area.x_coord }}, {{ area.y_coord }}), {icon: markerIcon})
+            .addTo(map)
+            .bindPopup("<strong class='area_name'>{{ area.name }}</strong>" +
+                "<br><img src='{{ area.image.url }}' height='100'>")
+            .on({
+                click: function (e) {
+                    console.log(e.latlng);
+                },
+                mouseover: function (e) {
+                    this.openPopup();
+                },
+                mouseout: function (e) {
+                    this.closePopup();
+                },
+            });
+    {% endfor %}
+
+
+    map.setView(xy(120, 70), 1);
+    map.setZoom(0);
+
+    function onMapClick(e) {
+        let coords = e.latlng;
+        alert(coords.lng.toFixed(2) + ", " + coords.lat.toFixed(2))
+        {#.setLatLng(e.latlng)#}
+        {#.setContent("You clicked the map at " + e.latlng.toString())#}
+        {#.openOn(map);#}
+    }
+
+    map.on('contextmenu', onMapClick);
+
+</script>
+</body>
+</html>

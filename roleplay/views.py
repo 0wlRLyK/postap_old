@@ -11,6 +11,24 @@ from users import models as users_m
 from . import models
 
 
+class LocationView(generic.DetailView):
+    model = models.Location
+    template_name = "rp/location.html"
+    context_object_name = "location"
+
+
+class AreaView(generic.DetailView):
+    model = models.Area
+    template_name = "rp/area.html"
+    context_object_name = "area"
+
+
+class SubLocationView(generic.DetailView):
+    model = models.SubLocation
+    template_name = "rp/sublocation.html"
+    context_object_name = "subloc"
+
+
 class TraderView(generic.DetailView):
     model = models.Trader
     template_name = "rp/trade.html"

@@ -1,0 +1,236 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ subloc.name }}</title>
+    <link rel="stylesheet" href="{% static "css/fonts.css" %}">
+    <style>
+        body {
+            background: #151515;
+            padding: 0;
+            margin: 0;
+        }
+
+        #subloc_description, #subloc_subjects {
+
+            width: 100%;
+        }
+
+        #subloc_description {
+            height: 50vh;
+        }
+
+        #subloc_bg {
+            height: 100%;
+            width: 55%;
+            background-size: 100%;
+            box-shadow: -20px -20px 30px 25px #151515 inset;
+            float: left;
+
+
+        }
+
+        #subloc_descript {
+            width: 45%;
+            height: 100%;
+            color: #FFFFFF;
+            float: left;
+            overflow-y: auto;
+            font-family: "Jura", sans-serif;
+        }
+
+        #subloc_descript h2 {
+            font-family: "Jura B", sans-serif;
+            text-align: center;
+        }
+
+        #subloc_subjects {
+            height: 50vh;
+            color: #FFFFFF;
+            overflow-y: auto;
+            font-family: "Jura", sans-serif;
+            width: 95%;
+            margin: auto;
+        }
+
+        /*
+        CARDS
+         */
+        .card {
+            width: 200px;
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.22), 0 14px 56px rgba(0, 0, 0, 0.25);
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .card__header {
+            border-radius: 10px 10px 0 0;
+            width: 100%;
+            height: 120px;
+            background-size: cover;
+            background-position: bottom;
+            -webkit-filter: grayscale(50%);
+            filter: grayscale(50%);
+            -webkit-transition: all 0.5s ease-in-out;
+            -moz-transition: all 0.5s ease-in-out;
+            transition: all 0.5s ease-in-out;
+        }
+
+        .card:hover .card__header {
+            -webkit-filter: grayscale(0%);
+            filter: grayscale(0%);
+            -webkit-transition: all 0.5s ease-in-out;
+            -moz-transition: all 0.5s ease-in-out;
+            transition: all 0.5s ease-in-out;
+        }
+
+        .card__image {
+            width: 100px;
+            height: 100px;
+            margin-left: -45px;
+            position: absolute;
+            left: 50%;
+            top: 10px;
+            border-radius: 50%;
+        }
+
+        .card:hover .card__image {
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.22), 0 5px 5px rgba(0, 0, 0, 0.25);
+        }
+
+        .card__image-geoff {
+            background-position: center;
+            cursor: pointer;
+            z-index: 10;
+            -webkit-transition: all 0.5s ease-in-out;
+            -moz-transition: all 0.5s ease-in-out;
+            transition: all 0.5s ease-in-out;
+        }
+
+        .card__image-geoff:hover {
+
+        }
+
+        .card__info {
+            width: 200px;
+            height: 150px;
+            border-radius: 0 0 10px 10px;
+            background-color: #101010;
+            -webkit-transition: all 0.5s ease-in-out;
+            -moz-transition: all 0.5s ease-in-out;
+            transition: all 0.5s ease-in-out;
+        }
+
+        .card:hover .card__info {
+            background-color: #192330;
+        }
+
+        .details h3 {
+            margin: 0;
+            font-family: "Jura B", sans-serif;
+        }
+
+        .details b {
+            font-family: "Jura B", sans-serif;
+        }
+
+        .details__text {
+            display: block;
+            text-align: center;
+            font-size: .8em;
+            padding-bottom: 6px;
+        }
+
+        .details__text-header {
+            display: block;
+            text-align: center;
+            width: 100%;
+            font-size: 1.25em;
+            padding-top: 10px;
+        }
+
+        .details__text-subheader {
+            display: block;
+            text-align: left;
+            padding-left: 10px;
+            width: 100%;
+            font-size: .85em;
+        }
+
+        .npc_spec {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #2b2b2b9c;
+            top: 10px;
+            right: 5px;
+            padding: 7px;
+            border-radius: 50px;
+        }
+    </style>
+</head>
+<body>
+<div id="subloc_description">
+    <div id="subloc_bg" style="background-image: url('{{ subloc.image.url }}')"></div>
+    <div id="subloc_descript">
+        <h2>{{ subloc.name }}</h2>
+        <p id="subloc_full_description">{{ subloc.description |safe }}</p>
+    </div>
+</div>
+<div id="subloc_subjects">
+    {% for trader in subloc.get_traders %}
+        <div class="card">
+            <div class="card__header" style="background-image: url('{{ trader.image.url }}')"></div>
+            <div class="card__image card__image-geoff"
+                 style="  background-image: url('{{ trader.avatar.url }}');"></div>
+            <div class="npc_spec"><img src="{{ trader.spec_icon }}" alt=""></div>
+            <div class="card__info">
+                <div class="details">
+                    <h3 class="details__text-header">{{ trader.name }}</h3>
+                    <p class="details__text-subheader">Специальность: <b>{{ trader.spec }}</b></p>
+                    <p class="details__text-subheader">Группа: <b>{{ trader.faction }}</b></p>
+                    <p class="details__text-subheader">Ранг: <b>{{ trader.full_rank }}</b></p>
+                </div>
+
+            </div>
+        </div>
+    {% endfor %}
+    {% for mechanic in subloc.get_mechanics %}
+        <div class="card">
+            <div class="card__header" style="background-image: url('{{ mechanic.image.url }}')"></div>
+            <div class="card__image card__image-geoff"
+                 style="  background-image: url('{{ mechanic.avatar.url }}');"></div>
+            <div class="npc_spec"><img src="{{ mechanic.spec_icon }}" alt=""></div>
+            <div class="card__info">
+                <div class="details">
+                    <h3 class="details__text-header">{{ mechanic.name }}</h3>
+                    <p class="details__text-subheader">Специальность: <b>{{ mechanic.spec }}</b></p>
+                    <p class="details__text-subheader">Группа: <b>{{ mechanic.faction }}</b></p>
+                    <p class="details__text-subheader">Ранг: <b>{{ mechanic.full_rank }}</b></p>
+                </div>
+
+            </div>
+        </div>
+    {% endfor %}
+    {% for npc in subloc.get_npc_minimage %}
+        <div class="card">
+            <div class="card__header" style="background-image: url('{{ npc.image.url }}')"></div>
+            <div class="card__image card__image-geoff" style="  background-image: url('{{ npc.avatar.url }}');"></div>
+            <div class="npc_spec"><img src="{{ npc.spec_icon }}" alt=""></div>
+            <div class="card__info">
+                <div class="details">
+                    <h3 class="details__text-header">{{ npc.name }}</h3>
+                    <p class="details__text-subheader">Специальность: <b>{{ npc.spec }}</b></p>
+                    <p class="details__text-subheader">Группа: <b>{{ npc.faction }}</b></p>
+                    <p class="details__text-subheader">Ранг: <b>{{ npc.full_rank }}</b></p>
+                </div>
+
+            </div>
+        </div>
+    {% endfor %}
+</div>
+</body>
+</html>
