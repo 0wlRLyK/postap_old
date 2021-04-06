@@ -102,9 +102,274 @@
                     {% endblock %}
                 </div>
             </div>
- {% include "users/equip/equipment.html" %}
+    {% include "users/equip/equipment.html" %}
 
 {% endblock %}
 
+{% block javascript %}
+    <script src="{% static 'js/users/jup.js' %}"></script>
+    <script src="{% static 'js/responsiveTabs.js' %}"></script>
+    <script>$('#profileTabs').responsiveTabs({
+        startCollapsed: 'accordion',
+        setHash: true
+    });</script>
 
 
+    <script>
+        clearEmptyBlocks('.eq-inv', 20);
+
+        /*
+          CONTEXT MENU :: WEAPONS
+        */
+        // REMOVE
+        $(document).contextmenu({
+            delegate: ".equip_slot",
+            menu: [
+                {title: "<i>Убрать в рюкзак</i>", cmd: "remove", uiIcon: "ui-icon out"},
+
+                {title: "----"}
+            ],
+            select: function (event, ui) {
+                var $target = ui.target;
+                switch (ui.cmd) {
+                    case "remove":
+                        let dataId = $target.attr("data-id"),
+                            dataSlot = $target.attr("data-slot"),
+                            equipType = $target.attr("data-type"),
+                            slot_to = defineSlot(equipType);
+
+                        removeFromSlot($target, dataSlot + "_" + dataId);
+                        fromSlot($target, "#inventory", dataId, equipType, slot_to, false);
+
+
+                        break;
+                    case "paste":
+                        break;
+                }
+                // Optionally return false, to prevent closing the menu now
+            },
+        });
+        // SET IN
+        $.widget("moogle.contextmenu_weapon", $.moogle.contextmenu, {});
+        $(document).contextmenu_weapon({
+            delegate: ".equip_inv_weapon",
+            menu: [
+                {title: "<i>Переместить в слот № 1</i>", cmd: "slot1", uiIcon: "ui-icon in"},
+                {title: "<i>Переместить в слот № 2</i>", cmd: "slot2", uiIcon: "ui-icon in"},
+                {title: "<i>Переместить в слот № 3</i>", cmd: "slot3", uiIcon: "ui-icon in"},
+
+                {title: "----"}
+            ],
+            select: function (event, ui) {
+                var $target = ui.target;
+                switch (ui.cmd) {
+                    case "slot1":
+                        setInSlot($target, "slot1");
+                        setUpSlot($target, "slot1");
+                        break;
+                    case "slot2":
+                        setInSlot($target, "slot2");
+                        setUpSlot($target, "slot2");
+                        break;
+                    case "slot3":
+                        setInSlot($target, "slot3");
+                        setUpSlot($target, "slot3");
+                        break;
+                }
+            },
+        });
+        /*
+          CONTEXT MENU :: ARMOR
+        */
+        // SET IN
+        $.widget("moogle.contextmenu_outfit", $.moogle.contextmenu, {});
+        $(document).contextmenu_outfit({
+            delegate: ".equip_inv_outfit",
+            menu: [
+                {title: "<i>Переместить в слот брони</i>", cmd: "armor", uiIcon: "ui-icon in"},
+
+                {title: "----"}
+            ],
+            select: function (event, ui) {
+                var $target = ui.target;
+                switch (ui.cmd) {
+                    case "armor":
+                        setInSlot($target, "armor");
+                        setUpSlot($target, "armor");
+                        break;
+                }
+            },
+        });
+
+        /*
+          CONTEXT MENU :: HELMET
+        */
+        // SET IN
+        $.widget("moogle.contextmenu_helmet", $.moogle.contextmenu, {});
+        $(document).contextmenu_helmet({
+            delegate: ".equip_inv_helmet",
+            menu: [
+                {title: "<i>Переместить в слот шлемов</i>", cmd: "helmet", uiIcon: "ui-icon in"},
+
+                {title: "----"}
+            ],
+            select: function (event, ui) {
+                var $target = ui.target;
+                switch (ui.cmd) {
+                    case "helmet":
+                        setInSlot($target, "helmet");
+                        setUpSlot($target, "helmet");
+                        break;
+                }
+            },
+        });
+        /*
+          CONTEXT MENU :: DEVICES
+        */
+        // SET IN
+        $.widget("moogle.contextmenu_device", $.moogle.contextmenu, {});
+        $(document).contextmenu_device({
+            delegate: ".equip_inv_device",
+            menu: [
+                // {title: "<i>Переместить в слот № 1</i>", cmd: "device1", uiIcon: "ui-icon in"},
+                {title: "<i>Переместить в слот детектора</i>", cmd: "device2", uiIcon: "ui-icon in"},
+                // {title: "<i>Переместить в слот № 3</i>", cmd: "device3", uiIcon: "ui-icon in"},
+
+                {title: "----"}
+            ],
+            select: function (event, ui) {
+                var $target = ui.target;
+                switch (ui.cmd) {
+                    case "device1":
+                        setInSlot($target, "device1");
+                        setUpSlot($target, "device1");
+                        break;
+                    case "device2":
+                        setInSlot($target, "device2");
+                        setUpSlot($target, "device2");
+                        break;
+                    case "device3":
+                        setInSlot($target, "device3");
+                        setUpSlot($target, "device3");
+                        break;
+                }
+            },
+        });
+        /*
+         CONTEXT MENU :: HELMET
+       */
+        // SET IN
+        $.widget("moogle.contextmenu_backpack", $.moogle.contextmenu, {});
+        $(document).contextmenu_backpack({
+            delegate: ".equip_inv_backpack",
+            menu: [
+                {title: "<i>Переместить в слот рюкзаков</i>", cmd: "backpack", uiIcon: "ui-icon in"},
+
+                {title: "----"}
+            ],
+            select: function (event, ui) {
+                var $target = ui.target;
+                switch (ui.cmd) {
+                    case "backpack":
+                        setInSlot($target, "backpack");
+                        setUpSlot($target, "backpack");
+                        break;
+                }
+            },
+        });
+        /*
+          DRAG AND DROP :: WEAPONS
+        */
+        removeFromSlotClick("slot1");
+        removeFromSlotClick("slot2");
+        removeFromSlotClick("slot3");
+        removeFromSlotClick("armor");
+        removeFromSlotClick("helmet");
+        removeFromSlotClick("device2");
+        removeFromSlotClick("backpack");
+        removeFromSlotClick("container1");
+        removeFromSlotClick("container2");
+        removeFromSlotClick("container3");
+        removeFromSlotClick("container4");
+        removeFromSlotClick("container5");
+        removeFromSlotClick("belt1");
+        removeFromSlotClick("belt2");
+        removeFromSlotClick("belt3");
+        removeFromSlotClick("belt4");
+        replaceInInventoryDnD("#e-slot1");
+        replaceInInventoryDnD("#e-slot2");
+        replaceInInventoryDnD("#e-slot3");
+        replaceInInventoryDnD("#e-armor");
+        replaceInInventoryDnD("#e-helmet");
+        // replaceInInventoryDnD("#e-device1");
+        replaceInInventoryDnD("#e-device2");
+        // replaceInInventoryDnD("#e-device3");
+        replaceInInventoryDnD("#e-backpack");
+        replaceInInventoryDnD("#e-container1");
+        replaceInInventoryDnD("#e-container2");
+        replaceInInventoryDnD("#e-container3");
+        replaceInInventoryDnD("#e-container4");
+        replaceInInventoryDnD("#e-container5");
+        replaceInInventoryDnD("#e-belt1");
+        replaceInInventoryDnD("#e-belt2");
+        replaceInInventoryDnD("#e-belt3");
+        replaceInInventoryDnD("#e-belt4");
+        $('body').on('dblclick', ".equip_inv_weapon", function () {
+            setInSlotClick(this, "weapon", ["slot1", "slot2", "slot3"]);
+        });
+        $('body').on('dblclick', ".equip_inv_outfit", function () {
+            setInSlotClick(this, "outfit", ["armor"]);
+        });
+        $('body').on('dblclick', ".equip_inv_helmet", function () {
+            setInSlotClick(this, "helmet", ["helmet"]);
+        });
+        $('body').on('dblclick', ".equip_inv_device", function () {
+            setInSlotClick(this, "device", ["device2"]);
+        });
+        $('body').on('dblclick', ".equip_inv_backpack", function () {
+            setInSlotClick(this, "backpack", ["backpack"]);
+        });
+        $('body').on('dblclick', ".equip_inv_ammo", function () {
+            setInSlotClick(this, "ammo", ["belt1", "belt2", "belt3", "belt4"], true);
+        });
+        setInSlotDnD('.equip_inv_weapon', "#equipped_slot1, #equipped_slot2, #equipped_slot3", "weapon");
+        setInSlotDnD('.equip_inv_outfit', "#equipped_armor", "outfit");
+        setInSlotDnD('.equip_inv_helmet', "#equipped_helmet", "helmet");
+        setInSlotDnD('.equip_inv_device', "#equipped_device2", "device");
+        setInSlotDnD('.equip_inv_backpack', "#equipped_backpack", "backpack");
+        setInAmmoDnD('.equip_inv_ammo', "#equipped_belt1, #equipped_belt2, #equipped_belt3, #equipped_belt4", "ammo");
+        let containersQuantity = Number($("#containers").attr("data-containers"));
+        if (containersQuantity >= 5) {
+            replaceInInventoryDnD("#e-container5");
+            $('body').on('dblclick', ".equip_inv_artifact", function () {
+                setInSlotClick(this, "artifact", ["container1", "container2", "container3", "container4", "container5"]);
+            });
+            setInSlotDnD('.equip_inv_artifact', "#equipped_container1, #equipped_container2, #equipped_container3, #equipped_container4, #equipped_container5", "artifact");
+        } else if (containersQuantity >= 4) {
+            replaceInInventoryDnD("#e-container4");
+            $('body').on('dblclick', ".equip_inv_artifact", function () {
+                setInSlotClick(this, "artifact", ["container1", "container2", "container3", "container4"]);
+            });
+            setInSlotDnD('.equip_inv_artifact', "#equipped_container1, #equipped_container2, #equipped_container3, #equipped_container4", "artifact");
+        } else if (containersQuantity >= 3) {
+            replaceInInventoryDnD("#e-container3");
+            setInSlotDnD('.equip_inv_artifact', "#equipped_container1, #equipped_container2", "artifact");
+            $('body').on('dblclick', ".equip_inv_artifact", function () {
+                setInSlotClick(this, "artifact", ["container1", "container2", "container3", "container4"]);
+            });
+        } else if (containersQuantity >= 2) {
+            replaceInInventoryDnD("#e-container2");
+            $('body').on('dblclick', ".equip_inv_artifact", function () {
+                setInSlotClick(this, "artifact", ["container1", "container2"]);
+            });
+            setInSlotDnD('.equip_inv_artifact', "#equipped_container1, #equipped_container2", "artifact");
+        } else if (containersQuantity >= 1) {
+            replaceInInventoryDnD("#e-container1");
+            $('body').on('dblclick', ".equip_inv_artifact", function () {
+                setInSlotClick(this, "artifact", ["container1"]);
+            });
+            setInSlotDnD('.equip_inv_artifact', "#equipped_container1", "artifact");
+        }
+
+    </script>
+{% endblock %}

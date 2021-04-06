@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'nucleus',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -72,6 +73,7 @@ INSTALLED_APPS = [
     'equipment',
     'favorites',
     'roleplay',
+    'chat',
 
     # TEMPORARY APPS
 
@@ -82,6 +84,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'mathfilters',
     'django_cleanup.apps.CleanupConfig',
+
 ]
 
 MIDDLEWARE = [
@@ -117,7 +120,12 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'postap.wsgi.application'
-
+ASGI_APPLICATION = 'postap.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -160,7 +168,7 @@ AUTHENTICATION_BACKENDS = (
 
 LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Kiev'
 
 USE_I18N = True
 

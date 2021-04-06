@@ -1,16 +1,24 @@
-"""
-ASGI config for postap project.
-
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/3.0/howto/deployment/asgi/
-"""
-
 import os
 
-from django.core.asgi import get_asgi_application
+from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.security.websocket import AllowedHostsOriginValidator
+from chat.consumers import DialogConsumer, ChatConsumer
+from django.conf.urls import url
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'postap.settings')
 
-application = get_asgi_application()
+application = ProtocolTypeRouter({
+    # Websocket chat handler
+    'websocket': AllowedHostsOriginValidator(
+        AuthMiddlewareStack(
+            URLRouter(
+                [
+                    # url(r"chat/", DialogConsumer, name='chat')
+                    url(r"d/(?P<username>[\w.@+-]+)/$", DialogConsumer.as_asgi(), name='dialog'),
+                    url(r"chat/(?P<slug>[\w.@+-]+)/$", ChatConsumer.as_asgi(), name='chat')
+                ]
+            )
+        ),
+    ),
+})

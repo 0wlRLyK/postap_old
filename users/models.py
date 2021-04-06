@@ -262,7 +262,7 @@ class SiteUser(AbstractUser):
     rpl_second_name = models.CharField(_('Second name of hero'), max_length=50, default="", blank=True)
 
     rpl_bio = RichTextField(_('Biography of hero'), default="", blank=True)
-    rpl_avatar = models.ForeignKey(Avatar, verbose_name=_('avatar'), default='img/profile/no_data.gif',
+    rpl_avatar = models.ForeignKey(Avatar, verbose_name=_('avatar'),
                                    on_delete=models.CASCADE, blank=True, null=True)
     speciality = models.CharField(_('Speciality of hero'), max_length=200, choices=SPECIALITIES, default="no")
     rpl_xp = models.IntegerField(_('Experience of hero'), default=0)
