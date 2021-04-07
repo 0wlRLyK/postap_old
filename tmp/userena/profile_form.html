@@ -79,7 +79,7 @@
                                 {{ form.birthday.errors }}
                                 <label for="birthday">День рождения:</label>
                                 <input type="text" name="{{ form.birthday.name }}" id="{{ form.birthday.id_for_label }}"
-                                       value="{{ user.birthday|date:"d.m.y" }}">
+                                       value="{{ user.birthday|date:"Y-m-d" }}">
 
                             </div>
                             <div class="form-group">

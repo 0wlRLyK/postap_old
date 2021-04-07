@@ -1,10 +1,14 @@
 import json
 import random
 
+from chat.forms import ComposeForm
+from chat.models import ChatMessage
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views import generic
+from django.views.generic.edit import FormMixin
 from equipment import models as equip
 from users import models as users_m
 
@@ -21,6 +25,36 @@ class AreaView(generic.DetailView):
     model = models.Area
     template_name = "rp/area.html"
     context_object_name = "area"
+
+
+class CampFireView(LoginRequiredMixin, FormMixin, generic.DetailView):
+    model = models.CampFire
+    template_name = "rp/campfire.html"
+    context_object_name = "camp"
+    form_class = ComposeForm
+    success_url = './'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.get_form()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseForbidden()
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        campfire = self.get_object()
+        user = self.request.user
+        message = form.cleaned_data.get("message")
+        ChatMessage.objects.create(user=user, thread=campfire.chat, message=message)
+        return super().form_valid(form)
 
 
 class SubLocationView(generic.DetailView):

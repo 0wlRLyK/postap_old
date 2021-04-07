@@ -28,6 +28,13 @@ class SubLocationAdmin(admin.ModelAdmin):
     list_display = ['name', 'type_of_subloc', 'icon_admin']
 
 
+@admin.register(rp.CampFire)
+class CampFireAdmin(admin.ModelAdmin):
+    list_display = ['name', 'area', 'chat']
+    search_fields = ['name', 'area', 'chat']
+    list_filter = ['name', 'area', 'chat']
+
+
 @admin.register(rp.Trader)
 class NPCTraderAdmin(admin.ModelAdmin):
     fieldsets = (

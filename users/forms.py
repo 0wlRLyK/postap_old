@@ -64,13 +64,14 @@ class EditFormExtra(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.profile = super().save(commit=False)
-        self.user = self.profile.user
-        self.fields['signature'] = forms.ChoiceField(
-            required=False,
-            widget=CKEditorWidget(),
-            initial=self.user.signature,
-        )
+        if self.is_valid():
+            self.profile = super().save(commit=False)
+            self.user = self.profile.user
+            self.fields['signature'] = forms.ChoiceField(
+                required=False,
+                widget=CKEditorWidget(),
+                initial=self.user.signature,
+            )
 
     def clean_country(self):
         data = self.data.copy()

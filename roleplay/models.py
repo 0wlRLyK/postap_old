@@ -1,3 +1,4 @@
+from chat.models import Chat
 from ckeditor.fields import RichTextField
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -90,6 +91,25 @@ class SubLocation(AbstractLocation):
     class Meta:
         verbose_name = "Подлокация"
         verbose_name_plural = "Подлокации"
+
+
+class CampFire(models.Model):
+    """
+    CampFire - Roleplay chat
+    """
+    name = models.CharField(max_length=70, verbose_name="Название чата")
+    area = models.ForeignKey(Area, verbose_name="Територия", null=True, on_delete=models.SET_NULL,
+                             related_name="campfires")
+    chat = models.ForeignKey(Chat, verbose_name="Чат", null=True, on_delete=models.SET_NULL)
+    image = models.ImageField(verbose_name="Превью", upload_to="roleplay/campfire/preview/", null=True)
+    bg = models.ImageField(verbose_name="Фон", upload_to="roleplay/campfire/bg/", null=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Костер (ролевой чат)"
+        verbose_name_plural = "Костры (ролевые чаты)"
 
 
 def npc_upload_to_ava(instance, filename):
